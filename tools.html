@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Tools</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+
+margin:0;
+
+background:#0b1535;
+
+font-family:Arial;
+
+color:white;
+
+padding:40px;
+
+}
+
+h1{
+
+text-align:center;
+
+font-size:65px;
+
+margin-bottom:50px;
+
+}
+
+.back{
+
+display:inline-block;
+
+color:#a78bfa;
+
+font-size:24px;
+
+text-decoration:none;
+
+margin-bottom:35px;
+
+}
+
+.container{
+
+max-width:1700px;
+
+margin:auto;
+
+}
+
+/* EXACTLY 6 ITEMS PER ROW */
+
+.tool-grid{
+
+display:grid;
+
+grid-template-columns:
+
+repeat(
+6,
+1fr
+);
+
+gap:18px;
+
+}
+
+.tool{
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+height:85px;
+
+padding:12px;
+
+background:#334155;
+
+border-radius:18px;
+
+font-size:22px;
+
+font-weight:700;
+
+color:white;
+
+text-decoration:none;
+
+text-align:center;
+
+transition:.25s;
+
+}
+
+.tool:hover{
+
+transform:
+translateY(-6px);
+
+background:
+
+linear-gradient(
+135deg,
+#6366f1,
+#9333ea
+);
+
+box-shadow:
+
+0 12px 30px
+
+rgba(
+147,
+51,
+234,
+0.45
+);
+
+}
+
+/* Tablet */
+
+@media(max-width:1200px){
+
+.tool-grid{
+
+grid-template-columns:
+
+repeat(
+4,
+1fr
+);
+
+}
+
+}
+
+/* Mobile */
+
+@media(max-width:768px){
+
+body{
+
+padding:20px;
+
+}
+
+h1{
+
+font-size:42px;
+
+}
+
+.tool-grid{
+
+grid-template-columns:
+
+repeat(
+2,
+1fr
+);
+
+}
+
+.tool{
+
+font-size:18px;
+
+height:70px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<a
+class="back"
+href="index.html">
+
+← Back
+
+</a>
+
+<h1>
+Tools
+</h1>
+
+<div class="container">
+
+<div class="tool-grid">
+
+<a class="tool" href="https://dashboard.mux.com/" target="_blank">Mux</a>
+
+<a class="tool" href="https://smartsight-wbd.mediamelon.com/" target="_blank">Mediamelon</a>
+
+<a class="tool" href="https://inflow.eurosport.com/" target="_blank">Inflow</a>
+
+<a class="tool" href="https://backoffice.prd.api.discomax.com/" target="_blank">Ad-Platform UI</a>
+
+<a class="tool" href="https://tundra.discovery.com/" target="_blank">Tundra</a>
+
+<a class="tool" href="https://console.wbd-sdp.io/" target="_blank">SDP Console</a>
+
+<a class="tool" href="https://app.istreamplanet.com/" target="_blank">Tempo</a>
+
+<a class="tool" href="https://studio.prd.api.discomax.com/" target="_blank">Studio</a>
+
+<a class="tool" href="https://dacc.vdp.h264.io/" target="_blank">DACC</a>
+
+<a class="tool" href="https://grafana.prd.o11y.discomax.com/" target="_blank">Grafana</a>
+
+<a class="tool" href="https://foundry.wbdapps.com/search/" target="_blank">Foundry</a>
+
+<a class="tool" href="https://taiga2.discovery.com/" target="_blank">Taiga</a>
+
+<a class="tool" href="https://chimera.ui.discomax.com/" target="_blank">Chimera</a>
+
+<a class="tool" href="https://kibana.prd.o11y.discomax.com/" target="_blank">Kibana</a>
+
+<a class="tool" href="https://disco.wbdapps.com/views" target="_blank">Disco</a>
+
+<a class="tool" href="https://istreamplanet.datadoghq.com/" target="_blank">Datadog</a>
+
+<a class="tool" href="https://backoffice.prd.api.discomax.com/prismatic-microapps/co-ui/" target="_blank">COUI</a>
+
+</div>
+
+</div>
+
+</body>
+
+</html>
