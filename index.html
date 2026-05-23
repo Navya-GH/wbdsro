@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>WBD SRO Portal</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Inter;
+
+background:
+linear-gradient(
+135deg,
+#050816,
+#111827
+);
+
+color:white;
+}
+
+.header{
+
+padding:40px;
+
+text-align:center;
+
+}
+
+.grid{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(300px,1fr));
+
+gap:25px;
+
+padding:40px;
+
+}
+
+.card{
+
+background:
+rgba(255,255,255,.08);
+
+backdrop-filter:blur(20px);
+
+border-radius:30px;
+
+padding:30px;
+
+}
+
+button{
+
+width:100%;
+
+padding:18px;
+
+margin:10px 0;
+
+border:none;
+
+border-radius:15px;
+
+cursor:pointer;
+
+font-size:18px;
+
+background:
+
+linear-gradient(
+90deg,
+#2563eb,
+#9333ea
+);
+
+color:white;
+
+}
+
+.links{
+
+display:none;
+
+}
+
+a{
+
+display:block;
+
+padding:15px;
+
+margin:8px 0;
+
+text-decoration:none;
+
+background:#1f2937;
+
+border-radius:10px;
+
+color:white;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h1>
+🚀 WBD SRO Portal
+</h1>
+
+<p>
+Internal tools navigation
+</p>
+
+</div>
+
+
+<div class="grid">
+
+<div class="card">
+
+<button onclick="toggle('tools')">
+
+🛠 Tools
+
+</button>
+
+<div
+class="links"
+id="tools">
+
+<a href="https://grafana.com">
+Grafana
+</a>
+
+<a href="https://jenkins.io">
+Jenkins
+</a>
+
+<a href="https://aws.amazon.com">
+AWS
+</a>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<button onclick="toggle('office')">
+
+💬 Office
+
+</button>
+
+<div
+class="links"
+id="office">
+
+<a href="https://slack.com">
+Slack
+</a>
+
+<a href="https://outlook.office.com">
+Outlook
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+function toggle(id){
+
+let x=
+document
+.getElementById(id);
+
+x.style.display=
+x.style.display==="block"
+?
+"none"
+:
+"block";
+
+}
+
+</script>
+
+</body>
+
+</html>
