@@ -39,21 +39,28 @@ top:0;
 
 left:0;
 
-width:100%;
+width:100vw;
 
-height:100%;
+height:100vh;
 
 object-fit:cover;
 
+object-position:center;
+
 z-index:-10;
 
-filter:
-brightness(.55);
+pointer-events:none;
+
+opacity:1;
+
+background:#020617;
+
+transform:translateZ(0);
+
+backface-visibility:hidden;
 
 }
 
-
-/* OVERLAY */
 
 body::after{
 
@@ -73,14 +80,15 @@ rgba(
 2,
 8,
 23,
-0.25
+0.18
 ),
 
 rgba(
 2,
 8,
 23,
-0.55
+0.42
+
 )
 
 );
@@ -90,8 +98,6 @@ z-index:-5;
 pointer-events:none;
 
 }
-
-
 
 .top{
 
@@ -567,6 +573,61 @@ val
 );
 
 }
+
+const bg=
+document.getElementById(
+"bg-video"
+);
+
+function startVideo(){
+
+let p=
+bg.play();
+
+if(p!==undefined){
+
+p.catch(()=>{
+
+document.body.addEventListener(
+
+"touchstart",
+
+()=>{
+
+bg.play();
+
+},
+
+{
+
+once:true
+
+}
+
+);
+
+});
+
+}
+
+}
+
+document.addEventListener(
+"DOMContentLoaded",
+startVideo
+);
+
+document.addEventListener(
+"visibilitychange",
+()=>{
+
+if(
+!document.hidden
+)
+
+startVideo();
+
+});
 
 </script>
 
