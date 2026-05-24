@@ -107,7 +107,7 @@ justify-content:space-between;
 
 align-items:flex-start;
 
-margin-bottom:20px;
+margin-bottom:10px;
 
 }
 
@@ -280,6 +280,218 @@ text-decoration:none;
 
 }
 
+.pd-mini{
+
+position:fixed;
+
+right:80px;
+
+top:40px;
+
+width:330px;
+
+z-index:70;
+
+background:none;
+
+backdrop-filter:none;
+
+padding:0;
+
+animation:
+float 5s ease-in-out infinite;
+
+}
+
+@keyframes float{
+
+0%{
+transform:translateY(0px);
+}
+
+50%{
+transform:translateY(-8px);
+}
+
+100%{
+transform:translateY(0px);
+}
+
+}
+
+.pd-title{
+
+font-size:24px;
+
+font-weight:700;
+
+margin-bottom:10px;
+
+}
+
+.pd-grid{
+
+display:flex;
+
+gap:10px;
+
+}
+
+.pd-card{
+
+flex:1;
+
+padding:15px;
+
+border-radius:22px;
+
+background:
+
+rgba(
+255,
+255,
+255,
+0.04
+);
+
+backdrop-filter:
+blur(14px);
+
+border:
+
+1px solid
+
+rgba(
+255,
+255,
+255,
+0.08
+);
+
+transition:.4s;
+
+}
+
+.pd-card:hover{
+
+transform:
+translateY(-3px);
+
+}
+
+.pd-label{
+
+font-size:30px;
+
+font-weight:bold;
+
+margin-bottom:10px;
+
+}
+
+.stat-row{
+
+display:flex;
+
+justify-content:space-between;
+
+padding:5px 0;
+
+font-size:14px;
+
+}
+
+.value{
+
+font-weight:bold;
+
+font-size:18px;
+
+}
+
+.p1{
+
+background:
+rgba(239,68,68,.18);
+
+}
+
+.p2{
+
+background:
+rgba(249,115,22,.18);
+
+}
+
+.p3{
+
+background:
+rgba(234,179,8,.18);
+
+}
+
+.alert{
+
+animation:
+danger .8s infinite;
+
+box-shadow:
+
+0 0 50px rgba(255,0,0,.9);
+
+}
+
+@keyframes danger{
+
+0%{
+
+opacity:1;
+
+transform:scale(1);
+
+}
+
+50%{
+
+opacity:.45;
+
+transform:scale(1.05);
+
+}
+
+100%{
+
+opacity:1;
+
+transform:scale(1);
+
+}
+
+}
+
+background:
+rgba(234,179,8,.18);
+
+}
+
+@media(max-width:900px){
+
+.pd-mini{
+
+position:relative;
+
+width:100%;
+
+right:auto;
+
+bottom:auto;
+
+margin-top:35px;
+
+}
+
+}
+
 .footer{
 
 position:fixed;
@@ -404,14 +616,92 @@ id="search">
 
 <a data-search="sling shifts" href="https://app.getsling.com/" target="_blank"><button class="main-btn">Sling</button></a>
 
-<a data-search="events live checks" href="https://warnermedia.sharepoint.com/sites/GTOC/_layouts/15/Doc.aspx?sourcedoc=%7BE9E9EACE-C693-451E-9C0F-BB855F669C09%7D&action=edit" target="_blank"><button class="main-btn">Live Event Checks</button></a>
+<a data-search="events live checks" href="https://warnermedia.sharepoint.com/" target="_blank"><button class="main-btn">Live Event Checks</button></a>
+
+</div>
+
+<div class="pd-mini">
+
+<div class="pd-title">
+PagerDuty Stats
+</div>
+
+<div class="pd-grid">
+
+<div class="pd-card p1">
+
+<div class="pd-label">P1</div>
+
+<div class="stat-row">
+<span>Open</span>
+<span class="value" id="p1o">0</span>
+</div>
+
+<div class="stat-row">
+<span>Trig</span>
+<span class="value" id="p1t">0</span>
+</div>
+
+<div class="stat-row">
+<span>Ack</span>
+<span class="value" id="p1a">0</span>
+</div>
 
 </div>
 
 
+<div class="pd-card p2">
+
+<div class="pd-label">P2</div>
+
+<div class="stat-row">
+<span>Open</span>
+<span class="value" id="p2o">0</span>
+</div>
+
+<div class="stat-row">
+<span>Trig</span>
+<span class="value" id="p2t">0</span>
+</div>
+
+<div class="stat-row">
+<span>Ack</span>
+<span class="value" id="p2a">0</span>
+</div>
+
+</div>
+
+
+<div class="pd-card p3">
+
+<div class="pd-label">P3</div>
+
+<div class="stat-row">
+<span>Open</span>
+<span class="value" id="p3o">0</span>
+</div>
+
+<div class="stat-row">
+<span>Trig</span>
+<span class="value" id="p3t">0</span>
+</div>
+
+<div class="stat-row">
+<span>Ack</span>
+<span class="value" id="p3a">0</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 <div class="footer">
 
-SRO Dashboard • v1.1 • Built by Navya
+---------------- SRO Dashboard • v1.2 • Built by Navya ----------------
 
 </div>
 
@@ -645,6 +935,124 @@ startVideo,
 {
 once:true
 }
+);
+
+async function loadPagerDuty(){
+
+try{
+
+const TOKEN=
+"u+mnguNsLNMzxz7KoUuA";
+
+const res=
+await fetch(
+
+"https://api.pagerduty.com/incidents?team_ids[]=PK3J30X&statuses[]=triggered&statuses[]=acknowledged&limit=100",
+
+{
+headers:{
+Authorization:
+`Token token=${TOKEN}`,
+Accept:
+"application/vnd.pagerduty+json;version=2"
+}
+}
+
+);
+
+const data=
+await res.json();
+
+const c={
+
+P1:{o:0,t:0,a:0},
+
+P2:{o:0,t:0,a:0},
+
+P3:{o:0,t:0,a:0}
+
+};
+
+(data.incidents||[]).forEach(i=>{
+
+const p=
+(
+i.priority?.summary
+||
+i.priority?.name
+||
+"P3"
+)
+
+.match(/P[123]/)
+
+?.[0];
+
+if(!p)return;
+
+c[p].o++;
+
+if(i.status==="triggered")
+c[p].t++;
+
+if(i.status==="acknowledged")
+c[p].a++;
+
+});
+
+["P1","P2","P3"]
+
+.forEach(p=>{
+
+document.getElementById(
+p.toLowerCase()+"o"
+).innerHTML=
+c[p].o;
+
+document.getElementById(
+p.toLowerCase()+"t"
+).innerHTML=
+c[p].t;
+
+document.getElementById(
+p.toLowerCase()+"a"
+).innerHTML=
+c[p].a;
+
+});
+
+document
+.querySelector(".p1")
+.classList.toggle(
+"alert",
+c.P1.o>0
+);
+
+document
+.querySelector(".p2")
+.classList.toggle(
+"alert",
+c.P2.o>0
+);
+
+}
+
+catch(e){
+
+console.log(
+"PD ERROR:",
+e
+);
+
+}
+
+}
+
+loadPagerDuty();
+
+setInterval(
+loadPagerDuty,
+60000
 );
 
 </script>
