@@ -336,7 +336,11 @@ id="bg-video"
 autoplay
 muted
 loop
-playsinline>
+playsinline
+webkit-playsinline
+disablepictureinpicture
+disableremoteplayback
+preload="auto">
 
 <source
 src="RG.mp4"
@@ -407,7 +411,7 @@ id="search">
 
 <div class="footer">
 
-SRO Dashboard • v1.0 • Built by Navya
+SRO Dashboard • v1.1 • Built by Navya
 
 </div>
 
@@ -581,29 +585,35 @@ document.getElementById(
 
 function startVideo(){
 
-let p=
+if(!bg)return;
+
+bg.muted=true;
+
+bg.setAttribute(
+"muted",
+""
+);
+
+bg.setAttribute(
+"playsinline",
+""
+);
+
+bg.setAttribute(
+"webkit-playsinline",
+""
+);
+
+const play=
 bg.play();
 
-if(p!==undefined){
+if(play!==undefined){
 
-p.catch(()=>{
+play.catch(()=>{
 
-document.body.addEventListener(
-
-"touchstart",
-
-()=>{
-
-bg.play();
-
-},
-
-{
-
-once:true
-
-}
-
+setTimeout(
+()=>bg.play(),
+500
 );
 
 });
@@ -612,8 +622,8 @@ once:true
 
 }
 
-document.addEventListener(
-"DOMContentLoaded",
+window.addEventListener(
+"load",
 startVideo
 );
 
@@ -628,6 +638,14 @@ if(
 startVideo();
 
 });
+
+document.addEventListener(
+"touchstart",
+startVideo,
+{
+once:true
+}
+);
 
 </script>
 
