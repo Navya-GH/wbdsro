@@ -614,6 +614,51 @@ margin-top:10px;
 
 }
 
+.request-btn{
+
+margin-top:10px;
+
+height:52px;
+
+border:none;
+
+border-radius:16px;
+
+cursor:pointer;
+
+font-size:16px;
+
+color:white;
+
+background:
+
+rgba(
+255,
+255,
+255,
+0.08
+);
+
+backdrop-filter:
+blur(12px);
+
+transition:.3s;
+
+}
+
+.request-btn:hover{
+
+background:
+
+rgba(
+255,
+255,
+255,
+0.16
+);
+
+}
+
 </style>
 
 </head>
@@ -706,6 +751,14 @@ Enter NAVEX
 </button>
 
 <div id="error"></div>
+
+<button
+class="request-btn"
+onclick="requestAccess()">
+
+Request Access
+
+</button>
 
 </div>
 
@@ -882,7 +935,7 @@ PagerDuty Stats
 
 <div class="footer">
 
----------------- SRO Dashboard • v1.2 • Built by Navya ----------------
+---------------- SRO Dashboard • v1.4 ----------------
 
 </div>
 
@@ -999,6 +1052,42 @@ location.reload();
 }
 
 /* ---------- END LOGIN ---------- */
+
+function requestAccess(){
+
+const email=
+
+document
+.getElementById(
+"email"
+)
+.value
+.trim();
+
+const message=
+
+`Hi Navya,
+
+Please provide access to NAVEX Dashboard.
+
+Requester:
+${email}`;
+
+navigator.clipboard.writeText(
+message
+);
+
+alert(
+"Access request copied. Please send it to Navya on Teams or Outlook."
+);
+
+window.open(
+
+"https://outlook.office.com/mail/deeplink/compose?to=navya.teja@wbd.com&subject=NAVEX%20Dashboard%20Access%20Request"
+
+);
+
+}
 
 function format(zone){
 
