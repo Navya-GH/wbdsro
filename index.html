@@ -536,11 +536,180 @@ bottom:12px;
 
 }
 
+.login-box{
+
+display:flex;
+
+flex-direction:column;
+
+gap:18px;
+
+width:420px;
+
+}
+
+.login-box input{
+
+height:62px;
+
+padding:18px;
+
+border:none;
+
+border-radius:18px;
+
+background:
+
+rgba(
+255,
+255,
+255,
+0.08
+);
+
+backdrop-filter:
+blur(18px);
+
+color:white;
+
+font-size:18px;
+
+}
+
+.login-box button{
+
+height:64px;
+
+border:none;
+
+border-radius:18px;
+
+font-size:22px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+color:white;
+
+background:
+
+linear-gradient(
+135deg,
+#5b5cf6,
+#8b5cf6
+);
+
+}
+
+#error{
+
+color:#ff6b6b;
+
+font-size:18px;
+
+text-align:center;
+
+margin-top:10px;
+
+}
+
 </style>
 
 </head>
 
 <body>
+
+<div
+id="login-screen"
+
+style="
+
+position:fixed;
+
+inset:0;
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:center;
+
+align-items:center;
+
+backdrop-filter:blur(25px);
+
+background:
+rgba(
+0,
+0,
+0,
+0.25
+);
+
+z-index:99999;
+
+"
+
+>
+
+<div
+
+style="
+
+font-size:72px;
+
+font-weight:bold;
+
+margin-bottom:20px;
+
+"
+
+>
+
+NAVEX
+
+</div>
+
+<div
+
+style="
+
+font-size:22px;
+
+opacity:.8;
+
+margin-bottom:50px;
+
+"
+
+>
+
+Sign in to continue
+
+</div>
+
+<div class="login-box">
+
+<input
+id="email"
+type="email"
+placeholder="WBD Email">
+
+<input
+id="password"
+type="password"
+placeholder="Password">
+
+<button onclick="login()">
+Enter NAVEX
+</button>
+
+<div id="error"></div>
+
+</div>
+
+</div>
 
 
 <video
@@ -577,6 +746,18 @@ type="video/mp4">
 </div>
 
 <div class="clock">
+
+<button
+onclick="logout()"
+style="
+margin-top:8px;
+padding:8px 14px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+">
+Logout
+</button>
 
 <div id="greeting"></div>
 
@@ -701,13 +882,123 @@ PagerDuty Stats
 
 <div class="footer">
 
----------------- SRO Dashboard v1.2 ----------------
+---------------- SRO Dashboard • v1.2 • Built by Navya ----------------
 
 </div>
 
-
-
 <script>
+
+/* ---------- LOGIN ---------- */
+
+const USERS={
+
+"navya.teja@wbd.com":"sro@2026",
+
+"abc@wbd.com":"welcome123"
+
+};
+
+function login(){
+
+const email=
+
+document
+.getElementById(
+"email"
+)
+.value
+.trim()
+.toLowerCase();
+
+const password=
+
+document
+.getElementById(
+"password"
+)
+.value;
+
+if(
+
+USERS[email]
+
+&&
+
+USERS[email]===password
+
+){
+
+localStorage.setItem(
+"navexLogin",
+"ok"
+);
+
+localStorage.setItem(
+"navexUser",
+email
+);
+
+document
+.getElementById(
+"login-screen"
+)
+.style.display="none";
+
+}
+
+else{
+
+document
+.getElementById(
+"error"
+)
+.innerHTML=
+
+"Invalid email or password";
+
+}
+
+}
+
+window.addEventListener(
+
+"load",
+
+()=>{
+
+if(
+
+localStorage.getItem(
+"navexLogin"
+)
+
+===
+
+"ok"
+
+){
+
+document
+.getElementById(
+"login-screen"
+)
+.style.display="none";
+
+}
+
+}
+
+);
+
+function logout(){
+
+localStorage.clear();
+
+location.reload();
+
+}
+
+/* ---------- END LOGIN ---------- */
 
 function format(zone){
 
@@ -1054,6 +1345,16 @@ setInterval(
 loadPagerDuty,
 60000
 );
+
+function logout(){
+
+localStorage.removeItem(
+"navexLogin"
+);
+
+location.reload();
+
+}
 
 </script>
 
