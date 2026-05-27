@@ -3,6 +3,8 @@
 
 <head>
 
+<meta charset="UTF-8">
+
 <title>NAVEX</title>
 
 <style>
@@ -14,6 +16,8 @@ body{
 margin:0;
 
 padding:30px;
+
+padding-bottom:280px;
 
 font-family:Arial;
 
@@ -147,6 +151,14 @@ min-width:120px;
 
 .clock{
 
+position:absolute;
+
+top:10px;
+
+right:20px;
+
+width:200px;
+
 text-align:right;
 
 font-size:16px;
@@ -159,28 +171,73 @@ h1{
 
 text-align:center;
 
-font-size:72px;
+font-size:76px;
 
-margin:10px 0 35px;
+margin:-18px 0 28px;
+/* moved slightly upward */
+
+font-weight:900;
+
+letter-spacing:-2px;
+
+color:#ffffff;
+
+-webkit-text-fill-color:#ffffff;
+
+position:relative;
+
+top:-12px;
+
+text-shadow:
+0 0 10px rgba(255,255,255,.35),
+0 0 25px rgba(255,255,255,.28),
+0 0 50px rgba(220,230,255,.18);
+
+animation:logoGlow 6s ease-in-out infinite;
+
+}
+
+@keyframes logoGlow{
+
+0%{
+transform:scale(1);
+text-shadow:
+0 0 10px rgba(255,255,255,.35),
+0 0 25px rgba(255,255,255,.22);
+}
+
+50%{
+transform:scale(1.015);
+text-shadow:
+0 0 18px rgba(255,255,255,.55),
+0 0 45px rgba(220,230,255,.32);
+}
+
+100%{
+transform:scale(1);
+text-shadow:
+0 0 10px rgba(255,255,255,.35),
+0 0 25px rgba(255,255,255,.22);
+}
 
 }
 
 .search{
 
 width:min(
-850px,
-95%
+860px,
+92%
 );
 
 display:block;
 
 margin:auto;
 
-padding:20px;
+padding:16px 26px;
 
 border:none;
 
-border-radius:20px;
+border-radius:18px;
 
 background:
 
@@ -192,15 +249,13 @@ rgba(
 );
 
 backdrop-filter:
-blur(25px);
+blur(24px);
 
 color:white;
 
-font-size:22px;
+font-size:18px;
 
-outline:none;
-
-margin-bottom:30px;
+margin-bottom:24px;
 
 }
 
@@ -218,12 +273,18 @@ grid-template-columns:
 repeat(
 auto-fit,
 minmax(
-230px,
+220px,
 1fr
 )
 );
 
-gap:22px;
+gap:18px;
+
+padding:0 20px;
+
+max-width:1700px;
+
+margin:auto;
 
 }
 
@@ -231,17 +292,19 @@ gap:22px;
 
 width:100%;
 
-height:120px;
+height:92px;
 
 border:none;
 
-border-radius:24px;
+border-radius:22px;
 
 cursor:pointer;
 
 color:white;
 
-font-size:28px;
+font-size:22px;
+
+font-weight:500;
 
 background:
 
@@ -249,7 +312,7 @@ rgba(
 255,
 255,
 255,
-0.08
+0.07
 );
 
 backdrop-filter:
@@ -257,19 +320,31 @@ blur(30px);
 
 transition:.25s;
 
+letter-spacing:.2px;
+
 }
 
 .main-btn:hover{
 
 transform:
-translateY(-6px);
+translateY(-4px);
 
 background:
 
 linear-gradient(
 135deg,
-#5b5cf6,
-#8b5cf6
+rgba(
+91,
+92,
+246,
+.45
+),
+rgba(
+139,
+92,
+246,
+.45
+)
 );
 
 }
@@ -492,6 +567,684 @@ margin-top:35px;
 
 }
 
+.events-layout{
+
+display:grid;
+
+grid-template-columns:
+
+calc(100% - 500px)
+
+460px;
+
+gap:30px;
+
+align-items:start;
+
+max-width:1700px;
+
+margin:60px auto 0;
+
+padding:0 20px;
+
+position:relative;
+
+z-index:2;
+
+}
+
+.events-section{
+
+width:100%;
+
+overflow:hidden;
+
+}
+
+.events-title{
+
+font-size:28px;
+
+font-weight:800;
+
+margin-bottom:18px;
+
+}
+
+.events-grid{
+display:flex;
+align-items:flex-start;
+gap:18px;
+overflow:hidden;
+}
+
+.events-home{
+flex:0 0 230px;
+width:230px;
+}
+
+.events-scroll{
+display:flex;
+gap:18px;
+
+width:
+calc(
+(230px * 3)
++
+(18px * 2)
+);
+
+overflow:hidden;
+
+flex-wrap:nowrap;
+
+scroll-behavior:smooth;
+}
+
+.events-scroll .media-box{
+flex:0 0 230px;
+
+width:230px;
+
+height:180px;
+}
+
+.media-box{
+
+height:170px;
+
+min-width:220px;
+
+flex-shrink:0;
+
+border-radius:22px;
+
+overflow:hidden;
+
+background:
+rgba(255,255,255,.08);
+
+backdrop-filter:blur(18px);
+
+border:
+1px solid rgba(255,255,255,.08);
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.media-box:hover{
+
+transform:
+translateY(-5px);
+
+}
+
+.media-box img,
+.media-box video{
+
+width:100%;
+
+height:100%;
+
+object-fit:cover;
+
+display:block;
+
+}
+
+.events-home{
+
+position:relative;
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:space-between;
+
+align-items:flex-start;
+
+width:230px;
+
+height:180px;
+
+padding:24px;
+
+border-radius:28px;
+
+overflow:hidden;
+
+background:
+linear-gradient(
+90deg,
+rgba(6,14,30,.95),
+rgba(20,35,55,.82)
+);
+
+border:
+1px solid rgba(255,255,255,.08);
+
+backdrop-filter:blur(18px);
+
+transition:.35s;
+
+}
+
+/* subtle content preview effect */
+.events-home::before{
+
+content:"";
+
+position:absolute;
+
+right:-40px;
+
+top:0;
+
+width:180px;
+
+height:100%;
+
+background:
+
+linear-gradient(
+90deg,
+transparent,
+rgba(255,255,255,.08)
+);
+
+filter:blur(20px);
+
+opacity:.55;
+
+}
+
+/* dark overlay */
+.events-home::after{
+
+content:"";
+
+position:absolute;
+
+inset:0;
+
+background:
+
+linear-gradient(
+180deg,
+rgba(0,0,0,.02),
+rgba(0,0,0,.35)
+);
+
+}
+
+.events-home:hover{
+
+transform:
+translateY(-6px);
+
+box-shadow:
+0 20px 45px rgba(0,0,0,.28);
+
+}
+
+.hub-glow{
+
+display:none;
+
+}
+
+.hub-icon{
+
+font-size:42px;
+
+position:relative;
+
+z-index:2;
+
+margin-bottom:auto;
+
+}
+
+.hub-title{
+
+position:relative;
+
+z-index:2;
+
+font-size:30px;
+
+font-weight:800;
+
+line-height:1;
+
+color:white;
+
+margin-top:18px;
+
+}
+
+.hub-sub{
+
+position:relative;
+
+z-index:2;
+
+font-size:14px;
+
+color:
+
+rgba(255,255,255,.58);
+
+margin-top:8px;
+
+}
+
+.hub-sub::after{
+
+content:"→";
+
+font-size:42px;
+
+position:absolute;
+
+right:-145px;
+
+bottom:-8px;
+
+color:white;
+
+opacity:.9;
+
+}
+
+.events-home span{
+
+font-size:14px;
+
+margin-top:8px;
+
+opacity:.8;
+
+}
+
+.announce{
+
+position:fixed;
+
+left:50%;
+
+transform:translateX(-50%);
+
+bottom:15px;
+
+width:90%;
+
+height:42px;
+
+display:flex;
+
+align-items:center;
+
+overflow:hidden;
+
+border-radius:16px;
+
+padding:0 18px;
+
+background:
+
+rgba(255,255,255,.08);
+
+backdrop-filter:blur(18px);
+
+}
+
+.marquee{
+
+white-space:nowrap;
+
+animation:
+scroll 30s linear infinite;
+
+}
+
+@keyframes scroll{
+
+from{
+
+transform:translateX(100%);
+
+}
+
+to{
+
+transform:translateX(-100%);
+
+}
+
+}
+
+@media(max-width:900px){
+
+.events-rail{
+
+position:relative;
+
+bottom:auto;
+
+margin-top:40px;
+
+}
+
+}
+
+.team-feed{
+
+position:fixed;
+
+right:35px;
+
+bottom:82px;
+
+width:390px;
+height:285px;
+
+padding:16px;
+
+border-radius:22px;
+
+display:flex;
+
+flex-direction:column;
+
+background:
+
+linear-gradient(
+180deg,
+rgba(255,255,255,.10),
+rgba(255,255,255,.05)
+);
+
+backdrop-filter:blur(40px);
+
+border:
+
+1px solid rgba(255,255,255,.08);
+
+box-shadow:
+
+0 25px 70px rgba(0,0,0,.22);
+
+z-index:90;
+
+overflow:hidden;
+
+isolation:isolate;
+
+}
+
+.chat-messages{
+
+flex:1;
+
+overflow-y:auto;
+
+padding:0;
+
+display:flex;
+
+flex-direction:column;
+
+gap:2px;
+
+}
+
+.chat-messages::-webkit-scrollbar{
+
+width:8px;
+
+}
+
+.chat-messages::-webkit-scrollbar-thumb{
+
+background:
+
+rgba(255,255,255,.2);
+
+border-radius:20px;
+
+}
+
+.msg{
+
+display:flex;
+
+align-items:flex-start;
+
+gap:10px;
+
+margin:0;
+
+padding:2px 0;
+
+min-height:auto;
+
+}
+
+.msg.mine .bubble{
+
+background:
+
+linear-gradient(
+135deg,
+rgba(91,92,246,.42),
+rgba(114,104,255,.28)
+);
+
+}
+
+.msg.other .bubble{
+
+background:
+
+rgba(255,255,255,.08);
+
+}
+
+.msg:hover{
+
+transform:none;
+
+background:none;
+
+}
+
+.author{
+
+flex:0 0 auto;
+
+width:110px;
+
+padding:0;
+
+margin:0;
+
+background:transparent !important;
+
+font-size:14px;
+
+font-weight:600;
+
+opacity:.55;
+
+white-space:nowrap;
+
+overflow:hidden;
+
+text-overflow:ellipsis;
+
+}
+
+.bubble{
+
+flex:1;
+
+padding:0;
+
+margin:0;
+
+background:transparent !important;
+
+border:none !important;
+
+box-shadow:none !important;
+
+font-size:15px;
+
+line-height:1.25;
+
+color:white;
+
+word-break:break-word;
+
+cursor:pointer;
+
+}
+
+.bubble.expanded{
+
+max-height:500px;
+
+padding:14px 16px;
+
+overflow:auto;
+
+line-height:1.4;
+
+align-items:flex-start;
+
+}
+
+.chat-input{
+
+display:flex;
+
+gap:10px;
+
+margin-top:14px;
+
+height:52px;
+
+}
+
+.chat-compose{
+
+display:flex;
+
+gap:12px;
+
+height:48px;
+
+margin-top:8px;
+
+}
+
+.chat-input input{
+
+flex:1;
+
+border:none;
+
+outline:none;
+
+border-radius:18px;
+
+padding:0 20px;
+
+background:
+
+rgba(255,255,255,.06);
+
+color:white;
+
+font-size:16px;
+
+}
+
+.chat-input button{
+
+width:90px;
+
+border:none;
+
+border-radius:16px;
+
+cursor:pointer;
+
+}
+
+.feed-title{
+
+text-align:center;
+
+font-size:34px;
+
+margin-bottom:18px;
+
+}
+
+.feed-body{
+
+flex:1;
+
+overflow-y:auto;
+
+display:flex;
+
+flex-direction:column;
+
+gap:10px;
+
+padding-right:4px;
+
+}
+
+.feed-body div{
+
+padding:0;
+
+border-radius:0;
+
+background:none;
+
+}
+
+.feed-input{
+
+flex:1;
+
+border:none;
+
+outline:none;
+
+border-radius:18px;
+
+background:
+
+rgba(255,255,255,.08);
+
+color:white;
+
+font-size:14px;
+
+padding:0 16px;
+
+}
+
 .footer{
 
 position:fixed;
@@ -611,6 +1364,38 @@ font-size:18px;
 text-align:center;
 
 margin-top:10px;
+
+}
+
+.send-btn{
+
+width:52px;
+
+border-radius:14px;
+
+border:none;
+
+cursor:pointer;
+
+font-size:22px;
+
+background:
+
+linear-gradient(
+135deg,
+#5b5cf6,
+#7268ff
+);
+
+color:white;
+
+transition:.25s;
+
+}
+
+.send-btn:hover{
+
+transform:scale(1.05);
 
 }
 
@@ -931,11 +1716,124 @@ PagerDuty Stats
 
 </div>
 
+<div class="events-layout">
+
+<div class="events-section">
+
+<div class="events-title">
+
+Upcoming Major Events
+
 </div>
 
-<div class="footer">
+<div class="events-grid">
 
----------------- SRO Dashboard • v1.4 ----------------
+<a href="events.html">
+
+<div class="media-box events-home">
+
+<div class="hub-icon">
+🗓️
+</div>
+
+<div>
+
+<div class="hub-title">
+Go to Full<br>
+Schedule
+</div>
+
+<div class="hub-sub">
+Open Event Grid
+</div>
+
+</div>
+
+</div>
+
+</a>
+
+<div class="events-scroll">
+
+<div class="media-box" data-src="events/event1"></div>
+
+<div class="media-box" data-src="events/event2"></div>
+
+<div class="media-box" data-src="events/event3"></div>
+
+<div class="media-box" data-src="events/event4"></div>
+
+<div class="media-box" data-src="events/event5"></div>
+
+<div class="media-box" data-src="events/event6"></div>
+
+</div>
+</div>
+</div>
+
+
+
+<div class="team-feed">
+
+<div class="feed-title">
+
+CONNECT
+
+</div>
+
+<div
+class="feed-body chat-messages"
+id="chatBox">
+</div>
+
+<div class="chat-compose">
+
+<input
+id="chatInput"
+class="feed-input"
+placeholder="Send message...">
+
+<button
+class="send-btn"
+onclick="sendChat()">
+
+➜
+
+</button>
+
+</div>
+
+</div> <!-- team-feed -->
+</div> <!-- events-layout -->
+
+<div class="announce">
+
+<div class="marquee">
+
+🟢 Oncall:
+Paul Hobbs
+
+|
+
+🕘 Next Shift:
+Naveen
+
+|
+
+📢 Maintenance:
+PD migration Sunday
+
+|
+
+💡 Team Update:
+Runbook review
+
+|
+
+🔥 Discussion:
+Auto-close P3?
+
+</div>
 
 </div>
 
@@ -965,7 +1863,6 @@ const USERS={
 "reginna.gregorio@wbd.com":"sro@2026",
 "sourabh.tiwari@wbd.com":"sro@2026",
 "abhinandan.kumar@wbd.com":"sro@2026",
-"pralad.gurung@wbd.com":"sro@2026",
 
 "abc@wbd.com":"welcome123"
 
@@ -1464,6 +2361,369 @@ localStorage.removeItem(
 location.reload();
 
 }
+
+function loadEventMedia(){
+
+document
+.querySelectorAll(".media-box")
+.forEach(box=>{
+
+const base=
+box.dataset.src;
+
+const formats=[
+
+".jpeg",
+".jpg",
+".png",
+".mp4",
+".webm"
+
+];
+
+loadFile(0);
+
+function loadFile(i){
+
+if(i>=formats.length)return;
+
+const src=
+base+formats[i];
+
+if(
+src.endsWith(".mp4")
+||
+src.endsWith(".webm")
+){
+
+const v=
+document.createElement("video");
+
+v.autoplay=true;
+v.loop=true;
+v.muted=true;
+v.playsInline=true;
+
+v.style.width="100%";
+v.style.height="100%";
+v.style.objectFit="cover";
+
+v.onloadeddata=
+()=>{
+
+box.innerHTML="";
+
+box.appendChild(v);
+
+};
+
+v.onerror=
+()=>loadFile(i+1);
+
+v.src=src;
+
+}
+
+else{
+
+const img=
+new Image();
+
+img.onload=
+()=>{
+
+box.innerHTML="";
+
+box.appendChild(img);
+
+};
+
+img.onerror=
+()=>loadFile(i+1);
+
+img.src=src;
+
+}
+
+}
+
+});
+
+}
+
+window.addEventListener(
+
+"load",
+
+()=>{
+
+loadEventMedia();
+
+autoRotate();
+
+document
+.getElementById(
+"chatInput"
+)
+.addEventListener(
+
+"keydown",
+
+e=>{
+
+if(
+e.key==="Enter"
+){
+
+e.preventDefault();
+
+sendChat();
+
+}
+
+}
+
+);
+
+}
+
+);
+
+function autoRotate(){
+
+const rail=
+document.querySelector(".events-scroll");
+
+if(!rail)return;
+
+const cards=
+rail.querySelectorAll(".media-box");
+
+let current=0;
+
+setInterval(()=>{
+
+current++;
+
+if(current > cards.length - 3){
+current = 0;
+}
+
+const cardWidth =
+cards[0].offsetWidth + 18;
+
+rail.scrollTo({
+left: current * cardWidth,
+behavior:"smooth"
+});
+
+},4500);
+
+}
+
+</script>
+
+<script type="module">
+
+import {
+initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+
+import {
+getDatabase,
+ref,
+push,
+onChildAdded
+}
+from
+"https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+const firebaseConfig={
+
+apiKey:"AIzaSyAFh5qQee550XC4-_YvvVfr5PiXRLJeNnE",
+
+authDomain:"navex-chat.firebaseapp.com",
+
+databaseURL:
+"https://navex-chat-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId:"navex-chat",
+
+storageBucket:
+"navex-chat.firebasestorage.app",
+
+messagingSenderId:
+"49824114190",
+
+appId:
+"1:49824114190:web:2df658e59bda148eb4fe5f"
+
+};
+
+const app=
+initializeApp(firebaseConfig);
+
+const db=
+getDatabase(app);
+
+const chatBox=
+document.getElementById(
+"chatBox"
+);
+
+const chatRef=
+ref(
+db,
+"/navex-chat"
+);
+
+const myUser =
+
+(
+localStorage.getItem(
+"navexUser"
+)
+
+||
+
+"guest"
+
+)
+
+.split("@")[0];
+
+window.sendChat=
+async function(){
+
+const input=
+document.getElementById(
+"chatInput"
+);
+
+const text=
+input.value.trim();
+
+if(!text)return;
+
+try{
+
+await push(
+
+chatRef,
+
+{
+
+user:
+(
+localStorage
+.getItem(
+"navexUser"
+)
+||
+"guest"
+)
+.split("@")[0],
+
+text:text,
+
+time:Date.now()
+
+}
+
+);
+
+input.value="";
+input.dispatchEvent(
+new Event("input")
+);
+
+input.focus();
+
+input.focus();
+
+}
+catch(e){
+
+console.log(
+"CHAT ERROR",
+e
+);
+
+}
+
+};
+
+/* RECEIVE + PERSIST */
+
+onChildAdded(
+
+chatRef,
+
+snap=>{
+
+const m=
+snap.val();
+
+if(
+!m
+||
+!m.text
+)return;
+
+const id=
+"msg-"+snap.key;
+
+if(
+document.getElementById(id)
+)return;
+
+chatBox.insertAdjacentHTML(
+
+"beforeend",
+
+`
+<div
+id="${id}"
+class="msg ${m.user===myUser?'mine':'other'}"
+>
+
+<div class="author">
+${m.user}
+</div>
+
+<div class="bubble">
+${m.text}
+</div>
+
+</div>
+`
+
+);
+
+chatBox.scrollTop=
+chatBox.scrollHeight;
+
+document
+.querySelectorAll(".bubble")
+.forEach(b=>{
+
+b.onclick=()=>{
+
+b.classList.toggle("expanded");
+
+};
+
+});
+
+}
+
+);
+
+console.log(
+"Firebase Chat Ready"
+);
 
 </script>
 
