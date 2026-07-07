@@ -148,22 +148,53 @@ font-size:14px;
 min-width:120px;
 
 }
+.dashboard-layout{
+    display:grid;
+    grid-template-columns:260px 1fr 320px;
+    gap:40px;
+    align-items:start;
+}
+
+.left-column{
+
+width:250px;
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+justify-content:flex-start;
+gap:16px;
+margin-top:0;
+
+}
+
+.center-column{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;   /* Centers everything */
+}
+
+.right-column{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:22px;
+
+}
 
 .clock{
 
 position:absolute;
-
-top:10px;
-
+top:18px;
 right:20px;
 
-width:200px;
+display:flex;
+align-items:center;
+gap:18px;
 
-text-align:right;
-
-font-size:16px;
-
-opacity:.9;
+z-index:1000;
 
 }
 
@@ -225,7 +256,7 @@ text-shadow:
 .search{
 
 width:min(
-860px,
+760px,
 92%
 );
 
@@ -266,57 +297,34 @@ color:#bdbdbd;
 }
 
 .container{
-
-display:grid;
-
-grid-template-columns:
-repeat(
-auto-fit,
-minmax(
-220px,
-1fr
-)
-);
-
-gap:18px;
-
-padding:0 20px;
-
-max-width:1700px;
-
-margin:auto;
-
+    display:grid;
+    grid-template-columns:repeat(5, 180px);
+    gap:20px;
+    justify-content:center;   /* <-- This centers the grid */
 }
 
 .main-btn{
 
 width:100%;
 
-height:92px;
+height:74px;
 
 border:none;
 
-border-radius:22px;
+border-radius:18px;
 
 cursor:pointer;
 
 color:white;
 
-font-size:22px;
+font-size:18px;
 
-font-weight:500;
+font-weight:600;
 
 background:
+rgba(255,255,255,.07);
 
-rgba(
-255,
-255,
-255,
-0.07
-);
-
-backdrop-filter:
-blur(30px);
+backdrop-filter:blur(30px);
 
 transition:.25s;
 
@@ -355,95 +363,45 @@ text-decoration:none;
 
 }
 
+
 .pd-mini{
 
-position:fixed;
+position:absolute;
+top:105px;
+left:35px;
 
-right:80px;
+width:250px;
 
-top:40px;
-
-width:330px;
-
-z-index:70;
-
-background:none;
-
-backdrop-filter:none;
-
-padding:0;
-
-animation:
-float 5s ease-in-out infinite;
-
-}
-
-@keyframes float{
-
-0%{
-transform:translateY(0px);
-}
-
-50%{
-transform:translateY(-8px);
-}
-
-100%{
-transform:translateY(0px);
-}
+z-index:15;
 
 }
 
 .pd-title{
 
-font-size:24px;
-
+font-size:18px;
 font-weight:700;
-
-margin-bottom:10px;
+margin-bottom:12px;
 
 }
 
 .pd-grid{
 
 display:flex;
-
 gap:10px;
+justify-content:center;
+width:100%;
 
 }
 
 .pd-card{
 
-flex:1;
-
-padding:15px;
-
-border-radius:22px;
-
-background:
-
-rgba(
-255,
-255,
-255,
-0.04
-);
-
-backdrop-filter:
-blur(14px);
-
-border:
-
-1px solid
-
-rgba(
-255,
-255,
-255,
-0.08
-);
-
-transition:.4s;
+width:72px;
+min-height:128px;
+padding:10px 8px;
+border-radius:16px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
 
 }
 
@@ -456,23 +414,18 @@ translateY(-3px);
 
 .pd-label{
 
-font-size:30px;
-
-font-weight:bold;
-
-margin-bottom:10px;
+font-size:18px;
+font-weight:700;
+margin-bottom:8px;
 
 }
 
 .stat-row{
 
 display:flex;
-
 justify-content:space-between;
-
-padding:5px 0;
-
-font-size:14px;
+font-size:13px;
+margin:6px 0;
 
 }
 
@@ -553,15 +506,15 @@ rgba(234,179,8,.18);
 
 .pd-mini{
 
-position:relative;
+position:absolute;
+top:105px;
+left:35px;
 
-width:100%;
+width:250px;
 
-right:auto;
+z-index:15;
 
-bottom:auto;
-
-margin-top:35px;
+}
 
 }
 
@@ -572,9 +525,7 @@ margin-top:35px;
 display:grid;
 
 grid-template-columns:
-
 calc(100% - 500px)
-
 460px;
 
 gap:30px;
@@ -583,9 +534,7 @@ align-items:start;
 
 max-width:1700px;
 
-margin:60px auto 0;
-
-padding:0 20px;
+padding:120px 20px 0;
 
 position:relative;
 
@@ -596,6 +545,7 @@ z-index:2;
 .events-section{
 
 width:100%;
+margin-top:90px;
 
 overflow:hidden;
 
@@ -946,11 +896,11 @@ margin-top:40px;
 
 position:fixed;
 
-right:35px;
+right:25px;
 
-bottom:82px;
+bottom:72px;
 
-width:390px;
+width:300px;
 height:285px;
 
 padding:16px;
@@ -1583,63 +1533,7 @@ type="video/mp4">
 
 </div>
 
-<div class="clock">
-
-<button
-onclick="logout()"
-style="
-margin-top:8px;
-padding:8px 14px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-">
-Logout
-</button>
-
-<div id="greeting"></div>
-
-</div>
-
-</div>
-
-
-<h1>
-NAVEX
-</h1>
-
-
-<input
-class="search"
-placeholder="Search Tools, Grafana, PagerDuty..."
-onkeyup="filterButtons()"
-id="search">
-
-
-
-<div class="container">
-
-<a data-search="tools grafana kibana mux tundra studio disco datadog foundry taiga" href="tools.html"><button class="main-btn">Tools</button></a>
-
-<a data-search="pager duty incidents" href="https://discoveryinc.pagerduty.com/incidents" target="_blank"><button class="main-btn">PagerDuty</button></a>
-
-<a data-search="mail outlook sro" href="https://outlook.cloud.microsoft/mail/sro.uk@wbd.com/" target="_blank"><button class="main-btn">SRO Mailbox</button></a>
-
-<a data-search="hbo max" href="https://play.hbomax.com/" target="_blank"><button class="main-btn">HBO Max</button></a>
-
-<a data-search="service now snow" href="https://wbd.service-now.com/" target="_blank"><button class="main-btn">Service Now</button></a>
-
-<a data-search="sharepoint docs" href="https://warnermedia.sharepoint.com/" target="_blank"><button class="main-btn">SharePoint</button></a>
-
-<a data-search="confluence wiki" href="https://wbdstreaming.atlassian.net/" target="_blank"><button class="main-btn">Confluence</button></a>
-
-<a data-search="sling shifts" href="https://app.getsling.com/" target="_blank"><button class="main-btn">Sling</button></a>
-
-<a data-search="events live checks" href="https://warnermedia.sharepoint.com/:x:/r/sites/GTOC/Shared%20Documents/SRO%20UK/BAU%20Documents/SRO%20UK%20Digital%20Events%20Pre%20+%20During%20Checklist.xlsx?d=we9e9eacec693451e9c0fbb855f669c09&csf=1&web=1&e=27e57J" target="_blank"><button class="main-btn">Live Event Checks</button></a>
-
-</div>
-
-<div class="pd-mini">
+        <div class="pd-mini">
 
 <div class="pd-title">
 PagerDuty Stats
@@ -1647,7 +1541,10 @@ PagerDuty Stats
 
 <div class="pd-grid">
 
-<div class="pd-card p1">
+<div
+class="pd-card p1"
+id="p1Card"
+style="cursor:pointer;">
 
 <div class="pd-label">P1</div>
 
@@ -1666,10 +1563,22 @@ PagerDuty Stats
 <span class="value" id="p1a">0</span>
 </div>
 
+<div
+id="p1Incidents"
+style="
+margin-top:8px;
+font-size:11px;
+line-height:1.4;
+">
+</div>
+
 </div>
 
 
-<div class="pd-card p2">
+<div
+class="pd-card p2"
+id="p2Card"
+style="cursor:pointer;">
 
 <div class="pd-label">P2</div>
 
@@ -1688,10 +1597,22 @@ PagerDuty Stats
 <span class="value" id="p2a">0</span>
 </div>
 
+<div
+id="p2Incidents"
+style="
+margin-top:8px;
+font-size:11px;
+line-height:1.4;
+">
+</div>
+
 </div>
 
 
-<div class="pd-card p3">
+<div
+class="pd-card p3"
+id="p3Card"
+style="cursor:pointer;">
 
 <div class="pd-label">P3</div>
 
@@ -1709,6 +1630,229 @@ PagerDuty Stats
 <span>Ack</span>
 <span class="value" id="p3a">0</span>
 </div>
+
+</div>
+</div>
+</div>
+
+<div class="clock">
+
+<div
+id="greeting"
+style="
+font-size:22px;
+font-weight:700;
+color:#fff;
+text-shadow:0 0 10px rgba(0,0,0,.5);
+white-space:nowrap;
+">
+</div>
+
+<button
+onclick="logout()"
+style="
+padding:8px 14px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+">
+Logout
+</button>
+
+</div>
+
+</div>
+
+
+<h1>
+NAVEX
+</h1>
+
+
+<input
+class="search"
+placeholder="Search Tools, Grafana, PagerDuty..."
+onkeyup="filterButtons()"
+id="search">
+
+<div class="dashboard-layout">
+
+    <!-- LEFT COLUMN -->
+    <div class="left-column">
+
+    </div>
+
+    <!-- CENTER COLUMN -->
+    <div class="center-column">
+
+            <div class="container">
+
+<a data-search="tools grafana kibana mux tundra studio disco datadog foundry taiga" href="tools.html"><button class="main-btn">Tools</button></a>
+
+<a data-search="pager duty incidents" href="https://discoveryinc.pagerduty.com/incidents" target="_blank"><button class="main-btn">PagerDuty</button></a>
+
+<a data-search="mail outlook sro" href="https://outlook.cloud.microsoft/mail/sro.uk@wbd.com/" target="_blank"><button class="main-btn">SRO Mailbox</button></a>
+
+<a data-search="hbo max" href="https://play.hbomax.com/" target="_blank"><button class="main-btn">HBO Max</button></a>
+
+<a data-search="service now snow" href="https://wbd.service-now.com/now/nav/ui/classic/params/target/%24dashboards.do%3Fsysparm_dashboard%3D5239f78f93c63d5006e47b4e1dba1003" target="_blank"><button class="main-btn">Service Now</button></a>
+
+<a data-search="sharepoint docs" href="https://warnermedia.sharepoint.com/sites/GTOC/Shared%20Documents/Forms/AllItems.aspx?viewid=ed5b1887%2D2cd5%2D446f%2D87f3%2D462b549b9414&csf=1&CID=d1d785df%2D7a12%2D4cef%2Db109%2D9fe5d875c2dc&FolderCTID=0x012000796045061964044D985D3BF153E93EB6" target="_blank"><button class="main-btn">SharePoint</button></a>
+
+<a data-search="confluence wiki" href="https://wbdstreaming.atlassian.net/wiki/spaces/SREC/pages/2970779820/SRO+UK+-+Home+Page" target="_blank"><button class="main-btn">Confluence</button></a>
+
+<a data-search="sling shifts" href="https://app.getsling.com/shifts" target="_blank"><button class="main-btn">Sling</button></a>
+
+<a data-search="events live checks" href="https://warnermedia.sharepoint.com/:x:/r/sites/GTOC/_layouts/15/Doc.aspx?sourcedoc=%7BE9E9EACE-C693-451E-9C0F-BB855F669C09%7D&file=SRO%20UK%20Digital%20Events%20Pre%20%2B%20During%20Checklist.xlsx&action=default&mobileredirect=true&wdOrigin=TEAMS-MAGLEV.p2p_ns.rwc&wdExp=TEAMS-TREATMENT&wdhostclicktime=1772693207786&web=1" target="_blank"><button class="main-btn">Live Event Checks</button></a>
+
+
+    </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-column">
+
+        <div
+id="shiftCard"
+class="main-btn"
+style="
+height:auto;
+width:300px;
+
+position:absolute;
+
+top:65px;
+right:20px;
+padding:20px;
+
+display:flex;
+flex-direction:column;
+justify-content:flex-start;
+align-items:flex-start;
+cursor:default;
+">
+
+<div
+style="
+font-size:34px;
+font-weight:700;
+">
+
+Shift Status
+
+</div>
+
+<div
+style="
+margin-top:12px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-size:16px;
+font-weight:600;
+width:100%;
+">
+
+    <div>
+        🟢
+        <span id="loginPercent">0</span>
+        / 26 Logged In
+    </div>
+
+    <div>
+        ⏱
+        <span id="lastLogin">--</span>
+    </div>
+
+</div>
+<div
+
+style="
+margin-top:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+">
+
+<div
+style="
+margin-top:14px;
+font-size:15px;
+font-weight:700;
+">
+Latest Handover
+</div>
+
+</div>
+<div
+id="lastHandover"
+
+style="
+margin-top:10px;
+width:100%;
+padding:14px;
+border-radius:16px;
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.08);
+font-size:15px;
+line-height:1.5;
+min-height:82px;
+overflow:auto;
+">
+
+No handover yet.
+
+</div>
+
+<button
+
+id="shiftBtn"
+
+onclick="openShiftModal()"
+
+style="
+
+margin-top:8px;
+width:100%;
+height:46px;
+border:none;
+border-radius:14px;
+cursor:pointer;
+font-size:18px;
+font-weight:600;
+background:#22c55e;
+color:white;
+
+">
+
+Shift Login
+
+</button>
+
+<button
+
+onclick="showShiftTeam()"
+
+style="
+
+margin-top:10px;
+width:100%;
+height:50px;
+position:relative;
+z-index:9999;
+pointer-events:auto;
+border:none;
+border-radius:14px;
+cursor:pointer;
+font-size:16px;
+background:rgba(255,255,255,.08);
+color:white;
+
+">
+
+👥 View Team
+
+</button>
 
 </div>
 
@@ -1765,6 +1909,8 @@ Open Event Grid
 
 <div class="media-box" data-src="events/event5"></div>
 
+<div class="media-box" data-src="events/event6"></div>
+
 </div>
 </div>
 </div>
@@ -1804,33 +1950,441 @@ onclick="sendChat()">
 </div> <!-- team-feed -->
 </div> <!-- events-layout -->
 
+<!-- ================= SHIFT MODAL ================= -->
+
+<div id="shiftModal"
+
+style="
+
+display:none;
+
+position:fixed;
+
+inset:0;
+
+background:rgba(0,0,0,.65);
+
+backdrop-filter:blur(12px);
+
+justify-content:center;
+
+align-items:center;
+
+z-index:9999;
+
+">
+
+<div
+
+style="
+
+width:520px;
+
+max-width:92%;
+
+background:rgba(15,23,42,.95);
+
+border-radius:24px;
+
+padding:28px;
+
+border:1px solid rgba(255,255,255,.08);
+
+">
+
+<h2 style="margin-top:0">
+
+Logging into Shift
+
+</h2>
+
+<p style="opacity:.75">
+
+Complete all startup checks.
+
+</p>
+
+<div style="margin-top:20px">
+
+<label>
+
+<input class="shiftCheck" type="checkbox">
+
+Slack messages read
+
+</label>
+
+<br><br>
+
+<label>
+
+<input class="shiftCheck" type="checkbox">
+
+Emails checked
+
+</label>
+
+<br><br>
+
+<label>
+
+<input class="shiftCheck" type="checkbox">
+
+Handover received
+
+</label>
+
+<br><br>
+
+<label>
+
+<input class="shiftCheck" type="checkbox">
+
+PagerDuty checked
+
+</label>
+
+</div>
+
+<div
+
+style="
+
+margin-top:25px;
+
+height:10px;
+
+background:#222;
+
+border-radius:20px;
+
+overflow:hidden;
+
+">
+
+<div
+
+id="progressFill"
+
+style="
+
+height:100%;
+
+width:0%;
+
+background:#4CAF50;
+
+transition:.3s;
+
+">
+
+</div>
+
+</div>
+
+<div
+
+id="progressText"
+
+style="
+
+margin-top:8px;
+
+text-align:right;
+
+font-size:13px;
+
+opacity:.8;
+
+">
+
+0%
+
+</div>
+
+<textarea
+
+id="shiftNotes"
+
+placeholder="Optional Notes..."
+
+style="
+
+margin-top:18px;
+
+width:100%;
+
+height:80px;
+
+border:none;
+
+border-radius:14px;
+
+padding:12px;
+
+resize:none;
+
+">
+
+</textarea>
+
+<div
+
+style="
+
+display:flex;
+
+justify-content:flex-end;
+
+gap:12px;
+
+margin-top:20px;
+
+">
+
+<button
+
+onclick="closeShiftModal()"
+
+style="
+
+padding:12px 18px;
+
+border:none;
+
+border-radius:12px;
+
+cursor:pointer;
+
+">
+
+Cancel
+
+</button>
+
+<button
+
+id="ackBtn"
+
+onclick="acknowledgeShift()"
+
+disabled
+
+style="
+
+padding:12px 18px;
+
+border:none;
+
+border-radius:12px;
+
+background:#5b5cf6;
+
+color:white;
+
+cursor:pointer;
+
+">
+
+Acknowledge
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+<div id="endShiftModal"
+
+style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.65);
+backdrop-filter:blur(12px);
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+<div
+
+style="
+width:520px;
+max-width:92%;
+background:rgba(15,23,42,.95);
+border-radius:24px;
+padding:28px;
+border:1px solid rgba(255,255,255,.08);
+">
+
+<h2 style="margin-top:0;">
+Ending Shift
+</h2>
+
+<p style="opacity:.75;">
+Complete handover before leaving.
+</p>
+
+<label>
+<input class="endShiftCheck" type="checkbox">
+Handover Given
+</label>
+
+<br><br>
+
+<label>
+<input class="endShiftCheck" type="checkbox">
+Tickets Updated
+</label>
+
+<br><br>
+
+<label>
+<input class="endShiftCheck" type="checkbox">
+No Active Investigations
+</label>
+
+<br><br>
+
+<label>
+<input class="endShiftCheck" type="checkbox">
+Teams Status Updated
+</label>
+
+<textarea
+
+id="endShiftNotes"
+
+placeholder="Anything to tell next shift..."
+
+style="
+margin-top:20px;
+width:100%;
+height:90px;
+border:none;
+border-radius:14px;
+padding:12px;
+resize:none;
+">
+
+</textarea>
+
+<div
+
+style="
+display:flex;
+justify-content:flex-end;
+gap:12px;
+margin-top:20px;
+">
+
+<button
+
+onclick="closeEndShiftModal()"
+
+style="
+padding:12px 18px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+">
+
+Cancel
+
+</button>
+
+<button
+
+style="
+padding:12px 18px;
+border:none;
+border-radius:12px;
+background:#ef4444;
+color:white;
+cursor:pointer;
+"
+
+onclick="endShift()">
+
+End Shift
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= TEAM STATUS ================= -->
+
+<div
+id="teamModal"
+style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+backdrop-filter:blur(10px);
+justify-content:center;
+align-items:center;
+z-index:99999;
+">
+
+<div
+style="
+width:650px;
+max-width:95%;
+max-height:80vh;
+overflow:auto;
+background:rgba(15,23,42,.96);
+border-radius:24px;
+padding:25px;
+border:1px solid rgba(255,255,255,.08);
+">
+
+<div
+style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+">
+
+<h2 style="margin:0">
+Today's Team
+</h2>
+
+<button
+onclick="closeTeamModal()"
+style="
+border:none;
+background:#ef4444;
+color:white;
+padding:10px 16px;
+border-radius:12px;
+cursor:pointer;
+">
+
+Close
+
+</button>
+
+</div>
+
+<div id="teamList"></div>
+
+</div>
+
+</div>
+
 <div class="announce">
 
-<div class="marquee">
-
-🟢 Oncall:
-Paul Hobbs
-
-|
-
-🕘 Next Shift:
-Naveen
-
-|
-
-📢 Maintenance:
-PD migration Sunday
-
-|
-
-💡 Team Update:
-Runbook review
-
-|
-
-🔥 Discussion:
-Auto-close P3?
-
+<div
+class="marquee"
+id="announcementBar">
 </div>
 
 </div>
@@ -1841,30 +2395,39 @@ Auto-close P3?
 
 const USERS={
 
-"navya.teja@wbd.com":"sro@2026",
+"navya.teja@wbd.com":"navya@236",
+"praveen.sharma@wbd.com":"sro@2026",
 "venkataharish.mitta@wbd.com":"sro@2026",
 "somana.nagasaikrishna@wbd.com":"sro@2026",
-"linginenisampath.kumar@wbd.com":"sro@2026",
-"manisha.gutlapalli@wbd.com":"sro@2026",
-"chitturisrijaya.venkatasurya@wbd.com":"sro@2026",
-"masani.reddy@wbd.com":"sro@2026",
-"akash.vankadari@wbd.com":"sro@2026",
-"naveen.vonna@wbd.com":"sro@2026",
+"abhinandan.kumar@wbd.com":"sro@2026",
 "yogananda.t@wbd.com":"sro@2026",
-"manasa.g@wbd.com":"sro@2026",
-"paul.hobbs@wbd.com":"sro@2026",
-"jaspal.bhatia@wbd.com":"sro@2026",
+"mathumitha.gosh@wbd.com":"sro@2026",
 "vignesh.pandurangan@wbd.com":"sro@2026",
+"kuljeet.singh@wbd.com":"sro@2026",
+"mdmohtasim.alam@wbd.com":"sro@2026",
+"chitturisrijaya.venkatasurya@wbd.com":"sro@2026",
+"akash.vankadari@wbd.com":"sro@2026",
+"masani.reddy@wbd.com":"sro@2026",
+"manisha.gutlapalli@wbd.com":"sro@2026",
+"naveen.vonna@wbd.com":"sro@2026",
+"sourabh.tiwari@wbd.com":"sro@2026",
+"hajibasha.tadpatri@wbd.com":"sro@2026",
+"raju.chintapally@wbd.com":"sro@2026",
+"nagasatish.mattaparthi@wbd.com":"sro@2026",
+"kumar.mude@wbd.com":"sro@2026",
+"kovvuridileep.srisaireddy@wbd.com":"sro@2026",
+"manasa.g@wbd.com":"sro@2026",
 "divya.m@wbd.com":"sro@2026",
+"linginenisampath.kumar@wbd.com":"sro@2026",
+"mande.sri@wbd.com":"sro@2026",
+"jyotisman.rath@wbd.com":"sro@2026",
+"aditya.gupta@wbd.com":"sro@2026",
+"bhagyaraju.tn@wbd.com":"sro@2026",
 "kush.vekaria@wbd.com":"sro@2026",
 "danille.dones@wbd.com":"sro@2026",
 "reginna.gregorio@wbd.com":"sro@2026",
-"sourabh.tiwari@wbd.com":"sro@2026",
-"abhinandan.kumar@wbd.com":"sro@2026",
-"hajibasha.tadpatri@wbd.com":"sro@2026",
-"mathumitha.gosh@wbd.com":"sro@2026",
-
-"abc@wbd.com":"welcome123"
+"paul.hobbs@wbd.com":"sro@2026",
+"jaspal.bhatia@wbd.com":"sro@2026"
 
 };
 
@@ -1960,14 +2523,6 @@ document
 
 );
 
-function logout(){
-
-localStorage.clear();
-
-location.reload();
-
-}
-
 /* ---------- END LOGIN ---------- */
 
 function requestAccess(){
@@ -2036,24 +2591,56 @@ format("Europe/London");
 document.getElementById("pst").innerHTML=
 format("America/Los_Angeles");
 
-let hr=
-new Date().getHours();
+let hr = new Date().getHours();
 
-document.getElementById(
-"greeting"
-).innerHTML=
+let greeting =
+hr < 12
+? "☀️ Good Morning"
+: hr < 18
+? "🌤️ Good Afternoon"
+: "🌙 Good Evening";
 
-hr<12
-?
-"Good Morning"
+const user =
+(
+    localStorage.getItem("navexUser")
+    || "SRO"
+)
+.split("@")[0]
+.replace(/\./g," ");
 
-:
-hr<18
-?
-"Good Afternoon"
+const firstName =
+user
+.split(" ")[0]
+.charAt(0).toUpperCase() +
+user.split(" ")[0].slice(1);
 
-:
-"Good Evening";
+const openedAt =
+Number(localStorage.getItem("navexOpened"));
+
+if(!openedAt){
+
+    localStorage.setItem(
+        "navexOpened",
+        Date.now()
+    );
+
+}
+
+const diff =
+Date.now() -
+Number(localStorage.getItem("navexOpened"));
+
+if(diff < 60000){
+
+    document.getElementById("greeting").innerHTML =
+    `🟢 Welcome back, <b>${firstName}</b>`;
+
+}else{
+
+    document.getElementById("greeting").innerHTML =
+    `${greeting}, <b>${firstName}</b>`;
+
+}
 
 }
 
@@ -2260,6 +2847,56 @@ Accept:
 const data=
 await res.json();
 
+/* ---------- LOAD ONCALLS ---------- */
+
+const scheduleIds = [
+    "PH56ZWR", // L1
+    "PZJXY4B", // L2
+    "PWN9XSO"  // L3
+];
+
+const oncallURL =
+"https://api.pagerduty.com/oncalls?"
++
+scheduleIds
+.map(id => `schedule_ids[]=${id}`)
+.join("&");
+
+const oncallRes =
+await fetch(
+    oncallURL,
+    {
+        headers:{
+            Authorization:`Token token=${TOKEN}`,
+            Accept:"application/vnd.pagerduty+json;version=2"
+        }
+    }
+);
+
+const oncallData =
+await oncallRes.json();
+
+const oncalls = {};
+
+oncallData.oncalls.forEach(o=>{
+
+    const schedule =
+    o.schedule.summary;
+
+    oncalls[schedule] =
+    o.user.summary;
+
+});
+
+window.incidentsByPriority = {
+    P1:[],
+    P2:[],
+    P3:[]
+};
+window.incidentsByPriority.P1 = [];
+window.incidentsByPriority.P2 = [];
+window.incidentsByPriority.P3 = [];
+
 const c={
 
 P1:{o:0,t:0,a:0},
@@ -2269,6 +2906,7 @@ P2:{o:0,t:0,a:0},
 P3:{o:0,t:0,a:0}
 
 };
+
 
 (data.incidents||[]).forEach(i=>{
 
@@ -2294,6 +2932,15 @@ c[p].t++;
 
 if(i.status==="acknowledged")
 c[p].a++;
+window.incidentsByPriority[p].push({
+    title:i.title,
+    url:i.html_url,
+    status:i.status,
+    incident:i.incident_number
+});
+console.log("P1 Incidents", p1Incidents);
+console.log("P2 Incidents", p2Incidents);
+console.log("First Incident", data.incidents?.[0]);
 
 });
 
@@ -2318,19 +2965,25 @@ c[p].a;
 
 });
 
-document
-.querySelector(".p1")
-.classList.toggle(
-"alert",
-c.P1.o>0
-);
 
-document
-.querySelector(".p2")
-.classList.toggle(
-"alert",
-c.P2.o>0
-);
+document.getElementById("p1Card").onclick = ()=>showIncidents("P1");
+
+document.getElementById("p2Card").onclick = ()=>showIncidents("P2");
+
+document.getElementById("p3Card").onclick = ()=>showIncidents("P3");
+
+document.getElementById("announcementBar").innerHTML = `
+🟢 Oncall:
+L1 - ${oncalls["SRO IN - L1"] || "--"}
+&nbsp;&nbsp;|
+L2 - ${oncalls["SRO IN - L2"] || "--"}
+&nbsp;&nbsp;|
+L3 - ${oncalls["SRO IN - L3"] || "--"}
+&nbsp;&nbsp;|
+🛠️ Maintenance: PD migration Sunday
+&nbsp;&nbsp;|
+💡 Team Update: Shifts to be started from 6th July
+`;
 
 }
 
@@ -2483,11 +3136,56 @@ sendChat();
 
 }
 
+
 );
+
+const saved =
+localStorage.getItem("todayShift");
+
+if(saved){
+
+    const shift =
+    JSON.parse(saved);
+
+    const today =
+    new Date().toISOString().split("T")[0];
+
+    if(shift.date===today){
+
+        const btn =
+document.getElementById("shiftBtn");
+
+btn.innerHTML = `
+✅ Shift Logged
+<br>
+<small>${shift.loginTime}</small>
+`;
+
+btn.style.background = "#16a34a";
+
+/* THIS IS THE IMPORTANT LINE */
+btn.onclick = openEndShiftModal;
+
+    }else{
+
+        localStorage.removeItem("todayShift");
+
+    }
 
 }
 
+document
+.querySelectorAll(".shiftCheck")
+.forEach(c=>{
+
+c.addEventListener(
+"change",
+updateShiftProgress
 );
+
+});
+
+});
 
 function autoRotate(){
 
@@ -2521,212 +3219,1004 @@ behavior:"smooth"
 
 }
 
-</script>
+function openShiftModal(){
 
+document.getElementById("shiftModal").style.display="flex";
+
+}
+
+function closeShiftModal(){
+
+document.getElementById("shiftModal").style.display="none";
+
+}
+function openEndShiftModal(){
+
+document.getElementById("endShiftModal").style.display="flex";
+
+}
+
+function closeEndShiftModal(){
+
+document.getElementById("endShiftModal").style.display="none";
+
+}
+
+function closeTeamModal(){
+
+document.getElementById("teamModal").style.display="none";
+
+}
+async function acknowledgeShift(){
+
+    try{
+
+        const now = new Date();
+
+        const loginTime = now.toLocaleTimeString([],{
+            hour:"2-digit",
+            minute:"2-digit"
+        });
+
+     const shiftData = {
+
+    user: localStorage.getItem("navexUser"),
+
+    status:"active",
+
+    loginTime:loginTime,
+
+    logoutTime:null,
+
+    loginNotes:document.getElementById("shiftNotes").value,
+
+    logoutNotes:"",
+
+    date:now.toISOString().split("T")[0]
+
+};
+
+        // Try Firebase, but don't stop if it fails
+        window.lastShiftData = shiftData;
+        if(window.saveShiftToFirebase){
+
+            await window.saveShiftToFirebase(shiftData);
+
+        }
+
+        localStorage.setItem(
+            "todayShift",
+            JSON.stringify(shiftData)
+        );
+
+const btn = document.getElementById("shiftBtn");
+
+const displayTime =
+loginTime || shift.loginTime || "--";
+
+btn.innerHTML =
+`
+🟢 Shift Active<br>
+<small>${displayTime}</small>
+`;
+
+btn.style.background="#16a34a";
+btn.onclick=openEndShiftModal;
+
+        closeShiftModal();
+
+    }
+    catch(err){
+
+        console.error("Shift Save Error:", err);
+
+        alert(err.message);
+
+    }
+
+}
+async function endShift(){
+
+    try{
+
+        const notes =
+        document.getElementById("endShiftNotes").value;
+
+        await window.endShiftInFirebase(notes);
+
+        localStorage.removeItem("todayShift");
+
+        const btn =
+        document.getElementById("shiftBtn");
+
+        btn.innerHTML="Logging into Shift";
+
+        btn.style.background="";
+
+        btn.onclick=openShiftModal;
+
+        closeEndShiftModal();
+
+        await loadShiftStatus();
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        alert(err.message);
+
+    }
+
+}
+
+function updateShiftProgress(){
+
+const checks =
+document.querySelectorAll(".shiftCheck");
+
+const completed =
+[...checks].filter(c=>c.checked).length;
+
+const percent =
+Math.round((completed/checks.length)*100);
+
+document.getElementById("progressFill").style.width =
+percent + "%";
+
+document.getElementById("progressText").innerHTML =
+percent + "%";
+
+document.getElementById("ackBtn").disabled =
+completed !== checks.length;
+
+}
+
+</script>
 <script type="module">
 
-import {
-initializeApp
-}
-from
-"https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 
 import {
+
 getDatabase,
 ref,
+set,
+get,
 push,
-onChildAdded
+child,
+onChildAdded,
+onValue
+
 }
-from
-"https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 
-const firebaseConfig={
+const firebaseConfig = {
 
-apiKey:"AIzaSyAFh5qQee550XC4-_YvvVfr5PiXRLJeNnE",
+    apiKey: "AIzaSyAFh5qQee550XC4-_YvvVfr5PiXRLJeNnE",
 
-authDomain:"navex-chat.firebaseapp.com",
+    authDomain: "navex-chat.firebaseapp.com",
 
-databaseURL:
-"https://navex-chat-default-rtdb.europe-west1.firebasedatabase.app",
+    databaseURL:
+    "https://navex-chat-default-rtdb.europe-west1.firebasedatabase.app",
 
-projectId:"navex-chat",
+    projectId: "navex-chat",
 
-storageBucket:
-"navex-chat.firebasestorage.app",
+    storageBucket:
+    "navex-chat.firebasestorage.app",
 
-messagingSenderId:
-"49824114190",
+    messagingSenderId: "49824114190",
 
-appId:
-"1:49824114190:web:2df658e59bda148eb4fe5f"
+    appId:
+    "1:49824114190:web:2df658e59bda148eb4fe5f"
 
 };
 
-const app=
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-const db=
-getDatabase(app);
+const db = getDatabase(app);
 
-const chatBox=
-document.getElementById(
-"chatBox"
-);
+const chatRef = ref(db,"navex-chat");
 
-const chatRef=
-ref(
-db,
-"/navex-chat"
-);
+const chatBox =
+document.getElementById("chatBox");
 
 const myUser =
-
 (
-localStorage.getItem(
-"navexUser"
-)
-
+localStorage.getItem("navexUser")
 ||
-
 "guest"
-
 )
-
 .split("@")[0];
 
-window.sendChat=
-async function(){
+window.saveShiftToFirebase = async function(shiftData){
 
-const input=
-document.getElementById(
-"chatInput"
-);
+    console.log("Saving shift...", shiftData);
 
-const text=
-input.value.trim();
+    const email =
+    shiftData.user
+    .replace(/\./g,"_")
+    .replace(/@/g,"_");
 
-if(!text)return;
+    await set(
 
-try{
+        ref(
+            db,
+            `navex-shifts/${shiftData.date}/${email}`
+        ),
 
-await push(
+        shiftData
 
-chatRef,
+    );
 
-{
+    console.log("Shift saved");
 
-user:
-(
-localStorage
-.getItem(
-"navexUser"
-)
-||
-"guest"
-)
-.split("@")[0],
+};
+window.endShiftInFirebase = async function(logoutNotes){
 
-text:text,
+    const today =
+    new Date().toISOString().split("T")[0];
 
-time:Date.now()
+    const email =
+    localStorage
+    .getItem("navexUser")
+    .replace(/\./g,"_")
+    .replace(/@/g,"_");
 
-}
+    const logoutTime =
+    new Date().toLocaleTimeString([],{
+        hour:"2-digit",
+        minute:"2-digit"
+    });
 
-);
+    const snap =
+    await get(
+        ref(
+            db,
+            `navex-shifts/${today}/${email}`
+        )
+    );
 
-input.value="";
-input.dispatchEvent(
-new Event("input")
-);
+    if(!snap.exists()) return;
 
-input.focus();
+    const data = snap.val();
 
-input.focus();
+    data.status = "ended";
 
-}
-catch(e){
+    data.logoutTime = logoutTime;
 
-console.log(
-"CHAT ERROR",
-e
-);
+    data.logoutNotes = logoutNotes;
+    data.lastUpdated =
+    Date.now();
 
-}
+    await set(
+
+        ref(
+            db,
+            `navex-shifts/${today}/${email}`
+        ),
+
+        data
+
+    );
 
 };
 
-/* RECEIVE + PERSIST */
+window.sendChat = async function(){
+
+    const input =
+    document.getElementById("chatInput");
+
+    const text =
+    input.value.trim();
+
+    if(!text) return;
+
+    await push(
+
+        chatRef,
+
+        {
+
+            user:
+
+            (
+            localStorage.getItem("navexUser")
+            ||
+            "guest"
+            ).split("@")[0],
+
+            text,
+
+            time:Date.now()
+
+        }
+
+    );
+
+    input.value="";
+
+};
 
 onChildAdded(
 
-chatRef,
+    chatRef,
 
-snap=>{
+    snap=>{
 
-const m=
-snap.val();
+        const m=snap.val();
 
-if(
-!m
-||
-!m.text
-)return;
+        if(!m) return;
 
-const id=
-"msg-"+snap.key;
+        const id="msg-"+snap.key;
 
-if(
-document.getElementById(id)
-)return;
+        if(document.getElementById(id))
+        return;
 
-chatBox.insertAdjacentHTML(
+        chatBox.insertAdjacentHTML(
 
-"beforeend",
+            "beforeend",
 
 `
-<div
-id="${id}"
-class="msg ${m.user===myUser?'mine':'other'}"
->
+<div id="${id}" class="msg ${m.user===myUser?"mine":"other"}">
 
 <div class="author">
+
 ${m.user}
+
 </div>
 
 <div class="bubble">
+
 ${m.text}
+
 </div>
 
 </div>
 `
 
+        );
+
+        chatBox.scrollTop =
+        chatBox.scrollHeight;
+
+        document
+        .querySelectorAll(".bubble")
+        .forEach(b=>{
+
+            b.onclick=()=>{
+
+                b.classList.toggle("expanded");
+
+            };
+
+        });
+
+    }
+
+);
+window.loadShiftStatus = async function(){
+
+    const today =
+    new Date().toISOString().split("T")[0];
+
+    const snap =
+    await get(
+        ref(
+            db,
+            `navex-shifts/${today}`
+        )
+    );
+
+    const data =
+    snap.exists()
+    ?
+    snap.val()
+    :
+    {};
+
+    updateShiftCard(data);
+
+    return data;
+
+};
+window.updateShiftCard=function(data){
+
+const TOTAL=26;
+
+const activeUsers =
+
+Object.values(data)
+
+.filter(
+
+user=>user.status==="active"
+
 );
 
-chatBox.scrollTop=
-chatBox.scrollHeight;
+const ready =
 
-document
-.querySelectorAll(".bubble")
-.forEach(b=>{
+activeUsers.length;
 
-b.onclick=()=>{
+const pending=
+TOTAL-ready;
 
-b.classList.toggle("expanded");
+const percent =
+Math.round((ready/TOTAL)*100);
+
+if(document.getElementById("readyCount"))
+    document.getElementById("readyCount").innerHTML = ready;
+
+if(document.getElementById("pendingCount"))
+    document.getElementById("pendingCount").innerHTML = pending;
+
+if(document.getElementById("teamProgress"))
+    document.getElementById("teamProgress").style.width = percent + "%";
+
+document.getElementById("loginPercent").innerHTML = ready;
+
+let latestTime="--";
+let latestUser="";
+
+activeUsers.forEach(user=>{
+
+if(
+
+latestTime=="--"
+
+||
+
+user.loginTime>latestTime
+
+){
+
+latestTime=user.loginTime;
+
+latestUser=user.user
+.split("@")[0];
+
+}
+
+});
+
+let duration = "--";
+
+if(latestTime !== "--"){
+
+    const now = new Date();
+
+    const [hour, minute] = latestTime.split(":").map(Number);
+
+    const login = new Date();
+
+    login.setHours(hour);
+    login.setMinutes(minute);
+    login.setSeconds(0);
+
+    const diffMinutes =
+    Math.floor((now - login) / 60000);
+
+    const hrs =
+    Math.floor(diffMinutes / 60);
+
+    const mins =
+    diffMinutes % 60;
+
+    duration =
+    hrs > 0
+    ? `${hrs}h ${mins}m`
+    : `${mins}m`;
+}
+
+document.getElementById("lastLogin").innerHTML =
+duration;
+
+"--"
+
+latestTime+
+"<br><span style='font-size:13px;opacity:.7'>"
++
+latestUser+
+"</span>";
+const handovers =
+
+Object.values(data)
+
+.filter(
+
+u=>u.logoutNotes &&
+u.logoutNotes.trim()!=="" &&
+u.logoutTime
+
+)
+
+.sort(
+
+(a,b)=>b.lastUpdated-a.lastUpdated
+
+);
+
+if(
+handovers.length &&
+document.getElementById("lastHandover")
+){
+
+document.getElementById("lastHandover").innerHTML=
+
+`
+<div style="font-size:13px;opacity:.7;">
+Last Handover
+</div>
+
+<div style="margin-top:6px;font-weight:600;">
+
+${handovers[0].user.split("@")[0]}
+
+</div>
+
+<div style="opacity:.8;margin-top:4px;">
+
+${handovers[0].logoutTime}
+
+</div>
+
+<div style="
+margin-top:8px;
+font-size:14px;
+opacity:.85;
+">
+
+${handovers[0].logoutNotes}
+
+</div>
+
+`;
+
+}
+
+}
+window.showIncidents = function(priority){
+    window.currentIncidentPriority = priority;
+
+    const incidents =
+window.incidentsByPriority[priority] || [];
+
+    document.getElementById("incidentTitle").innerHTML =
+        "🚨 " + priority + " Incidents (" + incidents.length + ")";
+
+    if(!incidents.length){
+
+        document.getElementById("incidentList").innerHTML = `
+            <div style="
+                text-align:center;
+                padding:40px;
+                opacity:.7;
+                font-size:18px;
+            ">
+                No active ${priority} incidents 🎉
+            </div>
+        `;
+
+    }else{
+
+        document.getElementById("incidentList").innerHTML =
+            incidents.map(i=>`
+
+<div style="
+padding:18px;
+margin-bottom:15px;
+background:rgba(255,255,255,.05);
+border-radius:16px;
+">
+
+<div style="
+font-size:20px;
+font-weight:bold;
+">
+
+#${i.incident}
+
+</div>
+
+<div style="
+margin-top:8px;
+font-size:16px;
+">
+
+${i.title}
+
+</div>
+
+<div style="
+margin-top:10px;
+opacity:.75;
+">
+
+Status :
+<b>${i.status}</b>
+
+</div>
+
+<button
+
+onclick="window.open('${i.url}','_blank')"
+
+style="
+margin-top:15px;
+background:#5b5cf6;
+border:none;
+color:white;
+padding:10px 18px;
+border-radius:10px;
+cursor:pointer;
+">
+
+Open in PagerDuty
+
+</button>
+
+</div>
+
+`).join("");
+
+    }
+    const searchBox =
+document.getElementById("incidentSearch");
+
+searchBox.value = "";
+
+searchBox.oninput = function(){
+
+    const keyword =
+    this.value.toLowerCase();
+
+    const filtered =
+    window.incidentsByPriority[
+        window.currentIncidentPriority
+    ].filter(i=>
+
+        i.title.toLowerCase().includes(keyword) ||
+
+        String(i.incident).includes(keyword)
+
+    );
+
+    document.getElementById("incidentList").innerHTML =
+    filtered.length ?
+
+    filtered.map(i=>`
+
+<div style="
+padding:18px;
+margin-bottom:15px;
+background:rgba(255,255,255,.05);
+border-radius:16px;
+">
+
+<div style="
+font-size:20px;
+font-weight:bold;
+">
+
+#${i.incident}
+
+</div>
+
+<div style="
+margin-top:8px;
+font-size:16px;
+">
+
+${i.title}
+
+</div>
+
+<div style="
+margin-top:10px;
+opacity:.75;
+">
+
+Status :
+<b>${i.status}</b>
+
+</div>
+
+<button
+
+onclick="window.open('${i.url}','_blank')"
+
+style="
+margin-top:15px;
+background:#5b5cf6;
+border:none;
+color:white;
+padding:10px 18px;
+border-radius:10px;
+cursor:pointer;
+">
+
+Open in PagerDuty
+
+</button>
+
+</div>
+
+`).join("")
+
+:
+
+`
+<div style="
+padding:50px;
+text-align:center;
+opacity:.6;
+font-size:18px;
+">
+
+No matching incidents found.
+
+</div>
+`;
 
 };
 
-});
+    document.getElementById("incidentModal").style.display = "flex";
+
+}
+
+window.closeIncidentModal = function(){
+
+    document.getElementById("incidentModal").style.display = "none";
+
+}
+window.showShiftTeam = async function(){
+    console.log("View Team clicked");
+
+    const TEAM = {
+
+"navya.teja@wbd.com":"Navya Teja",
+"praveen.sharma@wbd.com":"Praveen Sharma",
+"venkataharish.mitta@wbd.com":"Harish Mitta",
+"somana.nagasaikrishna@wbd.com":"Sai Krishna",
+"abhinandan.kumar@wbd.com":"Abhinandan",
+"yogananda.t@wbd.com":"Yogananda",
+"mathumitha.gosh@wbd.com":"Mathumitha",
+"vignesh.pandurangan@wbd.com":"Vignesh",
+"kuljeet.singh@wbd.com":"Kuljeet Singh",
+"mdmohtasim.alam@wbd.com":"Mohtasim Alam",
+"chitturisrijaya.venkatasurya@wbd.com":"Surya",
+"akash.vankadari@wbd.com":"Akash",
+"masani.reddy@wbd.com":"Sai Bhargav",
+"manisha.gutlapalli@wbd.com":"Manisha",
+"naveen.vonna@wbd.com":"Naveen",
+"sourabh.tiwari@wbd.com":"Sourabh Tiwari",
+"hajibasha.tadpatri@wbd.com":"Haji Basha",
+"raju.chintapally@wbd.com":"Raju Chintapally",
+"nagasatish.mattaparthi@wbd.com":"Naga Satish",
+"kumar.mude@wbd.com":"Kumar Naik",
+"kovvuridileep.srisaireddy@wbd.com":"Dileep Reddy",
+"manasa.g@wbd.com":"Manasa",
+"divya.m@wbd.com":"Divya",
+"linginenisampath.kumar@wbd.com":"Sampath Kumar",
+"mande.sri@wbd.com":"Yeshwanth Sri",
+"jyotisman.rath@wbd.com":"Jyotisman Rath",
+"aditya.gupta@wbd.com":"Aditya Gupta",
+"bhagyaraju.tn@wbd.com":"Bhagyaraju",
+"kush.vekaria@wbd.com":"Kush Vekeria",
+"danille.dones@wbd.com":"Danille Dones",
+"reginna.gregorio@wbd.com":"Reginna Gregorio",
+"paul.hobbs@wbd.com":"Paul Hobbs",
+"jaspal.bhatia@wbd.com":"Jaspal Bhatia"
+    };
+
+    window.renderTeam = function(data){
+
+        let ready = 0;
+        let pending = 0;
+
+        let readyHTML = "";
+        let pendingHTML = "";
+
+        Object.entries(TEAM).forEach(([mail,name])=>{
+
+            const key = mail
+                .replace(/\./g,"_")
+                .replace(/@/g,"_");
+
+            const user = data[key];
+
+            if(user && user.status==="active"){
+
+                ready++;
+
+                readyHTML += `
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    padding:12px 0;
+                    border-bottom:1px solid rgba(255,255,255,.06);
+                ">
+                    <div>🟢 ${name}</div>
+                    <div>${user.loginTime}</div>
+                </div>`;
+            }
+            else{
+
+                pending++;
+
+                pendingHTML += `
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    padding:12px 0;
+                    border-bottom:1px solid rgba(255,255,255,.06);
+                ">
+                    <div>🟡 ${name}</div>
+                    <div>--</div>
+                </div>`;
+            }
+
+        });
+
+        document.getElementById("teamList").innerHTML = `
+            <div style="
+                font-size:22px;
+                font-weight:bold;
+                color:#22c55e;
+                margin-bottom:15px;
+            ">
+                🟢 READY (${ready})
+            </div>
+
+            ${readyHTML}
+
+            <div style="
+                margin:25px 0;
+                border-top:1px solid rgba(255,255,255,.08);
+            "></div>
+
+            <div style="
+                font-size:22px;
+                font-weight:bold;
+                color:#facc15;
+                margin:15px 0;
+            ">
+                🟡 PENDING (${pending})
+            </div>
+
+            ${pendingHTML}
+        `;
+    }
+
+    const data = await window.loadShiftStatus();
+
+    renderTeam(data);
+
+    document.getElementById("teamModal").style.display = "flex";
+
+};
+
+const today =
+new Date().toISOString().split("T")[0];
+
+onValue(
+
+ref(
+db,
+`navex-shifts/${today}`
+),
+
+(snapshot)=>{
+
+    const data = snapshot.val() || {};
+
+    window.updateShiftCard(data);
+
+    if(
+        document.getElementById("teamModal").style.display==="flex"
+        &&
+        window.renderTeam
+    ){
+        window.renderTeam(data);
+    }
 
 }
 
 );
 
-console.log(
-"Firebase Chat Ready"
-);
+console.log("✅ Firebase Live Listener Ready");
 
 </script>
 
+<!-- ================= INCIDENT CENTER ================= -->
+
+<div id="incidentModal"
+
+style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.7);
+backdrop-filter:blur(10px);
+justify-content:center;
+align-items:center;
+z-index:99999;
+">
+
+<div
+
+style="
+width:760px;
+max-width:92%;
+max-height:82vh;
+overflow:auto;
+background:#121826;
+border-radius:22px;
+padding:25px;
+color:white;
+">
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+">
+
+<h2 id="incidentTitle"
+style="margin:0;">
+PagerDuty Incidents
+</h2>
+
+<button
+
+onclick="closeIncidentModal()"
+
+style="
+background:#ef4444;
+border:none;
+color:white;
+padding:8px 15px;
+border-radius:10px;
+cursor:pointer;
+">
+
+Close
+
+</button>
+
+</div>
+
+<input
+
+id="incidentSearch"
+
+type="text"
+
+placeholder="🔍 Search incidents..."
+
+style="
+width:100%;
+padding:14px;
+margin-bottom:18px;
+border:none;
+border-radius:12px;
+font-size:15px;
+outline:none;
+background:rgba(255,255,255,.08);
+color:white;
+">
+
+<div id="incidentList">
+
+Loading...
+
+</div>
+
+</div>
+
+</div>
 </body>
 
 </html>
