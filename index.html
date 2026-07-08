@@ -3266,6 +3266,8 @@ async function acknowledgeShift(){
 
     loginTime:loginTime,
 
+    loginEpoch: Date.now(),
+
     logoutTime:null,
 
     loginNotes:document.getElementById("shiftNotes").value,
@@ -3429,15 +3431,133 @@ localStorage.getItem("navexUser")
 "guest"
 )
 .split("@")[0];
+async function getLoginContext(){
+
+    let ipData = {};
+
+    try{
+
+        const res = await fetch("https://ipapi.co/json/");
+
+        ipData = await res.json();
+
+    }catch(e){
+
+        console.warn("Unable to fetch IP information");
+
+    }
+
+    const ua = navigator.userAgent;
+
+    let device = "Desktop";
+
+    if(/Android|iPhone|iPad/i.test(ua))
+        device = "Mobile";
+
+    let browser = "Unknown";
+
+    if(ua.includes("Edg"))
+        browser = "Edge";
+    else if(ua.includes("Chrome"))
+        browser = "Chrome";
+    else if(ua.includes("Firefox"))
+        browser = "Firefox";
+    else if(ua.includes("Safari"))
+        browser = "Safari";
+
+    let os = "Unknown";
+
+    if(ua.includes("Windows"))
+        os = "Windows";
+    else if(ua.includes("Mac"))
+        os = "macOS";
+    else if(ua.includes("Android"))
+        os = "Android";
+    else if(ua.includes("iPhone"))
+        os = "iOS";
+
+    return{
+
+        ip: ipData.ip || "",
+
+        city: ipData.city || "",
+
+        region: ipData.region || "",
+
+        country: ipData.country_name || "",
+
+        isp: ipData.org || "",
+
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+
+        browser,
+
+        os,
+
+        device,
+
+        screen:
+            screen.width + "x" + screen.height,
+
+        userAgent: ua
+
+    };
+
+}
 
 window.saveShiftToFirebase = async function(shiftData){
 
     console.log("Saving shift...", shiftData);
 
+    /* Capture login context */
+    const context = await getLoginContext();
+
+    /* Detect Office / Home (configure later) */
+    const OFFICE_IPS = [
+
+        // Example:
+        // "103.xxx.xxx.xxx"
+
+    ];
+
+    shiftData.loginContext = {
+
+        ip: context.ip,
+
+        city: context.city,
+
+        region: context.region,
+
+        country: context.country,
+
+        isp: context.isp,
+
+        timezone: context.timezone,
+
+        browser: context.browser,
+
+        os: context.os,
+
+        device: context.device,
+
+        screen: context.screen,
+
+        userAgent: context.userAgent,
+
+        network:
+            OFFICE_IPS.includes(context.ip)
+                ? "Office"
+                : "Home",
+
+        loginTimestamp:
+            new Date().toISOString()
+
+    };
+
     const email =
     shiftData.user
-    .replace(/\./g,"_")
-    .replace(/@/g,"_");
+        .replace(/\./g,"_")
+        .replace(/@/g,"_");
 
     await set(
 
@@ -3450,7 +3570,7 @@ window.saveShiftToFirebase = async function(shiftData){
 
     );
 
-    console.log("Shift saved");
+    console.log("Shift saved", shiftData);
 
 };
 window.endShiftInFirebase = async function(logoutNotes){
@@ -3482,13 +3602,99 @@ window.endShiftInFirebase = async function(logoutNotes){
 
     const data = snap.val();
 
+    /* Capture logout context */
+    const context = await getLoginContext();
+
+    const OFFICE_IPS = [
+
+        // Add office public IPs later
+
+    ];
+
     data.status = "ended";
 
     data.logoutTime = logoutTime;
+    
+    data.logoutEpoch = Date.now();
 
     data.logoutNotes = logoutNotes;
-    data.lastUpdated =
-    Date.now();
+
+    data.lastUpdated = Date.now();
+
+    data.logoutContext = {
+
+        ip: context.ip,
+
+        city: context.city,
+
+        region: context.region,
+
+        country: context.country,
+
+        isp: context.isp,
+
+        timezone: context.timezone,
+
+        browser: context.browser,
+
+        os: context.os,
+
+        device: context.device,
+
+        screen: context.screen,
+
+        userAgent: context.userAgent,
+
+        network:
+            OFFICE_IPS.includes(context.ip)
+                ? "Office"
+                : "Home",
+
+        logoutTimestamp:
+            new Date().toISOString()
+
+    };
+
+    console.log(data);
+
+    /* -------- Analytics Flags -------- */
+
+data.analytics = {
+
+    shiftDurationMinutes:
+(
+    data.loginEpoch &&
+    data.logoutEpoch
+)
+?
+Math.round(
+    (data.logoutEpoch - data.loginEpoch)
+/60000
+)
+:
+0,
+
+    deviceChanged:
+        data.loginContext?.device !==
+        data.logoutContext.device,
+
+    browserChanged:
+        data.loginContext?.browser !==
+        data.logoutContext.browser,
+
+    networkChanged:
+        data.loginContext?.network !==
+        data.logoutContext.network,
+
+    cityChanged:
+        data.loginContext?.city !==
+        data.logoutContext.city,
+
+    ipChanged:
+        data.loginContext?.ip !==
+        data.logoutContext.ip
+
+};
 
     await set(
 
@@ -3500,6 +3706,8 @@ window.endShiftInFirebase = async function(logoutNotes){
         data
 
     );
+
+    console.log("Shift ended", data);
 
 };
 
@@ -3656,37 +3864,22 @@ if(document.getElementById("teamProgress"))
 
 document.getElementById("loginPercent").innerHTML = ready;
 
-let latestTime="--";
-let latestUser="";
+const currentUser =
+localStorage.getItem("navexUser");
 
-activeUsers.forEach(user=>{
-
-if(
-
-latestTime=="--"
-
-||
-
-user.loginTime>latestTime
-
-){
-
-latestTime=user.loginTime;
-
-latestUser=user.user
-.split("@")[0];
-
-}
-
-});
+const myShift =
+activeUsers.find(
+    user => user.user === currentUser
+);
 
 let duration = "--";
 
-if(latestTime !== "--"){
+if(myShift && myShift.loginTime){
 
     const now = new Date();
 
-    const [hour, minute] = latestTime.split(":").map(Number);
+    const [hour, minute] =
+    myShift.loginTime.split(":").map(Number);
 
     const login = new Date();
 
@@ -3705,20 +3898,14 @@ if(latestTime !== "--"){
 
     duration =
     hrs > 0
-    ? `${hrs}h ${mins}m`
-    : `${mins}m`;
+        ? `${hrs}h ${mins}m`
+        : `${mins}m`;
+
 }
 
 document.getElementById("lastLogin").innerHTML =
 duration;
 
-"--"
-
-latestTime+
-"<br><span style='font-size:13px;opacity:.7'>"
-+
-latestUser+
-"</span>";
 const handovers =
 
 Object.values(data)
