@@ -1304,6 +1304,21 @@ linear-gradient(
 );
 
 }
+#lastHandover{
+
+    transition:.25s ease;
+
+}
+
+#lastHandover:hover{
+
+    transform:translateY(-2px);
+
+    border-color:rgba(126,200,255,.35);
+
+    box-shadow:0 8px 25px rgba(0,0,0,.25);
+
+}
 
 #error{
 
@@ -1796,8 +1811,6 @@ background:rgba(255,255,255,.05);
 border:1px solid rgba(255,255,255,.08);
 font-size:15px;
 line-height:1.5;
-min-height:82px;
-overflow:auto;
 ">
 
 No handover yet.
@@ -3514,12 +3527,9 @@ window.saveShiftToFirebase = async function(shiftData){
     const context = await getLoginContext();
 
     /* Detect Office / Home (configure later) */
-    const OFFICE_IPS = [
-
-        // Example:
-        // "103.xxx.xxx.xxx"
-
-    ];
+    const OFFICE_IP_PREFIXES = [
+    "203."
+];
 
     shiftData.loginContext = {
 
@@ -3546,9 +3556,11 @@ window.saveShiftToFirebase = async function(shiftData){
         userAgent: context.userAgent,
 
         network:
-            OFFICE_IPS.includes(context.ip)
-                ? "Office"
-                : "Home",
+    OFFICE_IP_PREFIXES.some(prefix =>
+        context.ip.startsWith(prefix)
+    )
+        ? "Office"
+        : "Home",
 
         loginTimestamp:
             new Date().toISOString()
@@ -3606,16 +3618,14 @@ window.endShiftInFirebase = async function(logoutNotes){
     /* Capture logout context */
     const context = await getLoginContext();
 
-    const OFFICE_IPS = [
-
-        // Add office public IPs later
-
-    ];
+    const OFFICE_IP_PREFIXES = [
+    "203."
+];
 
     data.status = "ended";
 
     data.logoutTime = logoutTime;
-    
+
     data.logoutEpoch = Date.now();
 
     data.logoutNotes = logoutNotes;
@@ -3647,9 +3657,11 @@ window.endShiftInFirebase = async function(logoutNotes){
         userAgent: context.userAgent,
 
         network:
-            OFFICE_IPS.includes(context.ip)
-                ? "Office"
-                : "Home",
+    OFFICE_IP_PREFIXES.some(prefix =>
+        context.ip.startsWith(prefix)
+    )
+        ? "Office"
+        : "Home",
 
         logoutTimestamp:
             new Date().toISOString()
@@ -3930,29 +3942,51 @@ handovers.length &&
 document.getElementById("lastHandover")
 ){
 
-document.getElementById("lastHandover").innerHTML=
+document.getElementById("lastHandover").innerHTML = `
 
-`
-<div style="font-size:13px;opacity:.7;">
-Last Handover
-</div>
+<div
+style="
+margin-top:6px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-weight:600;
+">
 
-<div style="margin-top:6px;font-weight:600;">
+<span>
 
 ${handovers[0].user.split("@")[0]}
+
+</span>
+
+<span
+style="
+font-size:18px;
+opacity:.55;
+">
+
+⤢
+
+</span>
 
 </div>
 
 <div style="opacity:.8;margin-top:4px;">
-
 ${handovers[0].logoutTime}
-
 </div>
 
-<div style="
+<div
+id="handoverPreview"
+style="
 margin-top:8px;
 font-size:14px;
-opacity:.85;
+opacity:.88;
+display:-webkit-box;
+-webkit-line-clamp:3;
+-webkit-box-orient:vertical;
+overflow:hidden;
+line-height:1.5;
+cursor:pointer;
 ">
 
 ${handovers[0].logoutNotes}
@@ -3960,6 +3994,56 @@ ${handovers[0].logoutNotes}
 </div>
 
 `;
+const latest = handovers[0];
+
+document.getElementById("lastHandover").style.cursor = "pointer";
+
+document.getElementById("lastHandover").onclick = () => {
+
+    document.getElementById("handoverBody").innerHTML = `
+
+        <div style="font-size:18px;font-weight:700;">
+            👤 ${latest.user.split("@")[0]}
+        </div>
+
+        <div style="margin-top:8px;opacity:.75;">
+            🕒 ${latest.logoutTime}
+        </div>
+
+        <hr style="
+            border:none;
+            border-top:1px solid rgba(255,255,255,.08);
+            margin:18px 0;
+        ">
+
+        <div style="
+            white-space:pre-wrap;
+            line-height:1.7;
+            font-size:15px;
+        ">
+${latest.logoutNotes}
+        </div>
+
+    `;
+
+    document.getElementById("handoverModal").style.display = "block";
+
+};
+
+document.getElementById("closeHandover").onclick = () => {
+
+    document.getElementById("handoverModal").style.display = "none";
+
+};
+document.getElementById("handoverModal").onclick = (e) => {
+
+    if (e.target.id === "handoverModal") {
+
+        document.getElementById("handoverModal").style.display = "none";
+
+    }
+
+};
 
 }
 
@@ -4402,6 +4486,66 @@ color:white;
 Loading...
 
 </div>
+
+</div>
+
+</div>
+<div
+id="handoverModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.65);
+backdrop-filter:blur(8px);
+z-index:99999;
+">
+
+<div
+style="
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:700px;
+max-width:90%;
+max-height:80%;
+overflow:auto;
+background:#1d2233;
+border-radius:18px;
+padding:24px;
+color:white;
+box-shadow:0 20px 60px rgba(0,0,0,.45);
+">
+
+<div
+style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:18px;
+">
+
+<h2 style="margin:0;">
+📝 Shift Handover
+</h2>
+
+<span
+id="closeHandover"
+style="
+font-size:28px;
+cursor:pointer;
+opacity:.7;
+">
+✕
+</span>
+
+</div>
+
+<div id="handoverBody"></div>
 
 </div>
 
