@@ -13,25 +13,48 @@
 
 body{
 
-margin:0;
+    margin:0;
+    padding:0;
 
-padding:30px;
+    width:100%;
+    min-height:100vh;
 
-padding-bottom:280px;
+    overflow-x:hidden;
+    overflow-y:auto;
 
-font-family:Arial;
+    position:relative;
 
-color:white;
+    font-family:Arial,Helvetica,sans-serif;
 
-min-height:100vh;
+    color:#fff;
 
-overflow-x:hidden;
-
-position:relative;
-
-background:#020617;
+    background:#000;
 
 }
+*{
+
+    box-sizing:border-box;
+
+}
+
+img{
+
+    max-width:100%;
+
+}
+
+video{
+
+    max-width:100%;
+
+}
+
+button{
+
+    cursor:pointer;
+
+}
+
 
 /* VIDEO BACKGROUND */
 
@@ -903,14 +926,14 @@ margin-top:40px;
 
 position:fixed;
 
-right:25px;
+right:20px;
 
-bottom:72px;
+bottom:62px;
 
-width:300px;
+width:290px;
 height:285px;
 
-padding:16px;
+padding:10px;
 
 border-radius:22px;
 
@@ -1206,7 +1229,7 @@ padding:0 16px;
 
 position:fixed;
 
-bottom:18px;
+bottom:15px;
 
 left:0;
 
@@ -1539,7 +1562,7 @@ type="video/mp4">
 
 </video>
 
-
+<div id="dashboardWrapper"></div>
 
 <div class="top">
 
@@ -1738,26 +1761,33 @@ id="search">
 id="shiftCard"
 class="main-btn"
 style="
-height:auto;
-width:300px;
+width:100%;
+max-width:295px;
 
+height:auto;
+
+padding:20px;
 position:absolute;
 
-top:65px;
+top:55px;
+
 right:20px;
-padding:20px;
 
 display:flex;
 flex-direction:column;
 justify-content:flex-start;
 align-items:flex-start;
+
 cursor:default;
+
+margin:0 auto;
 ">
 
 <div
 style="
-font-size:34px;
+font-size:24px;
 font-weight:700;
+align-items:center;
 ">
 
 Shift Status
@@ -3000,9 +3030,6 @@ window.incidentsByPriority[p].push({
     status:i.status,
     incident:i.incident_number
 });
-console.log("P1 Incidents", p1Incidents);
-console.log("P2 Incidents", p2Incidents);
-console.log("First Incident", data.incidents?.[0]);
 
 });
 
@@ -3818,7 +3845,7 @@ window.loadHandoverHistory = async function(){
     const snap = await get(
         query(
             ref(db,"navex-handovers"),
-            limitToLast(7)
+            limitToLast(250)
         )
     );
 
@@ -3827,13 +3854,25 @@ window.loadHandoverHistory = async function(){
         return;
     }
 
-    const handovers =
-    Object.values(snap.val())
-    .sort((a,b)=>b.timestamp-a.timestamp);
+   const handovers = Object.values(snap.val());
+
+handovers.sort((a,b)=>
+    (b.lastUpdated || b.logoutEpoch || 0) -
+    (a.lastUpdated || a.logoutEpoch || 0)
+);
+const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+
+const recentHistory = handovers.filter(h =>
+
+    (h.lastUpdated || h.logoutEpoch || 0) >= sevenDaysAgo
+
+);
 
     list.innerHTML="";
 
-    handovers.forEach(h=>{
+    recentHistory
+.filter(h => h.logoutNotes && h.logoutNotes.trim() !== "")
+.forEach(h=>{
 
         list.innerHTML += `
 <div class="handoverCard" style="
@@ -3848,12 +3887,26 @@ window.loadHandoverHistory = async function(){
             </div>
 
             <div style="opacity:.6;font-size:13px;">
-                ${h.date} • ${h.logoutTime}
+                📅 ${h.date}
+
+&nbsp;&nbsp;
+
+🕒 ${h.logoutTime}
             </div>
 
-            <div style="margin-top:8px;">
-                ${h.logoutNotes}
-            </div>
+            <div
+style="
+margin-top:10px;
+white-space:pre-wrap;
+word-break:break-word;
+overflow-wrap:anywhere;
+line-height:1.55;
+font-size:15px;
+">
+
+${h.logoutNotes}
+
+</div>
 
         </div>`;
     });
@@ -3895,7 +3948,7 @@ window.renderLatestHandover = async function(){
     const snap = await get(
         query(
             ref(db,"navex-handovers"),
-            limitToLast(10)
+            limitToLast(100)
         )
     );
 
@@ -3932,6 +3985,11 @@ window.renderLatestHandover = async function(){
     }
 
     const latest = handovers[0];
+
+    const previewNotes = latest.logoutNotes
+    .replace(/\r\n/g,"\n")
+    .replace(/^\s+|\s+$/g,"")
+    .replace(/\n{2,}/g,"\n");
 
     document.getElementById("lastHandover").innerHTML = `
 
@@ -3974,17 +4032,22 @@ ${latest.logoutTime}
 
 <div
 style="
-margin-top:8px;
-font-size:14px;
-opacity:.88;
+margin-top:12px;
+position:relative;
+">
+
+<div
+style="
+white-space:pre-wrap;
+line-height:1.6;
+font-size:15px;
+color:#f2f2f2;
 display:-webkit-box;
 -webkit-line-clamp:3;
 -webkit-box-orient:vertical;
 overflow:hidden;
-line-height:1.5;
-">
-
-${latest.logoutNotes}
+word-break:break-word;
+">${previewNotes}</div>
 
 </div>
 
@@ -4010,14 +4073,12 @@ border-top:1px solid rgba(255,255,255,.08);
 margin:18px 0;
 ">
 
-<div style="
+<div
+style="
 white-space:pre-wrap;
 line-height:1.7;
-">
-
-${latest.logoutNotes}
-
-</div>
+word-break:break-word;
+">${previewNotes}</div>
 
 `;
 
@@ -4867,6 +4928,7 @@ Loading...
 
 </div>
 
+</div>
 </div>
 </body>
 
