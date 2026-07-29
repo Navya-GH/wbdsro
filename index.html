@@ -1191,7 +1191,7 @@ Sign in to continue
    SLACK WEBHOOK INTEGRATION & API-BASED PAGERDUTY RESOLUTION ENGINE
    ========================================================================== */
 
-const SLACK_WEBHOOK_URL = "m5or8Z8lgWr4+Ki2a65fh4aGvZHEpWCvQWniR/Gbin459bfiaroMkpvcCfxQqAz1Z3GrBxWaVvhB5BBn3I154DhyVxWrTtOwd22gJg92/UGw/nxN3m5bdw==";
+const SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
 
 const TEAM_MEMBERS = [
     { email: "navya.teja@wbd.com", name: "Navya Teja" },
@@ -1234,24 +1234,25 @@ const TEAM_MEMBERS = [
  * Sends a JSON payload to the Slack Incoming Webhook safely.
  */
 async function sendSlackNotification(payload) {
-    if (!SLACK_WEBHOOK_URL || SLACK_WEBHOOK_URL.includes("YOUR_SLACK_WEBHOOK_URL_HERE")) {
-        console.warn("Slack Integration: Webhook URL is missing or set to placeholder.");
-        return;
+  try {
+    const bodyData = typeof payload === "string" ? { text: payload } : payload;
+
+    const response = await fetch(SLACK_WEBHOOK_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: JSON.stringify(bodyData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Slack API error status: ${response.status}`);
     }
 
-    try {
-        const bodyData = typeof payload === "string" ? { text: payload } : payload;
-
-        await fetch(SLACK_WEBHOOK_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-            },
-            body: JSON.stringify(bodyData)
-        });
-    } catch (error) {
-        console.error("Slack Integration Error:", error);
-    }
+    console.log("Slack notification sent successfully!");
+  } catch (error) {
+    console.error("Error sending Slack notification:", error);
+  }
 }
 
 /**
