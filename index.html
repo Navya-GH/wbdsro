@@ -1,1442 +1,834 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>NAVEX</title>
 
 <style>
 
-*{box-sizing:border-box;}
-
-body{
-
-    margin:0;
-    padding:0;
-
-    width:100%;
-    min-height:100vh;
-
-    overflow-x:hidden;
-    overflow-y:auto;
-
-    position:relative;
-
-    font-family:Arial,Helvetica,sans-serif;
-
-    color:#fff;
-
-    background:#000;
-
-}
 *{
-
     box-sizing:border-box;
-
 }
 
-img{
-
-    max-width:100%;
-
+:root {
+    --text-clamp-title: clamp(2rem, 5vw + 1rem, 4.75rem);
+    --text-clamp-subtitle: clamp(1rem, 2.5vw, 1.75rem);
+    --text-clamp-body: clamp(0.875rem, 1vw + 0.5rem, 1.125rem);
+    --text-clamp-small: clamp(0.75rem, 0.8vw + 0.4rem, 0.95rem);
 }
 
-video{
-
-    max-width:100%;
-
+html, body {
+    width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
 
-button{
-
-    cursor:pointer;
-
+body {
+    position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: clamp(2.5rem, 4vh, 3.5rem);
 }
 
+img, video {
+    max-width: 100%;
+    height: auto;
+}
+
+button {
+    cursor: pointer;
+}
 
 /* VIDEO BACKGROUND */
 
-#bg-video{
-
-position:fixed;
-
-top:0;
-
-left:0;
-
-width:100vw;
-
-height:100vh;
-
-object-fit:cover;
-
-object-position:center;
-
-z-index:-10;
-
-pointer-events:none;
-
-opacity:1;
-
-background:#020617;
-
-transform:translateZ(0);
-
-backface-visibility:hidden;
-
-}
-
-
-body::after{
-
-content:"";
-
-position:fixed;
-
-inset:0;
-
-background:
-
-linear-gradient(
-
-180deg,
-
-rgba(
-2,
-8,
-23,
-0.18
-),
-
-rgba(
-2,
-8,
-23,
-0.42
-
-)
-
-);
-
-z-index:-5;
-
-pointer-events:none;
-
-}
-
-.top{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:flex-start;
-
-margin-bottom:10px;
-
-}
-
-.timezones{
-
-display:flex;
-
-gap:10px;
-
-flex-wrap:wrap;
-
-}
-
-.tz{
-
-padding:10px 18px;
-
-border-radius:14px;
-
-background:
-
-rgba(
-255,
-255,
-255,
-0.08
-);
-
-backdrop-filter:
-blur(18px);
-
-font-size:14px;
-
-min-width:120px;
-
-}
-.dashboard-layout{
-    display:grid;
-    grid-template-columns:260px 1fr 320px;
-    gap:40px;
-    align-items:start;
-}
-
-.left-column{
-
-width:250px;
-display:flex;
-flex-direction:column;
-align-items:flex-start;
-justify-content:flex-start;
-gap:16px;
-margin-top:0;
-
-}
-
-.center-column{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;   /* Centers everything */
-}
-
-.right-column{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:22px;
-
-}
-
-.clock{
-
-position:absolute;
-top:18px;
-right:20px;
-
-display:flex;
-align-items:center;
-gap:18px;
-
-z-index:1000;
-
-}
-
-h1{
-
-text-align:center;
-
-font-size:76px;
-
-margin:-18px 0 28px;
-/* moved slightly upward */
-
-font-weight:900;
-
-letter-spacing:-2px;
-
-color:#ffffff;
-
--webkit-text-fill-color:#ffffff;
-
-position:relative;
-
-top:-12px;
-
-text-shadow:
-0 0 10px rgba(255,255,255,.35),
-0 0 25px rgba(255,255,255,.28),
-0 0 50px rgba(220,230,255,.18);
-
-animation:logoGlow 6s ease-in-out infinite;
-
-}
-
-@keyframes logoGlow{
-
-0%{
-transform:scale(1);
-text-shadow:
-0 0 10px rgba(255,255,255,.35),
-0 0 25px rgba(255,255,255,.22);
-}
-
-50%{
-transform:scale(1.015);
-text-shadow:
-0 0 18px rgba(255,255,255,.55),
-0 0 45px rgba(220,230,255,.32);
-}
-
-100%{
-transform:scale(1);
-text-shadow:
-0 0 10px rgba(255,255,255,.35),
-0 0 25px rgba(255,255,255,.22);
-}
-
-}
-
-.search{
-
-width:min(
-760px,
-92%
-);
-
-display:block;
-
-margin:auto;
-
-padding:16px 26px;
-
-border:none;
-
-border-radius:18px;
-
-background:
-
-rgba(
-255,
-255,
-255,
-0.08
-);
-
-backdrop-filter:
-blur(24px);
-
-color:white;
-
-font-size:18px;
-
-margin-bottom:24px;
-
-}
-
-.search::placeholder{
-
-color:#bdbdbd;
-
-}
-
-.container{
-    display:grid;
-    grid-template-columns:repeat(5, 180px);
-    gap:20px;
-    justify-content:center;   /* <-- This centers the grid */
-}
-
-.main-btn{
-
-width:100%;
-
-height:74px;
-
-border:none;
-
-border-radius:18px;
-
-cursor:pointer;
-
-color:white;
-
-font-size:18px;
-
-font-weight:600;
-
-background:
-rgba(255,255,255,.07);
-
-backdrop-filter:blur(30px);
-
-transition:.25s;
-
-letter-spacing:.2px;
-
-}
-
-.main-btn:hover{
-
-transform:
-translateY(-4px);
-
-background:
-
-linear-gradient(
-135deg,
-rgba(
-91,
-92,
-246,
-.45
-),
-rgba(
-139,
-92,
-246,
-.45
-)
-);
-
-}
-
-a{
-
-text-decoration:none;
-
-}
-#handoverHistoryBtn:hover{
-
-    color:#ffffff;
-
-    text-decoration:underline;
-
-}
-
-
-.pd-mini{
-
-position:absolute;
-top:105px;
-left:35px;
-
-width:250px;
-
-z-index:15;
-
-}
-
-.pd-title{
-
-font-size:18px;
-font-weight:700;
-margin-bottom:12px;
-
-}
-
-.pd-grid{
-
-display:flex;
-gap:10px;
-justify-content:center;
-width:100%;
-
-}
-
-.pd-card{
-
-width:72px;
-min-height:128px;
-padding:10px 8px;
-border-radius:16px;
-display:flex;
-flex-direction:column;
-justify-content:space-between;
-
-}
-
-.pd-card:hover{
-
-transform:
-translateY(-3px);
-
-}
-
-.pd-label{
-
-font-size:18px;
-font-weight:700;
-margin-bottom:8px;
-
-}
-
-.stat-row{
-
-display:flex;
-justify-content:space-between;
-font-size:13px;
-margin:6px 0;
-
-}
-
-.value{
-
-font-weight:bold;
-
-font-size:18px;
-
-}
-
-.p1{
-
-background:
-rgba(239,68,68,.18);
-
-}
-
-.p2{
-
-background:
-rgba(249,115,22,.18);
-
-}
-
-.p3{
-
-background:
-rgba(234,179,8,.18);
-
-}
-
-.alert{
-
-animation:
-danger .8s infinite;
-
-box-shadow:
-
-0 0 50px rgba(255,0,0,.9);
-
-}
-
-@keyframes danger{
-
-0%{
-
-opacity:1;
-
-transform:scale(1);
-
-}
-
-50%{
-
-opacity:.45;
-
-transform:scale(1.05);
-
-}
-
-100%{
-
-opacity:1;
-
-transform:scale(1);
-
-}
-
-}
-
-background:
-rgba(234,179,8,.18);
-
-}
-
-@media(max-width:900px){
-
-.pd-mini{
-
-position:absolute;
-top:105px;
-left:35px;
-
-width:250px;
-
-z-index:15;
-
-}
-
-}
-
-}
-
-.events-layout{
-
-display:grid;
-
-grid-template-columns:
-calc(100% - 500px)
-460px;
-
-gap:30px;
-
-align-items:start;
-
-max-width:1700px;
-
-padding:120px 20px 0;
-
-position:relative;
-
-z-index:2;
-
-}
-
-.events-section{
-
-width:100%;
-margin-top:90px;
-
-overflow:hidden;
-
-}
-
-.events-title{
-
-font-size:28px;
-
-font-weight:800;
-
-margin-bottom:18px;
-
-}
-
-.events-grid{
-display:flex;
-align-items:flex-start;
-gap:18px;
-overflow:hidden;
-}
-
-.events-home{
-flex:0 0 230px;
-width:230px;
-}
-
-.events-scroll{
-display:flex;
-gap:18px;
-
-width:
-calc(
-(230px * 3)
-+
-(18px * 2)
-);
-
-overflow:hidden;
-
-flex-wrap:nowrap;
-
-scroll-behavior:smooth;
-}
-
-.events-scroll .media-box{
-flex:0 0 230px;
-
-width:230px;
-
-height:180px;
-}
-
-.media-box{
-
-height:170px;
-
-min-width:220px;
-
-flex-shrink:0;
-
-border-radius:22px;
-
-overflow:hidden;
-
-background:
-rgba(255,255,255,.08);
-
-backdrop-filter:blur(18px);
-
-border:
-1px solid rgba(255,255,255,.08);
-
-cursor:pointer;
-
-transition:.3s;
-
-}
-
-.media-box:hover{
-
-transform:
-translateY(-5px);
-
-}
-
-.media-box img,
-.media-box video{
-
-width:100%;
-
-height:100%;
-
-object-fit:cover;
-
-display:block;
-
-}
-
-.events-home{
-
-position:relative;
-
-display:flex;
-
-flex-direction:column;
-
-justify-content:space-between;
-
-align-items:flex-start;
-
-width:230px;
-
-height:180px;
-
-padding:24px;
-
-border-radius:28px;
-
-overflow:hidden;
-
-background:
-linear-gradient(
-90deg,
-rgba(6,14,30,.95),
-rgba(20,35,55,.82)
-);
-
-border:
-1px solid rgba(255,255,255,.08);
-
-backdrop-filter:blur(18px);
-
-transition:.35s;
-
-}
-
-/* subtle content preview effect */
-.events-home::before{
-
-content:"";
-
-position:absolute;
-
-right:-40px;
-
-top:0;
-
-width:180px;
-
-height:100%;
-
-background:
-
-linear-gradient(
-90deg,
-transparent,
-rgba(255,255,255,.08)
-);
-
-filter:blur(20px);
-
-opacity:.55;
-
-}
-
-/* dark overlay */
-.events-home::after{
-
-content:"";
-
-position:absolute;
-
-inset:0;
-
-background:
-
-linear-gradient(
-180deg,
-rgba(0,0,0,.02),
-rgba(0,0,0,.35)
-);
-
-}
-
-.events-home:hover{
-
-transform:
-translateY(-6px);
-
-box-shadow:
-0 20px 45px rgba(0,0,0,.28);
-
-}
-
-.hub-glow{
-
-display:none;
-
-}
-
-.hub-icon{
-
-font-size:42px;
-
-position:relative;
-
-z-index:2;
-
-margin-bottom:auto;
-
-}
-
-.hub-title{
-
-position:relative;
-
-z-index:2;
-
-font-size:30px;
-
-font-weight:800;
-
-line-height:1;
-
-color:white;
-
-margin-top:18px;
-
-}
-
-.hub-sub{
-
-position:relative;
-
-z-index:2;
-
-font-size:14px;
-
-color:
-
-rgba(255,255,255,.58);
-
-margin-top:8px;
-
-}
-
-.hub-sub::after{
-
-content:"→";
-
-font-size:42px;
-
-position:absolute;
-
-right:-145px;
-
-bottom:-8px;
-
-color:white;
-
-opacity:.9;
-
-}
-
-.events-home span{
-
-font-size:14px;
-
-margin-top:8px;
-
-opacity:.8;
-
-}
-
-.announce{
-
-position:fixed;
-
-left:50%;
-
-transform:translateX(-50%);
-
-bottom:15px;
-
-width:90%;
-
-height:42px;
-
-display:flex;
-
-align-items:center;
-
-overflow:hidden;
-
-border-radius:16px;
-
-padding:0 18px;
-
-background:
-
-rgba(255,255,255,.08);
-
-backdrop-filter:blur(18px);
-
-}
-
-.marquee{
-
-white-space:nowrap;
-
-animation:
-scroll 30s linear infinite;
-
-}
-
-@keyframes scroll{
-
-from{
-
-transform:translateX(100%);
-
-}
-
-to{
-
-transform:translateX(-100%);
-
-}
-
-}
-
-@media(max-width:900px){
-
-.events-rail{
-
-position:relative;
-
-bottom:auto;
-
-margin-top:40px;
-
-}
-
-}
-
-.team-feed{
-
-position:fixed;
-
-right:20px;
-
-bottom:62px;
-
-width:290px;
-height:285px;
-
-padding:10px;
-
-border-radius:22px;
-
-display:flex;
-
-flex-direction:column;
-
-background:
-
-linear-gradient(
-180deg,
-rgba(255,255,255,.10),
-rgba(255,255,255,.05)
-);
-
-backdrop-filter:blur(40px);
-
-border:
-
-1px solid rgba(255,255,255,.08);
-
-box-shadow:
-
-0 25px 70px rgba(0,0,0,.22);
-
-z-index:90;
-
-overflow:hidden;
-
-isolation:isolate;
-
-}
-
-.chat-messages{
-
-flex:1;
-
-overflow-y:auto;
-
-padding:0;
-
-display:flex;
-
-flex-direction:column;
-
-gap:2px;
-
+#bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    object-position: center;
+    z-index: -10;
+    pointer-events: none;
+    opacity: 1;
+    background: #020617;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(2, 8, 23, 0.18), rgba(2, 8, 23, 0.42));
+    z-index: -5;
+    pointer-events: none;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: clamp(0.5rem, 1vh, 1rem);
+    padding: clamp(0.5rem, 1.5vw, 1rem) clamp(0.75rem, 2vw, 1.25rem) 0;
+    flex-wrap: wrap;
+    gap: clamp(0.5rem, 1vw, 1rem);
+    width: 100%;
+}
+
+.timezones {
+    display: flex;
+    gap: clamp(0.4rem, 0.8vw, 0.75rem);
+    flex-wrap: wrap;
+}
+
+.tz {
+    padding: clamp(0.4rem, 0.8vh, 0.65rem) clamp(0.6rem, 1vw, 1.1rem);
+    border-radius: 0.875rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px);
+    font-size: var(--text-clamp-small);
+    min-width: clamp(5.5rem, 10vw, 7.5rem);
+    text-align: center;
+}
+
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: minmax(13.75rem, 16.25rem) minmax(18.75rem, 1fr) minmax(17.5rem, 20rem);
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    align-items: start;
+    max-width: 100rem;
+    margin: 0 auto;
+    padding: 0 clamp(0.75rem, 2vw, 1.25rem);
+    width: 100%;
+}
+
+.left-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 1rem;
+}
+
+.center-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.clock {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1vw, 1.125rem);
+    z-index: 100;
+    margin-left: auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: var(--text-clamp-title);
+    margin: clamp(0.25rem, 1vh, 0.625rem) 0 clamp(0.75rem, 2vh, 1.75rem);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    color: #ffffff;
+    -webkit-text-fill-color: #ffffff;
+    position: relative;
+    text-shadow: 0 0 10px rgba(255,255,255,.35), 0 0 25px rgba(255,255,255,.28), 0 0 50px rgba(220,230,255,.18);
+    animation: logoGlow 6s ease-in-out infinite;
+}
+
+@keyframes logoGlow {
+    0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,255,255,.35), 0 0 25px rgba(255,255,255,.22); }
+    50% { transform: scale(1.015); text-shadow: 0 0 18px rgba(255,255,255,.55), 0 0 45px rgba(220,230,255,.32); }
+    100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,255,255,.35), 0 0 25px rgba(255,255,255,.22); }
+}
+
+.search {
+    width: min(47.5rem, 92%);
+    display: block;
+    margin: 0 auto clamp(0.75rem, 2vh, 1.5rem);
+    padding: clamp(0.6rem, 1.2vh, 1rem) clamp(1rem, 1.5vw, 1.625rem);
+    border: none;
+    border-radius: 1.125rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    color: white;
+    font-size: var(--text-clamp-body);
 }
-
-.chat-messages::-webkit-scrollbar{
 
-width:8px;
-
+.search::placeholder {
+    color: #bdbdbd;
 }
-
-.chat-messages::-webkit-scrollbar-thumb{
-
-background:
-
-rgba(255,255,255,.2);
 
-border-radius:20px;
-
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(clamp(8.5rem, 12vw, 10rem), 1fr));
+    gap: clamp(0.625rem, 1.2vw, 1rem);
+    justify-content: center;
+    width: 100%;
+    max-width: 60rem;
 }
-
-.msg{
-
-display:flex;
-
-align-items:flex-start;
-
-gap:10px;
-
-margin:0;
-
-padding:2px 0;
-
-min-height:auto;
 
+.main-btn {
+    width: 100%;
+    min-height: clamp(3.75rem, 6vh, 4.625rem);
+    height: auto;
+    border: none;
+    border-radius: 1.125rem;
+    cursor: pointer;
+    color: white;
+    font-size: var(--text-clamp-body);
+    font-weight: 600;
+    background: rgba(255,255,255,.07);
+    backdrop-filter: blur(30px);
+    transition: .25s;
+    letter-spacing: .015em;
+    padding: clamp(0.5rem, 1vh, 0.75rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
-.msg.mine .bubble{
-
-background:
-
-linear-gradient(
-135deg,
-rgba(91,92,246,.42),
-rgba(114,104,255,.28)
-);
-
+.main-btn:hover {
+    transform: translateY(-4px);
+    background: linear-gradient(135deg, rgba(91, 92, 246, .45), rgba(139, 92, 246, .45));
 }
-
-.msg.other .bubble{
 
-background:
-
-rgba(255,255,255,.08);
-
+a {
+    text-decoration: none;
 }
-
-.msg:hover{
-
-transform:none;
 
-background:none;
-
+#handoverHistoryBtn:hover {
+    color: #ffffff;
+    text-decoration: underline;
 }
-
-.author{
-
-flex:0 0 auto;
-
-width:110px;
-
-padding:0;
-
-margin:0;
-
-background:transparent !important;
-
-font-size:14px;
 
-font-weight:600;
-
-opacity:.55;
-
-white-space:nowrap;
-
-overflow:hidden;
-
-text-overflow:ellipsis;
-
+.pd-mini {
+    position: relative;
+    width: 100%;
+    z-index: 15;
 }
-
-.bubble{
-
-flex:1;
-
-padding:0;
 
-margin:0;
-
-background:transparent !important;
-
-border:none !important;
-
-box-shadow:none !important;
-
-font-size:15px;
-
-line-height:1.25;
-
-color:white;
-
-word-break:break-word;
-
-cursor:pointer;
-
+.pd-title {
+    font-size: var(--text-clamp-body);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
 }
-
-.bubble.expanded{
-
-max-height:500px;
-
-padding:14px 16px;
 
-overflow:auto;
-
-line-height:1.4;
-
-align-items:flex-start;
-
+.pd-grid {
+    display: flex;
+    gap: clamp(0.4rem, 0.8vw, 0.625rem);
+    justify-content: space-between;
+    width: 100%;
 }
-
-.chat-input{
 
-display:flex;
-
-gap:10px;
-
-margin-top:14px;
-
-height:52px;
-
+.pd-card {
+    flex: 1;
+    min-width: 0;
+    min-height: 8rem;
+    padding: clamp(0.4rem, 0.8vw, 0.625rem);
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
-
-.chat-compose{
-
-display:flex;
-
-gap:12px;
-
-height:48px;
 
-margin-top:8px;
-
+.pd-card:hover {
+    transform: translateY(-3px);
 }
-
-.chat-input input{
-
-flex:1;
-
-border:none;
-
-outline:none;
-
-border-radius:18px;
-
-padding:0 20px;
-
-background:
 
-rgba(255,255,255,.06);
-
-color:white;
-
-font-size:16px;
-
+.pd-label {
+    font-size: var(--text-clamp-body);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
 }
-
-.chat-input button{
-
-width:90px;
-
-border:none;
-
-border-radius:16px;
-
-cursor:pointer;
 
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--text-clamp-small);
+    margin: 0.375rem 0;
 }
 
-.feed-title{
-
-text-align:center;
-
-font-size:34px;
-
-margin-bottom:18px;
-
+.value {
+    font-weight: bold;
+    font-size: var(--text-clamp-body);
 }
-
-.feed-body{
-
-flex:1;
-
-overflow-y:auto;
-
-display:flex;
 
-flex-direction:column;
+.p1 { background: rgba(239,68,68,.18); }
+.p2 { background: rgba(249,115,22,.18); }
+.p3 { background: rgba(234,179,8,.18); }
 
-gap:10px;
-
-padding-right:4px;
-
+.alert {
+    animation: danger .8s infinite;
+    box-shadow: 0 0 50px rgba(255,0,0,.9);
 }
-
-.feed-body div{
-
-padding:0;
 
-border-radius:0;
-
-background:none;
-
+@keyframes danger {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: .45; transform: scale(1.05); }
+    100% { opacity: 1; transform: scale(1); }
 }
-
-.feed-input{
-
-flex:1;
-
-border:none;
-
-outline:none;
-
-border-radius:18px;
-
-background:
-
-rgba(255,255,255,.08);
-
-color:white;
-
-font-size:14px;
-
-padding:0 16px;
 
+.events-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1rem, 2vw, 1.875rem);
+    align-items: start;
+    max-width: 100rem;
+    padding: clamp(1rem, 3vh, 2.5rem) clamp(0.75rem, 2vw, 1.25rem) 0;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    width: 100%;
 }
 
-.footer{
-
-position:fixed;
-
-bottom:15px;
-
-left:0;
-
-width:100%;
-
-text-align:center;
-
-opacity:.55;
-
-font-size:18px;
-
-pointer-events:none;
-
+.events-section {
+    flex: 1 1 min(100%, 31.25rem);
+    width: 100%;
+    margin-top: 1.25rem;
+    overflow: hidden;
 }
-
-@media(max-width:900px){
-
-h1{
-
-font-size:46px;
 
+.events-title {
+    font-size: var(--text-clamp-subtitle);
+    font-weight: 800;
+    margin-bottom: 1.125rem;
 }
 
-.timezones{
-
-justify-content:center;
-
+.events-grid {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(0.75rem, 1.5vw, 1.125rem);
+    overflow: hidden;
+    flex-wrap: wrap;
 }
-
-.footer{
-
-font-size:14px;
 
-bottom:12px;
-
+.events-home {
+    flex: 0 0 clamp(11.25rem, 15vw, 14.375rem);
+    width: clamp(11.25rem, 15vw, 14.375rem);
 }
 
+.events-scroll {
+    display: flex;
+    gap: clamp(0.75rem, 1.5vw, 1.125rem);
+    flex: 1 1 min(100%, 18.75rem);
+    max-width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scroll-behavior: smooth;
+    padding-bottom: 0.625rem;
 }
-
-.login-box{
-
-display:flex;
-
-flex-direction:column;
 
-gap:18px;
-
-width:420px;
-
+.events-scroll::-webkit-scrollbar {
+    height: 6px;
 }
-
-.login-box input{
-
-height:62px;
-
-padding:18px;
-
-border:none;
-
-border-radius:18px;
-
-background:
-
-rgba(
-255,
-255,
-255,
-0.08
-);
-
-backdrop-filter:
-blur(18px);
-
-color:white;
-
-font-size:18px;
 
+.events-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.2);
+    border-radius: 10px;
 }
 
-.login-box button{
-
-height:64px;
-
-border:none;
-
-border-radius:18px;
-
-font-size:22px;
-
-font-weight:bold;
-
-cursor:pointer;
-
-color:white;
-
-background:
-
-linear-gradient(
-135deg,
-#5b5cf6,
-#8b5cf6
-);
-
+.events-scroll .media-box {
+    flex: 0 0 clamp(11.25rem, 15vw, 14.375rem);
+    width: clamp(11.25rem, 15vw, 14.375rem);
+    height: clamp(8.75rem, 12vh, 11.25rem);
 }
-#lastHandover{
 
-    transition:.25s ease;
-
+.media-box {
+    height: clamp(8.75rem, 12vh, 10.625rem);
+    min-width: clamp(11.25rem, 15vw, 13.75rem);
+    flex-shrink: 0;
+    border-radius: 1.375rem;
+    overflow: hidden;
+    background: rgba(255,255,255,.08);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,.08);
+    cursor: pointer;
+    transition: .3s;
 }
-
-#lastHandover:hover{
 
-    transform:translateY(-2px);
-
-    border-color:rgba(126,200,255,.35);
-
-    box-shadow:0 8px 25px rgba(0,0,0,.25);
-
+.media-box:hover {
+    transform: translateY(-5px);
 }
-
-#error{
 
-color:#ff6b6b;
-
-font-size:18px;
-
-text-align:center;
-
-margin-top:10px;
-
+.media-box img, .media-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.events-home {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: clamp(11.25rem, 15vw, 14.375rem);
+    height: clamp(8.75rem, 12vh, 11.25rem);
+    padding: clamp(1rem, 1.5vw, 1.5rem);
+    border-radius: 1.75rem;
+    overflow: hidden;
+    background: linear-gradient(90deg, rgba(6,14,30,.95), rgba(20,35,55,.82));
+    border: 1px solid rgba(255,255,255,.08);
+    backdrop-filter: blur(18px);
+    transition: .35s;
 }
-
-.send-btn{
-
-width:52px;
-
-border-radius:14px;
-
-border:none;
 
-cursor:pointer;
-
-font-size:22px;
-
-background:
-
-linear-gradient(
-135deg,
-#5b5cf6,
-#7268ff
-);
-
-color:white;
-
-transition:.25s;
-
+.events-home::before {
+    content: "";
+    position: absolute;
+    right: -2.5rem;
+    top: 0;
+    width: 11.25rem;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.08));
+    filter: blur(20px);
+    opacity: .55;
+}
+
+.events-home::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,.02), rgba(0,0,0,.35));
+}
+
+.events-home:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 45px rgba(0,0,0,.28);
+}
+
+.hub-icon {
+    font-size: clamp(1.75rem, 3vw, 2.625rem);
+    position: relative;
+    z-index: 2;
+    margin-bottom: auto;
+}
+
+.hub-title {
+    position: relative;
+    z-index: 2;
+    font-size: clamp(1.125rem, 1.8vw, 1.875rem);
+    font-weight: 800;
+    line-height: 1;
+    color: white;
+    margin-top: 0.875rem;
+}
+
+.hub-sub {
+    position: relative;
+    z-index: 2;
+    font-size: var(--text-clamp-small);
+    color: rgba(255,255,255,.58);
+    margin-top: 0.5rem;
 }
-
-.send-btn:hover{
-
-transform:scale(1.05);
-
+
+.hub-sub::after {
+    content: "→";
+    font-size: clamp(1.5rem, 2.5vw, 2.625rem);
+    position: absolute;
+    right: -2rem;
+    bottom: -0.5rem;
+    color: white;
+    opacity: .9;
+}
+
+.events-home span {
+    font-size: var(--text-clamp-small);
+    margin-top: 0.5rem;
+    opacity: .8;
 }
-
-.request-btn{
-
-margin-top:10px;
-
-height:52px;
-
-border:none;
-
-border-radius:16px;
-
-cursor:pointer;
-
-font-size:16px;
-
-color:white;
-
-background:
-
-rgba(
-255,
-255,
-255,
-0.08
-);
-
-backdrop-filter:
-blur(12px);
-
-transition:.3s;
-
+
+/* RESPONSIVE SCROLLING ANNOUNCEMENT BAR */
+.announce {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: clamp(2.25rem, 4vh, 3.25rem);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 0 1rem;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    z-index: 9990;
+}
+
+.marquee {
+    white-space: nowrap;
+    display: inline-block;
+    font-size: var(--text-clamp-small);
+    font-weight: 600;
+    color: #e2e8f0;
+    letter-spacing: 0.02em;
+    animation: scroll 30s linear infinite;
 }
-
-.request-btn:hover{
-
-background:
-
-rgba(
-255,
-255,
-255,
-0.16
-);
 
+@keyframes scroll {
+    from { transform: translateX(100vw); }
+    to { transform: translateX(-100%); }
+}
+
+.team-feed {
+    flex: 0 1 min(100%, 20rem);
+    width: 100%;
+    height: clamp(16rem, 30vh, 20rem);
+    padding: 0.875rem;
+    border-radius: 1.375rem;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 25px 70px rgba(0,0,0,.22);
+    z-index: 90;
+    overflow: hidden;
+    isolation: isolate;
+    margin-top: 1.25rem;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.2);
+    border-radius: 20px;
+}
+
+.msg {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    margin: 0;
+    padding: 2px 0;
+}
+
+.msg.mine .bubble {
+    background: linear-gradient(135deg, rgba(91,92,246,.42), rgba(114,104,255,.28));
+}
+
+.msg.other .bubble {
+    background: rgba(255,255,255,.08);
+}
+
+.author {
+    flex: 0 0 auto;
+    width: clamp(5rem, 8vw, 6.875rem);
+    font-size: var(--text-clamp-small);
+    font-weight: 600;
+    opacity: .55;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bubble {
+    flex: 1;
+    font-size: var(--text-clamp-small);
+    line-height: 1.25;
+    color: white;
+    word-break: break-word;
+    cursor: pointer;
+}
+
+.bubble.expanded {
+    max-height: 31.25rem;
+    padding: 0.875rem 1rem;
+    overflow: auto;
+    line-height: 1.4;
+}
+
+.chat-compose {
+    display: flex;
+    gap: 0.75rem;
+    height: clamp(2.5rem, 4vh, 3rem);
+    margin-top: 0.5rem;
+}
+
+.feed-title {
+    text-align: center;
+    font-size: var(--text-clamp-subtitle);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.feed-body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.feed-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    border-radius: 1.125rem;
+    background: rgba(255,255,255,.08);
+    color: white;
+    font-size: var(--text-clamp-small);
+    padding: 0 1rem;
+}
+
+.login-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.125rem;
+    width: 100%;
+    max-width: 26.25rem;
+    padding: 0 1.25rem;
+}
+
+.login-box input {
+    height: clamp(3rem, 6vh, 3.875rem);
+    padding: 1.125rem;
+    border: none;
+    border-radius: 1.125rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px);
+    color: white;
+    font-size: var(--text-clamp-body);
+}
+
+.login-box button {
+    height: clamp(3.2rem, 6vh, 4rem);
+    border: none;
+    border-radius: 1.125rem;
+    font-size: var(--text-clamp-body);
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    background: linear-gradient(135deg, #5b5cf6, #8b5cf6);
+}
+
+#shiftCard, .ticket-logger-card {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.ticket-logger-card {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(30px);
+    border-radius: 1.125rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.ticket-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.625rem;
+    font-size: var(--text-clamp-small);
+    font-weight: 600;
+    margin-top: 0.35rem;
+    width: 100%;
+}
+
+.ticket-tag.pd { background: rgba(234, 179, 8, 0.2); color: #fef08a; border: 1px solid rgba(234, 179, 8, 0.3); }
+.ticket-tag.inc { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+.ticket-delete-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0 0.25rem;
+    margin-left: 0.5rem;
+    transition: color 0.2s;
+}
+
+.ticket-delete-btn:hover {
+    color: #ef4444;
+}
+
+#lastHandover {
+    transition: .25s ease;
+}
+
+#lastHandover:hover {
+    transform: translateY(-2px);
+    border-color: rgba(126,200,255,.35);
+    box-shadow: 0 8px 25px rgba(0,0,0,.25);
+}
+
+#error {
+    color: #ff6b6b;
+    font-size: var(--text-clamp-body);
+    text-align: center;
+    margin-top: 0.625rem;
+}
+
+.send-btn {
+    width: clamp(2.75rem, 4vw, 3.25rem);
+    border-radius: 0.875rem;
+    border: none;
+    cursor: pointer;
+    font-size: var(--text-clamp-body);
+    background: linear-gradient(135deg, #5b5cf6, #7268ff);
+    color: white;
+    transition: .25s;
+}
+
+.send-btn:hover {
+    transform: scale(1.05);
+}
+
+.request-btn {
+    margin-top: 0.625rem;
+    height: clamp(2.75rem, 5vh, 3.25rem);
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-size: var(--text-clamp-small);
+    color: white;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    transition: .3s;
+}
+
+.request-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+#shiftModal > div,
+#endShiftModal > div,
+#teamModal > div,
+#incidentModal > div,
+#handoverModal > div,
+#handoverHistoryModal > div,
+#ticketAnalyticsModal > div {
+    max-height: 88vh;
+    overflow-y: auto;
+    font-size: var(--text-clamp-small);
+}
+
+.modal-tab-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.625rem;
+    background: rgba(255,255,255,0.08);
+    color: #ccc;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal-tab-btn.active {
+    background: #5b5cf6;
+    color: white;
+}
+
+@media(max-width: 1100px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .left-column {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .pd-mini {
+        max-width: 100%;
+    }
+
+    .center-column {
+        grid-column: 1 / -1;
+        order: 2;
+    }
+
+    .right-column {
+        grid-column: 1 / -1;
+        order: 3;
+    }
+}
+
+@media(max-width: 768px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .top {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .clock {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .events-layout {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .events-section {
+        margin-top: 0;
+    }
+
+    .team-feed {
+        max-width: 100%;
+        flex: 1 1 100%;
+    }
+
+    .events-scroll {
+        width: 100%;
+    }
+
+    .container {
+        grid-template-columns: repeat(auto-fit, minmax(clamp(7.5rem, 25vw, 9.5rem), 1fr));
+    }
 }
 
 </style>
@@ -1445,121 +837,33 @@ rgba(
 
 <body>
 
-<div
-id="login-screen"
+<div id="login-screen" style="position:fixed; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center; backdrop-filter:blur(25px); background:rgba(0, 0, 0, 0.25); z-index:99999;">
 
-style="
-
-position:fixed;
-
-inset:0;
-
-display:flex;
-
-flex-direction:column;
-
-justify-content:center;
-
-align-items:center;
-
-backdrop-filter:blur(25px);
-
-background:
-rgba(
-0,
-0,
-0,
-0.25
-);
-
-z-index:99999;
-
-"
-
->
-
-<div
-
-style="
-
-font-size:72px;
-
-font-weight:bold;
-
-margin-bottom:20px;
-
-"
-
->
-
+<div style="font-size: var(--text-clamp-title); font-weight:bold; margin-bottom:1.25rem;">
 NAVEX
-
 </div>
 
-<div
-
-style="
-
-font-size:22px;
-
-opacity:.8;
-
-margin-bottom:50px;
-
-"
-
->
-
+<div style="font-size: var(--text-clamp-body); opacity:.8; margin-bottom:2.5rem;">
 Sign in to continue
-
 </div>
 
 <div class="login-box">
 
-<input
-id="email"
-type="email"
-placeholder="WBD Email">
+<input id="email" type="email" placeholder="WBD Email">
+<input id="password" type="password" placeholder="Password">
 
-<input
-id="password"
-type="password"
-placeholder="Password">
-
-<button onclick="login()">
-Enter NAVEX
-</button>
+<button onclick="login()">Enter NAVEX</button>
 
 <div id="error"></div>
 
-<button
-class="request-btn"
-onclick="requestAccess()">
-
-Request Access
-
-</button>
+<button class="request-btn" onclick="requestAccess()">Request Access</button>
 
 </div>
 
 </div>
 
-
-<video
-id="bg-video"
-autoplay
-muted
-loop
-playsinline
-webkit-playsinline
-disablepictureinpicture
-disableremoteplayback
-preload="auto">
-
-<source
-src="13232-246463976_tiny.mp4"
-type="video/mp4">
-
+<video id="bg-video" autoplay muted loop playsinline webkit-playsinline disablepictureinpicture disableremoteplayback preload="auto">
+<source src="RG.mp4" type="video/mp4">
 </video>
 
 <div id="dashboardWrapper"></div>
@@ -1567,902 +871,737 @@ type="video/mp4">
 <div class="top">
 
 <div class="timezones">
-
 <div class="tz">🇮🇳 IST<br><span id="ist"></span></div>
-
 <div class="tz">🌍 UTC<br><span id="utc"></span></div>
-
 <div class="tz">🇬🇧 BST<br><span id="bst"></span></div>
-
 <div class="tz">🇺🇸 PST<br><span id="pst"></span></div>
-
-</div>
-
-        <div class="pd-mini">
-
-<div class="pd-title">
-PagerDuty Stats
-</div>
-
-<div class="pd-grid">
-
-<div
-class="pd-card p1"
-id="p1Card"
-style="cursor:pointer;">
-
-<div class="pd-label">P1</div>
-
-<div class="stat-row">
-<span>Open</span>
-<span class="value" id="p1o">0</span>
-</div>
-
-<div class="stat-row">
-<span>Trig</span>
-<span class="value" id="p1t">0</span>
-</div>
-
-<div class="stat-row">
-<span>Ack</span>
-<span class="value" id="p1a">0</span>
-</div>
-
-<div
-id="p1Incidents"
-style="
-margin-top:8px;
-font-size:11px;
-line-height:1.4;
-">
-</div>
-
-</div>
-
-
-<div
-class="pd-card p2"
-id="p2Card"
-style="cursor:pointer;">
-
-<div class="pd-label">P2</div>
-
-<div class="stat-row">
-<span>Open</span>
-<span class="value" id="p2o">0</span>
-</div>
-
-<div class="stat-row">
-<span>Trig</span>
-<span class="value" id="p2t">0</span>
-</div>
-
-<div class="stat-row">
-<span>Ack</span>
-<span class="value" id="p2a">0</span>
-</div>
-
-<div
-id="p2Incidents"
-style="
-margin-top:8px;
-font-size:11px;
-line-height:1.4;
-">
-</div>
-
-</div>
-
-
-<div
-class="pd-card p3"
-id="p3Card"
-style="cursor:pointer;">
-
-<div class="pd-label">P3</div>
-
-<div class="stat-row">
-<span>Open</span>
-<span class="value" id="p3o">0</span>
-</div>
-
-<div class="stat-row">
-<span>Trig</span>
-<span class="value" id="p3t">0</span>
-</div>
-
-<div class="stat-row">
-<span>Ack</span>
-<span class="value" id="p3a">0</span>
-</div>
-
-</div>
-</div>
 </div>
 
 <div class="clock">
-
-<div
-id="greeting"
-style="
-font-size:22px;
-font-weight:700;
-color:#fff;
-text-shadow:0 0 10px rgba(0,0,0,.5);
-white-space:nowrap;
-">
-</div>
-
-<button
-onclick="logout()"
-style="
-padding:8px 14px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-">
-Logout
-</button>
-
+<div id="greeting" style="font-size: var(--text-clamp-body); font-weight:700; color:#fff; text-shadow:0 0 10px rgba(0,0,0,.5); white-space:nowrap;"></div>
+<button onclick="logout()" style="padding:0.5rem 0.875rem; border:none; border-radius:0.625rem; cursor:pointer; font-size: var(--text-clamp-small);">Logout</button>
 </div>
 
 </div>
 
+<h1>NAVEX</h1>
 
-<h1>
-NAVEX
-</h1>
-
-
-<input
-class="search"
-placeholder="Search Tools, Grafana, PagerDuty..."
-onkeyup="filterButtons()"
-id="search">
+<input class="search" placeholder="Search Tools, Grafana, PagerDuty..." onkeyup="filterButtons()" id="search">
 
 <div class="dashboard-layout">
 
     <!-- LEFT COLUMN -->
     <div class="left-column">
+        <div class="pd-mini">
+            <div class="pd-title">PagerDuty Stats</div>
+            <div class="pd-grid">
+                <div class="pd-card p1" id="p1Card" style="cursor:pointer;">
+                    <div class="pd-label">P1</div>
+                    <div class="stat-row"><span>Open</span><span class="value" id="p1o">0</span></div>
+                    <div class="stat-row"><span>Trig</span><span class="value" id="p1t">0</span></div>
+                    <div class="stat-row"><span>Ack</span><span class="value" id="p1a">0</span></div>
+                    <div id="p1Incidents" style="margin-top:0.5rem; font-size: var(--text-clamp-small); line-height:1.4;"></div>
+                </div>
 
+                <div class="pd-card p2" id="p2Card" style="cursor:pointer;">
+                    <div class="pd-label">P2</div>
+                    <div class="stat-row"><span>Open</span><span class="value" id="p2o">0</span></div>
+                    <div class="stat-row"><span>Trig</span><span class="value" id="p2t">0</span></div>
+                    <div class="stat-row"><span>Ack</span><span class="value" id="p2a">0</span></div>
+                    <div id="p2Incidents" style="margin-top:0.5rem; font-size: var(--text-clamp-small); line-height:1.4;"></div>
+                </div>
+
+                <div class="pd-card p3" id="p3Card" style="cursor:pointer;">
+                    <div class="pd-label">P3</div>
+                    <div class="stat-row"><span>Open</span><span class="value" id="p3o">0</span></div>
+                    <div class="stat-row"><span>Trig</span><span class="value" id="p3t">0</span></div>
+                    <div class="stat-row"><span>Ack</span><span class="value" id="p3a">0</span></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- CENTER COLUMN -->
     <div class="center-column">
-
-            <div class="container">
-
-<a data-search="tools grafana kibana mux tundra studio disco datadog foundry taiga" href="tools.html"><button class="main-btn">Tools</button></a>
-
-<a data-search="pager duty incidents" href="https://discoveryinc.pagerduty.com/incidents" target="_blank"><button class="main-btn">PagerDuty</button></a>
-
-<a data-search="mail outlook sro" href="https://outlook.cloud.microsoft/mail/sro.uk@wbd.com/" target="_blank"><button class="main-btn">SRO Mailbox</button></a>
-
-<a data-search="hbo max" href="https://play.hbomax.com/" target="_blank"><button class="main-btn">HBO Max</button></a>
-
-<a data-search="service now snow" href="https://wbd.service-now.com/now/nav/ui/classic/params/target/%24dashboards.do%3Fsysparm_dashboard%3D5239f78f93c63d5006e47b4e1dba1003" target="_blank"><button class="main-btn">Service Now</button></a>
-
-<a data-search="sharepoint docs" href="https://warnermedia.sharepoint.com/sites/GTOC/Shared%20Documents/Forms/AllItems.aspx?viewid=ed5b1887%2D2cd5%2D446f%2D87f3%2D462b549b9414&csf=1&CID=d1d785df%2D7a12%2D4cef%2Db109%2D9fe5d875c2dc&FolderCTID=0x012000796045061964044D985D3BF153E93EB6" target="_blank"><button class="main-btn">SharePoint</button></a>
-
-<a data-search="confluence wiki" href="https://wbdstreaming.atlassian.net/wiki/spaces/SREC/pages/2970779820/SRO+UK+-+Home+Page" target="_blank"><button class="main-btn">Confluence</button></a>
-
-<a data-search="sling shifts" href="https://app.getsling.com/shifts" target="_blank"><button class="main-btn">Sling</button></a>
-
-<a data-search="events live checks" href="https://warnermedia.sharepoint.com/:x:/r/sites/GTOC/_layouts/15/Doc.aspx?sourcedoc=%7BE9E9EACE-C693-451E-9C0F-BB855F669C09%7D&file=SRO%20UK%20Digital%20Events%20Pre%20%2B%20During%20Checklist.xlsx&action=default&mobileredirect=true&wdOrigin=TEAMS-MAGLEV.p2p_ns.rwc&wdExp=TEAMS-TREATMENT&wdhostclicktime=1772693207786&web=1" target="_blank"><button class="main-btn">Live Event Checks</button></a>
-
-
-    </div>
+        <div class="container">
+            <a data-search="tools grafana kibana mux tundra studio disco datadog foundry taiga" href="tools.html"><button class="main-btn">Tools</button></a>
+            <a data-search="pager duty incidents" href="https://discoveryinc.pagerduty.com/incidents" target="_blank"><button class="main-btn">PagerDuty</button></a>
+            <a data-search="mail outlook sro" href="https://outlook.cloud.microsoft/mail/sro.uk@wbd.com/" target="_blank"><button class="main-btn">SRO Mailbox</button></a>
+            <a data-search="hbo max" href="https://play.hbomax.com/" target="_blank"><button class="main-btn">HBO Max</button></a>
+            <a data-search="service now snow" href="https://wbd.service-now.com/now/nav/ui/classic/params/target/%24dashboards.do%3Fsysparm_dashboard%3D5239f78f93c63d5006e47b4e1dba1003" target="_blank"><button class="main-btn">Service Now</button></a>
+            <a data-search="sharepoint docs" href="https://warnermedia.sharepoint.com/sites/GTOC/Shared%20Documents/Forms/AllItems.aspx?viewid=ed5b1887%2D2cd5%2D446f%2D87f3%2D462b549b9414&csf=1&CID=d1d785df%2D7a12%2D4cef%2Db109%2D9fe5d875c2dc&FolderCTID=0x012000796045061964044D985D3BF153E93EB6" target="_blank"><button class="main-btn">SharePoint</button></a>
+            <a data-search="confluence wiki" href="https://wbdstreaming.atlassian.net/wiki/spaces/SREC/pages/2970779820/SRO+UK+-+Home+Page" target="_blank"><button class="main-btn">Confluence</button></a>
+            <a data-search="sling shifts" href="https://app.getsling.com/shifts" target="_blank"><button class="main-btn">Sling</button></a>
+            <a data-search="events live checks" href="https://warnermedia.sharepoint.com/:x:/r/sites/GTOC/_layouts/15/Doc.aspx?sourcedoc=%7BE9E9EACE-C693-451E-9C0F-BB855F669C09%7D&file=SRO%20UK%20Digital%20Events%20Pre%20%2B%20During%20Checklist.xlsx&action=default&mobileredirect=true&wdOrigin=TEAMS-MAGLEV.p2p_ns.rwc&wdExp=TEAMS-TREATMENT&wdhostclicktime=1772693207786&web=1" target="_blank"><button class="main-btn">Live Event Checks</button></a>
+        </div>
     </div>
 
     <!-- RIGHT COLUMN -->
     <div class="right-column">
+        <div id="shiftCard" class="main-btn" style="width:100%; height:auto; padding:1.25rem; display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start; cursor:default; margin:0 auto;">
+            <div style="font-size: var(--text-clamp-body); font-weight:700; align-items:center;">Shift Status</div>
 
-        <div
-id="shiftCard"
-class="main-btn"
-style="
-width:100%;
-max-width:295px;
+            <div style="margin-top:0.75rem; display:flex; justify-content:space-between; align-items:center; font-size: var(--text-clamp-small); font-weight:600; width:100%;">
+                <div>🟢 <span id="loginPercent">0</span> / 26 Logged In</div>
+                <div>⏱ <span id="lastLogin">--</span></div>
+            </div>
 
-height:auto;
+            <div style="margin-top:0.625rem; display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <div style="margin-top:0.875rem; font-size: var(--text-clamp-small); font-weight:700;">Latest Handover</div>
+                <div id="handoverHistoryBtn" style="margin-top:0.875rem; margin-left:0.75rem; font-size: var(--text-clamp-small); font-weight:600; color:#79b8ff; cursor:pointer; user-select:none; transition:.2s;">🕘 History</div>
+            </div>
 
-padding:20px;
-position:absolute;
+            <div id="lastHandover" style="margin-top:0.625rem; width:100%; padding:0.875rem; border-radius:1rem; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); font-size: var(--text-clamp-small); line-height:1.5;">
+                No handover yet.
+            </div>
 
-top:55px;
+            <button id="shiftBtn" onclick="openShiftModal()" style="margin-top:0.5rem; width:100%; height:2.875rem; border:none; border-radius:0.875rem; cursor:pointer; font-size: var(--text-clamp-body); font-weight:600; background:#22c55e; color:white;">
+                Shift Login
+            </button>
 
-right:20px;
+            <button onclick="showShiftTeam()" style="margin-top:0.625rem; width:100%; height:3.125rem; position:relative; z-index:10; pointer-events:auto; border:none; border-radius:0.875rem; cursor:pointer; font-size: var(--text-clamp-small); background:rgba(255,255,255,.08); color:white;">
+                👥 View Team
+            </button>
+        </div>
 
-display:flex;
-flex-direction:column;
-justify-content:flex-start;
-align-items:flex-start;
+        <!-- ================= MY TICKETS  ================= -->
+        <div class="ticket-logger-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-size: var(--text-clamp-body); font-weight:700;">My Tickets </div>
+                <div id="ticketAnalyticsBtn" onclick="openTicketAnalyticsModal()" style="font-size: var(--text-clamp-small); color:#79b8ff; cursor:pointer; font-weight:600;">📊 Analytics</div>
+            </div>
 
-cursor:default;
+            <div style="display:flex; gap:0.5rem; margin-top:0.25rem;">
+                <input id="quickTicketInput" type="text" placeholder="Enter PD or INC Number (e.g. PD3486052)" style="flex:1; padding:0.6rem 0.8rem; border-radius:0.75rem; border:none; outline:none; background:rgba(255,255,255,0.08); color:white; font-size:var(--text-clamp-small);">
+                <button onclick="handleAddWorkedTicket()" style="padding:0.6rem 0.9rem; border:none; border-radius:0.75rem; background:linear-gradient(135deg, #5b5cf6, #8b5cf6); color:white; font-weight:bold; font-size:var(--text-clamp-small);">Add</button>
+            </div>
+            <div id="ticketInputError" style="font-size: var(--text-clamp-small); color:#fca5a5; display:none; margin-top:-0.25rem;"></div>
 
-margin:0 auto;
-">
-
-<div
-style="
-font-size:24px;
-font-weight:700;
-align-items:center;
-">
-
-Shift Status
-
-</div>
-
-<div
-style="
-margin-top:12px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-font-size:16px;
-font-weight:600;
-width:100%;
-">
-
-    <div>
-        🟢
-        <span id="loginPercent">0</span>
-        / 26 Logged In
+            <div style="margin-top:0.35rem;">
+                <div style="font-size:var(--text-clamp-small); opacity:0.6; font-weight:600;">Today's Tickets</div>
+                <div id="myTicketsList" style="display:flex; flex-direction:column; gap:0.25rem; margin-top:0.35rem; max-height:10rem; overflow-y:auto;">
+                    <div style="font-size:var(--text-clamp-small); opacity:0.5; font-style:italic;">No tickets logged today yet.</div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div>
-        ⏱
-        <span id="lastLogin">--</span>
-    </div>
-
-</div>
-<div
-style="
-margin-top:10px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-">
-
-<div
-style="
-margin-top:14px;
-font-size:15px;
-font-weight:700;
-">
-Latest Handover
-</div>
-
-<div
-
-id="handoverHistoryBtn"
-
-style="
-margin-top:14px;
-margin-left:12px;
-font-size:13px;
-font-weight:600;
-color:#79b8ff;
-cursor:pointer;
-user-select:none;
-transition:.2s;
-">
-
-🕘 History
-
-</div>
-
-</div>
-<div
-id="lastHandover"
-
-style="
-margin-top:10px;
-width:100%;
-padding:14px;
-border-radius:16px;
-background:rgba(255,255,255,.05);
-border:1px solid rgba(255,255,255,.08);
-font-size:15px;
-line-height:1.5;
-">
-
-No handover yet.
-
-</div>
-
-<button
-
-id="shiftBtn"
-
-onclick="openShiftModal()"
-
-style="
-
-margin-top:8px;
-width:100%;
-height:46px;
-border:none;
-border-radius:14px;
-cursor:pointer;
-font-size:18px;
-font-weight:600;
-background:#22c55e;
-color:white;
-
-">
-
-Shift Login
-
-</button>
-
-<button
-
-onclick="showShiftTeam()"
-
-style="
-
-margin-top:10px;
-width:100%;
-height:50px;
-position:relative;
-z-index:9999;
-pointer-events:auto;
-border:none;
-border-radius:14px;
-cursor:pointer;
-font-size:16px;
-background:rgba(255,255,255,.08);
-color:white;
-
-">
-
-👥 View Team
-
-</button>
-
-</div>
-
-</div>
 
 </div>
 
 <div class="events-layout">
+    <div class="events-section">
+        <div class="events-title">Upcoming Major Events</div>
+        <div class="events-grid">
+            <a href="events.html">
+                <div class="media-box events-home">
+                    <div class="hub-icon">🗓️</div>
+                    <div>
+                        <div class="hub-title">Go to Full<br>Schedule</div>
+                        <div class="hub-sub">Open Event Grid</div>
+                    </div>
+                </div>
+            </a>
+            <div class="events-scroll">
+                <div class="media-box" data-src="events/event1"></div>
+                <div class="media-box" data-src="events/event2"></div>
+                <div class="media-box" data-src="events/event3"></div>
+                <div class="media-box" data-src="events/event4"></div>
+                <div class="media-box" data-src="events/event5"></div>
+                <div class="media-box" data-src="events/event6"></div>
+            </div>
+        </div>
+    </div>
 
-<div class="events-section">
-
-<div class="events-title">
-
-Upcoming Major Events
-
+    <div class="team-feed">
+        <div class="feed-title">CONNECT</div>
+        <div class="feed-body chat-messages" id="chatBox"></div>
+        <div class="chat-compose">
+            <input id="chatInput" class="feed-input" placeholder="Send message...">
+            <button class="send-btn" onclick="sendChat()">➜</button>
+        </div>
+    </div>
 </div>
-
-<div class="events-grid">
-
-<a href="events.html">
-
-<div class="media-box events-home">
-
-<div class="hub-icon">
-🗓️
-</div>
-
-<div>
-
-<div class="hub-title">
-Go to Full<br>
-Schedule
-</div>
-
-<div class="hub-sub">
-Open Event Grid
-</div>
-
-</div>
-
-</div>
-
-</a>
-
-<div class="events-scroll">
-
-<div class="media-box" data-src="events/event1"></div>
-
-<div class="media-box" data-src="events/event2"></div>
-
-<div class="media-box" data-src="events/event3"></div>
-
-<div class="media-box" data-src="events/event4"></div>
-
-<div class="media-box" data-src="events/event5"></div>
-
-<div class="media-box" data-src="events/event6"></div>
-
-</div>
-</div>
-</div>
-
-
-
-<div class="team-feed">
-
-<div class="feed-title">
-
-CONNECT
-
-</div>
-
-<div
-class="feed-body chat-messages"
-id="chatBox">
-</div>
-
-<div class="chat-compose">
-
-<input
-id="chatInput"
-class="feed-input"
-placeholder="Send message...">
-
-<button
-class="send-btn"
-onclick="sendChat()">
-
-➜
-
-</button>
-
-</div>
-
-</div> <!-- team-feed -->
-</div> <!-- events-layout -->
 
 <!-- ================= SHIFT MODAL ================= -->
+<div id="shiftModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(12px); justify-content:center; align-items:center; z-index:9999;">
+    <div style="width:32.5rem; max-width:92%; background:rgba(15,23,42,.95); border-radius:1.5rem; padding:1.75rem; border:1px solid rgba(255,255,255,.08);">
+        <h2 style="margin-top:0">Logging into Shift</h2>
+        <p style="opacity:.75">Complete all startup checks.</p>
 
-<div id="shiftModal"
+        <div style="margin-top:1.25rem">
+            <label><input class="shiftCheck" type="checkbox"> Slack messages read</label><br><br>
+            <label><input class="shiftCheck" type="checkbox"> Emails checked</label><br><br>
+            <label><input class="shiftCheck" type="checkbox"> Handover received</label><br><br>
+            <label><input class="shiftCheck" type="checkbox"> PagerDuty checked</label>
+        </div>
 
-style="
+        <div style="margin-top:1.5625rem; height:0.625rem; background:#222; border-radius:1.25rem; overflow:hidden;">
+            <div id="progressFill" style="height:100%; width:0%; background:#4CAF50; transition:.3s;"></div>
+        </div>
+        <div id="progressText" style="margin-top:0.5rem; text-align:right; font-size: var(--text-clamp-small); opacity:.8;">0%</div>
 
-display:none;
+        <textarea id="shiftNotes" placeholder="Optional Notes..." style="margin-top:1.125rem; width:100%; height:5rem; border:none; border-radius:0.875rem; padding:0.75rem; resize:none;"></textarea>
 
-position:fixed;
-
-inset:0;
-
-background:rgba(0,0,0,.65);
-
-backdrop-filter:blur(12px);
-
-justify-content:center;
-
-align-items:center;
-
-z-index:9999;
-
-">
-
-<div
-
-style="
-
-width:520px;
-
-max-width:92%;
-
-background:rgba(15,23,42,.95);
-
-border-radius:24px;
-
-padding:28px;
-
-border:1px solid rgba(255,255,255,.08);
-
-">
-
-<h2 style="margin-top:0">
-
-Logging into Shift
-
-</h2>
-
-<p style="opacity:.75">
-
-Complete all startup checks.
-
-</p>
-
-<div style="margin-top:20px">
-
-<label>
-
-<input class="shiftCheck" type="checkbox">
-
-Slack messages read
-
-</label>
-
-<br><br>
-
-<label>
-
-<input class="shiftCheck" type="checkbox">
-
-Emails checked
-
-</label>
-
-<br><br>
-
-<label>
-
-<input class="shiftCheck" type="checkbox">
-
-Handover received
-
-</label>
-
-<br><br>
-
-<label>
-
-<input class="shiftCheck" type="checkbox">
-
-PagerDuty checked
-
-</label>
-
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+            <button onclick="closeShiftModal()" style="padding:0.75rem 1.125rem; border:none; border-radius:0.75rem; cursor:pointer;">Cancel</button>
+            <button id="ackBtn" onclick="acknowledgeShift()" disabled style="padding:0.75rem 1.125rem; border:none; border-radius:0.75rem; background:#5b5cf6; color:white; cursor:pointer;">Acknowledge</button>
+        </div>
+    </div>
 </div>
 
-<div
-
-style="
-
-margin-top:25px;
-
-height:10px;
-
-background:#222;
-
-border-radius:20px;
-
-overflow:hidden;
-
-">
-
-<div
-
-id="progressFill"
-
-style="
-
-height:100%;
-
-width:0%;
-
-background:#4CAF50;
-
-transition:.3s;
-
-">
-
-</div>
-
-</div>
-
-<div
-
-id="progressText"
-
-style="
-
-margin-top:8px;
-
-text-align:right;
-
-font-size:13px;
-
-opacity:.8;
-
-">
-
-0%
-
-</div>
-
-<textarea
-
-id="shiftNotes"
-
-placeholder="Optional Notes..."
-
-style="
-
-margin-top:18px;
-
-width:100%;
-
-height:80px;
-
-border:none;
-
-border-radius:14px;
-
-padding:12px;
-
-resize:none;
-
-">
-
-</textarea>
-
-<div
-
-style="
-
-display:flex;
-
-justify-content:flex-end;
-
-gap:12px;
-
-margin-top:20px;
-
-">
-
-<button
-
-onclick="closeShiftModal()"
-
-style="
-
-padding:12px 18px;
-
-border:none;
-
-border-radius:12px;
-
-cursor:pointer;
-
-">
-
-Cancel
-
-</button>
-
-<button
-
-id="ackBtn"
-
-onclick="acknowledgeShift()"
-
-disabled
-
-style="
-
-padding:12px 18px;
-
-border:none;
-
-border-radius:12px;
-
-background:#5b5cf6;
-
-color:white;
-
-cursor:pointer;
-
-">
-
-Acknowledge
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-<div id="endShiftModal"
-
-style="
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.65);
-backdrop-filter:blur(12px);
-justify-content:center;
-align-items:center;
-z-index:9999;
-">
-
-<div
-
-style="
-width:520px;
-max-width:92%;
-background:rgba(15,23,42,.95);
-border-radius:24px;
-padding:28px;
-border:1px solid rgba(255,255,255,.08);
-">
-
-<h2 style="margin-top:0;">
-Ending Shift
-</h2>
-
-<p style="opacity:.75;">
-Complete handover before leaving.
-</p>
-
-<label>
-<input class="endShiftCheck" type="checkbox">
-Handover Given
-</label>
-
-<br><br>
-
-<label>
-<input class="endShiftCheck" type="checkbox">
-Tickets Updated
-</label>
-
-<br><br>
-
-<label>
-<input class="endShiftCheck" type="checkbox">
-No Active Investigations
-</label>
-
-<br><br>
-
-<label>
-<input class="endShiftCheck" type="checkbox">
-Teams Status Updated
-</label>
-
-<textarea
-
-id="endShiftNotes"
-
-placeholder="Anything to tell next shift..."
-
-style="
-margin-top:20px;
-width:100%;
-height:90px;
-border:none;
-border-radius:14px;
-padding:12px;
-resize:none;
-">
-
-</textarea>
-
-<div
-
-style="
-display:flex;
-justify-content:flex-end;
-gap:12px;
-margin-top:20px;
-">
-
-<button
-
-onclick="closeEndShiftModal()"
-
-style="
-padding:12px 18px;
-border:none;
-border-radius:12px;
-cursor:pointer;
-">
-
-Cancel
-
-</button>
-
-<button
-
-style="
-padding:12px 18px;
-border:none;
-border-radius:12px;
-background:#ef4444;
-color:white;
-cursor:pointer;
-"
-
-onclick="endShift()">
-
-End Shift
-
-</button>
-
-</div>
-
-</div>
-
+<div id="endShiftModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(12px); justify-content:center; align-items:center; z-index:9999;">
+    <div style="width:32.5rem; max-width:92%; background:rgba(15,23,42,.95); border-radius:1.5rem; padding:1.75rem; border:1px solid rgba(255,255,255,.08);">
+        <h2 style="margin-top:0;">Ending Shift</h2>
+        <p style="opacity:.75;">Complete handover before leaving.</p>
+
+        <label><input class="endShiftCheck" type="checkbox"> Handover Given</label><br><br>
+        <label><input class="endShiftCheck" type="checkbox"> Tickets Updated</label><br><br>
+        <label><input class="endShiftCheck" type="checkbox"> No Active Investigations</label><br><br>
+        <label><input class="endShiftCheck" type="checkbox"> Teams Status Updated</label>
+
+        <textarea id="endShiftNotes" placeholder="Anything to tell next shift..." style="margin-top:1.25rem; width:100%; height:5.625rem; border:none; border-radius:0.875rem; padding:0.75rem; resize:none;"></textarea>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+            <button onclick="closeEndShiftModal()" style="padding:0.75rem 1.125rem; border:none; border-radius:0.75rem; cursor:pointer;">Cancel</button>
+            <button style="padding:0.75rem 1.125rem; border:none; border-radius:0.75rem; background:#ef4444; color:white; cursor:pointer;" onclick="endShift()">End Shift</button>
+        </div>
+    </div>
 </div>
 
 <!-- ================= TEAM STATUS ================= -->
-
-<div
-id="teamModal"
-style="
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.6);
-backdrop-filter:blur(10px);
-justify-content:center;
-align-items:center;
-z-index:99999;
-">
-
-<div
-style="
-width:650px;
-max-width:95%;
-max-height:80vh;
-overflow:auto;
-background:rgba(15,23,42,.96);
-border-radius:24px;
-padding:25px;
-border:1px solid rgba(255,255,255,.08);
-">
-
-<div
-style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-">
-
-<h2 style="margin:0">
-Today's Team
-</h2>
-
-<button
-onclick="closeTeamModal()"
-style="
-border:none;
-background:#ef4444;
-color:white;
-padding:10px 16px;
-border-radius:12px;
-cursor:pointer;
-">
-
-Close
-
-</button>
-
+<div id="teamModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(10px); justify-content:center; align-items:center; z-index:99999;">
+    <div style="width:40.625rem; max-width:95%; max-height:80vh; overflow:auto; background:rgba(15,23,42,.96); border-radius:1.5rem; padding:1.5625rem; border:1px solid rgba(255,255,255,.08);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+            <h2 style="margin:0">Today's Team</h2>
+            <button onclick="closeTeamModal()" style="border:none; background:#ef4444; color:white; padding:0.625rem 1rem; border-radius:0.75rem; cursor:pointer;">Close</button>
+        </div>
+        <div id="teamList"></div>
+    </div>
 </div>
 
-<div id="teamList"></div>
-
+<!-- ================= HANDOVER MODAL ================= -->
+<div id="handoverModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(12px); justify-content:center; align-items:center; z-index:9999;">
+    <div style="width:36rem; max-width:92%; background:rgba(15,23,42,.95); border-radius:1.5rem; padding:1.75rem; border:1px solid rgba(255,255,255,.08);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h2 style="margin:0;">Shift Handover Detail</h2>
+            <button id="closeHandover" style="border:none; background:#ef4444; color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; cursor:pointer;">Close</button>
+        </div>
+        <div id="handoverBody"></div>
+    </div>
 </div>
 
+<!-- ================= HANDOVER HISTORY MODAL ================= -->
+<div id="handoverHistoryModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(12px); justify-content:center; align-items:center; z-index:9999;">
+    <div style="width:42rem; max-width:95%; background:rgba(15,23,42,.95); border-radius:1.5rem; padding:1.75rem; border:1px solid rgba(255,255,255,.08);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h2 style="margin:0;">Handover History (7 Days)</h2>
+            <button id="closeHistory" style="border:none; background:#ef4444; color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; cursor:pointer;">Close</button>
+        </div>
+        <input id="handoverSearch" type="text" placeholder="Search handovers..." style="width:100%; padding:0.6rem 0.9rem; border-radius:0.75rem; border:none; outline:none; background:rgba(255,255,255,0.08); color:white; margin-bottom:1rem;">
+        <div id="handoverHistoryList"></div>
+    </div>
+</div>
+
+<!-- ================= INCIDENT MODAL ================= -->
+<div id="incidentModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(12px); justify-content:center; align-items:center; z-index:9999;">
+    <div style="width:40rem; max-width:95%; background:rgba(15,23,42,.95); border-radius:1.5rem; padding:1.75rem; border:1px solid rgba(255,255,255,.08);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h2 id="incidentTitle" style="margin:0;">Incidents</h2>
+            <button onclick="closeIncidentModal()" style="border:none; background:#ef4444; color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; cursor:pointer;">Close</button>
+        </div>
+        <input id="incidentSearch" type="text" placeholder="Search incident number or description..." style="width:100%; padding:0.6rem 0.9rem; border-radius:0.75rem; border:none; outline:none; background:rgba(255,255,255,0.08); color:white; margin-bottom:1rem;">
+        <div id="incidentList"></div>
+    </div>
+</div>
+
+<!-- ================= TICKET ANALYTICS MODAL ================= -->
+<div id="ticketAnalyticsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(12px); justify-content:center; align-items:center; z-index:9999;">
+    <div style="width:50rem; max-width:95%; background:rgba(15,23,42,.95); border-radius:1.5rem; padding:1.75rem; border:1px solid rgba(255,255,255,.08);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+            <h2 style="margin:0;">🎫 Ticket Analytics & Explorer</h2>
+            <button onclick="closeTicketAnalyticsModal()" style="border:none; background:#ef4444; color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; cursor:pointer;">Close</button>
+        </div>
+
+        <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+            <button id="tabBtnExplorer" class="modal-tab-btn active" onclick="switchAnalyticsTab('explorer')">📂 Ticket Explorer</button>
+            <button id="tabBtnSearch" class="modal-tab-btn" onclick="switchAnalyticsTab('search')">🔍 Ticket Search</button>
+            <button id="tabBtnEngineer" class="modal-tab-btn" onclick="switchAnalyticsTab('engineer')">👤 Engineer History</button>
+            <button id="tabBtnMetrics" class="modal-tab-btn" onclick="switchAnalyticsTab('metrics')">📊 Dashboard Metrics</button>
+        </div>
+
+        <!-- TAB 1: EXPLORER -->
+        <div id="analyticsTabExplorer">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:0.5rem; margin-bottom:1rem;">
+                <input type="date" id="analyticsFromDate" style="padding:0.5rem; border-radius:0.5rem; border:none; background:rgba(255,255,255,0.08); color:white;">
+                <input type="date" id="analyticsToDate" style="padding:0.5rem; border-radius:0.5rem; border:none; background:rgba(255,255,255,0.08); color:white;">
+                <select id="analyticsFilterEngineer" style="padding:0.5rem; border-radius:0.5rem; border:none; background:rgba(255,255,255,0.08); color:white;"></select>
+                <select id="analyticsFilterType" style="padding:0.5rem; border-radius:0.5rem; border:none; background:rgba(255,255,255,0.08); color:white;">
+                    <option value="">All Types</option>
+                    <option value="PagerDuty">PagerDuty</option>
+                    <option value="ServiceNow">ServiceNow</option>
+                </select>
+                <input type="text" id="analyticsFilterTicketNumber" placeholder="Ticket #" style="padding:0.5rem; border-radius:0.5rem; border:none; background:rgba(255,255,255,0.08); color:white;">
+                <button onclick="loadTicketExplorerData()" style="padding:0.5rem; border-radius:0.5rem; border:none; background:#5b5cf6; color:white; font-weight:bold;">Filter</button>
+            </div>
+
+            <table style="width:100%; text-align:left; border-collapse:collapse;">
+                <thead>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.1); opacity:0.8;">
+                        <th style="padding:0.6rem;">Date</th>
+                        <th style="padding:0.6rem;">Engineer</th>
+                        <th style="padding:0.6rem;">Type</th>
+                        <th style="padding:0.6rem;">Ticket ID</th>
+                    </tr>
+                </thead>
+                <tbody id="explorerTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- TAB 2: SINGLE SEARCH -->
+        <div id="analyticsTabSearch" style="display:none;">
+            <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+                <input type="text" id="searchTicketQuery" placeholder="Enter ticket ID (e.g. PD3486052 or INC1234567)" style="flex:1; padding:0.6rem; border-radius:0.5rem; border:none; background:rgba(255,255,255,0.08); color:white;">
+                <button onclick="handleTicketSearch()" style="padding:0.6rem 1rem; border-radius:0.5rem; border:none; background:#5b5cf6; color:white; font-weight:bold;">Search</button>
+            </div>
+            <div id="searchTicketResult"></div>
+        </div>
+
+        <!-- TAB 3: ENGINEER HISTORY -->
+        <div id="analyticsTabEngineer" style="display:none;">
+            <div style="margin-bottom:1rem;">
+                <select id="analyticsSelectEngineer" onchange="loadEngineerHistory()" style="width:100%; padding:0.6rem; border-radius:0.5rem; border:none; background:rgba(255,255,255,0.08); color:white;"></select>
+            </div>
+            <div id="engineerHistoryCard"></div>
+        </div>
+
+        <!-- TAB 4: METRICS -->
+        <div id="analyticsTabMetrics" style="display:none;">
+            <div id="dashboardMetricsContainer">Loading metrics...</div>
+        </div>
+    </div>
 </div>
 
 <div class="announce">
-
-<div
-class="marquee"
-id="announcementBar">
-</div>
-
+    <div class="marquee" id="announcementBar"></div>
 </div>
 
 <script>
 
+/* ==========================================================================
+   SLACK WEBHOOK INTEGRATION & API-BASED PAGERDUTY RESOLUTION ENGINE
+   ========================================================================== */
+
+const SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
+
+const TEAM_MEMBERS = [
+    { email: "navya.teja@wbd.com", name: "Navya Teja" },
+    { email: "praveen.sharma@wbd.com", name: "Praveen Sharma" },
+    { email: "venkataharish.mitta@wbd.com", name: "Harish Mitta" },
+    { email: "somana.nagasaikrishna@wbd.com", name: "Sai Krishna" },
+    { email: "abhinandan.kumar@wbd.com", name: "Abhinandan" },
+    { email: "yogananda.t@wbd.com", name: "Yogananda" },
+    { email: "mathumitha.gosh@wbd.com", name: "Mathumitha" },
+    { email: "vignesh.pandurangan@wbd.com", name: "Vignesh" },
+    { email: "kuljeet.singh@wbd.com", name: "Kuljeet Singh" },
+    { email: "mdmohtasim.alam@wbd.com", name: "Mohtasim Alam" },
+    { email: "chitturisrijaya.venkatasurya@wbd.com", name: "Surya" },
+    { email: "akash.vankadari@wbd.com", name: "Vankadari Akash" },
+    { email: "masani.reddy@wbd.com", name: "Sai Bhargav" },
+    { email: "manisha.gutlapalli@wbd.com", name: "Manisha" },
+    { email: "naveen.vonna@wbd.com", name: "Naveen" },
+    { email: "sourabh.tiwari@wbd.com", name: "Sourabh Tiwari" },
+    { email: "hajibasha.tadpatri@wbd.com", name: "Haji Basha" },
+    { email: "raju.chintapally@wbd.com", name: "Raju Chintapally" },
+    { email: "nagasatish.mattaparthi@wbd.com", name: "Naga Satish" },
+    { email: "kumar.mude@wbd.com", name: "Kumar Naik" },
+    { email: "kovvuridileep.srisaireddy@wbd.com", name: "Dileep Reddy" },
+    { email: "manasa.g@wbd.com", name: "Manasa" },
+    { email: "divya.m@wbd.com", name: "Divya" },
+    { email: "linginenisampath.kumar@wbd.com", name: "Sampath Kumar" },
+    { email: "mande.sri@wbd.com", name: "Yeshwanth Sri" },
+    { email: "jyotisman.rath@wbd.com", name: "Jyotisman Rath" },
+    { email: "aditya.gupta@wbd.com", name: "Aditya Gupta" },
+    { email: "bhagyaraju.tn@wbd.com", name: "Bhagyaraju" },
+    { email: "raghavendra.p@wbd.com", name: "Raghavendra P" },
+    { email: "kush.vekaria@wbd.com", name: "Kush Vekeria" },
+    { email: "danille.dones@wbd.com", name: "Danille Dones" },
+    { email: "reginna.gregorio@wbd.com", name: "Reginna Gregorio" },
+    { email: "paul.hobbs@wbd.com", name: "Paul Hobbs" },
+    { email: "jaspal.bhatia@wbd.com", name: "Jaspal Bhatia" }
+];
+
+/**
+ * Sends a JSON payload to the Slack Incoming Webhook safely.
+ */
+async function sendSlackNotification(payload) {
+    if (!SLACK_WEBHOOK_URL || SLACK_WEBHOOK_URL.includes("YOUR_SLACK_WEBHOOK_URL_HERE")) {
+        console.warn("Slack Integration: Webhook URL is missing or set to placeholder.");
+        return;
+    }
+
+    try {
+        const bodyData = typeof payload === "string" ? { text: payload } : payload;
+
+        await fetch(SLACK_WEBHOOK_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+            },
+            body: JSON.stringify(bodyData)
+        });
+    } catch (error) {
+        console.error("Slack Integration Error:", error);
+    }
+}
+
+/**
+ * Formats a given email into a polished display name
+ */
+function getSlackFormattedUserName(email) {
+    if (!email) return "Unknown User";
+    const found = TEAM_MEMBERS.find(m => m.email.toLowerCase() === email.toLowerCase());
+    if (found) return found.name;
+    const rawName = email.split("@")[0].replace(/\./g, " ");
+    return rawName
+        .split(" ")
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+}
+
+/**
+ * Helper to retrieve current formatted time in IST
+ */
+function getSlackISTTime() {
+    return new Date().toLocaleTimeString("en-US", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+    }) + " IST";
+}
+
+/**
+ * MATCHING HELPER
+ * Checks if a piece of text contains an engineer's name from TEAM_MEMBERS
+ */
+function findEngineerInText(text) {
+    if (!text) return null;
+    const lower = text.toLowerCase();
+    for (const member of TEAM_MEMBERS) {
+        const firstName = member.name.split(" ")[0].toLowerCase();
+        const fullName = member.name.toLowerCase();
+        if (fullName.length > 2 && lower.includes(fullName)) {
+            return member.name.split(" ")[0];
+        }
+        if (firstName.length > 2 && new RegExp(`\\b${firstName}\\b`, "i").test(text)) {
+            return member.name.split(" ")[0];
+        }
+    }
+    return null;
+}
+
+/**
+ * PAGERDUTY OWNER RESOLVER
+ * Resolves ownership and details directly from the fetched PagerDuty API data cache.
+ */
+function resolvePagerDutyOwner(pdId) {
+    const pdCache = window.rawPdIncidentsData || [];
+    const idStr = String(pdId).trim();
+
+    const incident = pdCache.find(i => 
+        String(i.id) === idStr || 
+        String(i.incident_number) === idStr
+    );
+
+    if (!incident) {
+        return { owner: "Unassigned / Not in API Cache", title: "", found: false };
+    }
+
+    let ownerName = "";
+
+    if (incident.assignments && incident.assignments.length > 0 && incident.assignments[0].assignee) {
+        ownerName = incident.assignments[0].assignee.summary || incident.assignments[0].assignee.name || "";
+    } else if (incident.assigned_to) {
+        ownerName = incident.assigned_to.summary || incident.assigned_to.name || "";
+    } else if (incident.created_by) {
+        ownerName = incident.created_by.summary || incident.created_by.name || "";
+    } else if (incident.user) {
+        ownerName = incident.user.summary || incident.user.name || "";
+    }
+
+    const matchedFirst = findEngineerInText(ownerName);
+    const resolvedOwner = matchedFirst || (ownerName ? ownerName.split(" ")[0] : "Unassigned");
+
+    return {
+        owner: resolvedOwner,
+        title: incident.title || incident.summary || "",
+        number: incident.incident_number || idStr,
+        found: true
+    };
+}
+
+/**
+ * SHIFT METRICS ENGINE & PD RESOLUTION
+ * Strictly parses ticket IDs from handover notes. Uses PagerDuty API cache as sole source of truth for PD tickets.
+ */
+function calculateShiftMetrics(rawNotes) {
+    if (!rawNotes || !rawNotes.trim()) {
+        return { pdCounts: {}, pdTotal: 0, pdDetails: [], snowCounts: {}, snowTotal: 0 };
+    }
+
+    const pdCounts = {};
+    const snowCounts = {};
+    const pdDetails = [];
+    let pdTotal = 0;
+    let snowTotal = 0;
+
+    const seenPdTickets = new Set();
+    const seenSnowTickets = new Set();
+
+    const lines = rawNotes.split(/\r?\n/);
+
+    lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+
+        // 1. EXTRACT & PROCESS PAGERDUTY TICKETS
+        const pdMatches = [...trimmed.matchAll(/(?:PD\s*#?\s*|PD|\b)(\d{6,20})\b/gi)];
+        pdMatches.forEach(match => {
+            const pdId = match[1];
+            if (seenPdTickets.has(pdId)) return;
+            seenPdTickets.add(pdId);
+
+            const resolved = resolvePagerDutyOwner(pdId);
+            const owner = resolved.owner;
+
+            pdCounts[owner] = (pdCounts[owner] || 0) + 1;
+            pdTotal++;
+
+            pdDetails.push({
+                id: pdId,
+                number: resolved.number || pdId,
+                owner: owner,
+                title: resolved.title
+            });
+        });
+
+        // 2. EXTRACT & PROCESS SERVICENOW (INC) TICKETS
+        const snowMatches = [...trimmed.matchAll(/\b(INC\d+)\b/gi)];
+        snowMatches.forEach(match => {
+            const ticketId = match[1].toUpperCase();
+            if (seenSnowTickets.has(ticketId)) return;
+            seenSnowTickets.add(ticketId);
+
+            let owner = findEngineerInText(trimmed);
+            if (!owner) owner = "Owner Not Specified";
+
+            snowCounts[owner] = (snowCounts[owner] || 0) + 1;
+            snowTotal++;
+        });
+    });
+
+    return { pdCounts, pdTotal, pdDetails, snowCounts, snowTotal };
+}
+
+/**
+ * Smartly parses raw handover text and builds a Slack Block Kit payload.
+ */
+function parseHandoverToBlockKit(rawNotes, userName, formattedTime, shiftRange) {
+    const blocks = [
+        {
+            type: "header",
+            text: {
+                type: "plain_text",
+                text: `📋 Shift Handover (${shiftRange})`,
+                emoji: true
+            }
+        },
+        {
+            type: "section",
+            fields: [
+                {
+                    type: "mrkdwn",
+                    text: `*Submitted By:*\n${userName}`
+                },
+                {
+                    type: "mrkdwn",
+                    text: `*Submitted At:*\n${formattedTime}`
+                }
+            ]
+        },
+        { type: "divider" }
+    ];
+
+    if (!rawNotes || !rawNotes.trim()) {
+        blocks.push({
+            type: "section",
+            text: { type: "mrkdwn", text: "_No details provided in this handover._" }
+        });
+        return { blocks };
+    }
+
+    const sections = {
+        liveEvents: [],
+        snowIncidents: [],
+        pdIncidents: [],
+        requests: [],
+        links: [],
+        notes: [],
+        other: []
+    };
+
+    const lines = rawNotes.split(/\r?\n/);
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    lines.forEach(line => {
+        let trimmed = line.trim();
+        if (!trimmed) return;
+
+        const matchedUrls = trimmed.match(urlRegex);
+        if (matchedUrls) {
+            matchedUrls.forEach(url => {
+                let urlLabel = "Link";
+                if (url.includes("slack.com")) urlLabel = "Slack Thread";
+                else if (url.includes("pagerduty.com")) urlLabel = "PagerDuty Console";
+                else if (url.includes("service-now.com")) urlLabel = "ServiceNow Portal";
+                
+                sections.links.push({ label: urlLabel, url: url });
+                trimmed = trimmed.replace(url, "").trim();
+            });
+        }
+
+        if (!trimmed) return;
+
+        const cleanedLine = trimmed.replace(/^[•\-\*]\s*/, "");
+
+        if (/^(live events|open incidents|requests?|important notes|links|snow|pagerduty|pd|notes|miscellaneous):?$/i.test(cleanedLine)) {
+            return;
+        }
+
+        if (/\bINC\d+\b/i.test(cleanedLine) || /\bSNOW\b/i.test(cleanedLine)) {
+            sections.snowIncidents.push(cleanedLine);
+        }
+        else if (/\bPD\b/i.test(cleanedLine) || /pagerduty/i.test(cleanedLine) || /\b\d{6,20}\b/.test(cleanedLine)) {
+            sections.pdIncidents.push(cleanedLine);
+        }
+        else if (/request|need access|raise request|access request/i.test(cleanedLine)) {
+            sections.requests.push(cleanedLine);
+        }
+        else if (/pre-check|vod check|tds|event|assigned event/i.test(cleanedLine)) {
+            sections.liveEvents.push(cleanedLine);
+        }
+        else if (/important|note|console|remember/i.test(cleanedLine)) {
+            sections.notes.push(cleanedLine);
+        }
+        else {
+            sections.other.push(cleanedLine);
+        }
+    });
+
+    if (sections.liveEvents.length > 0) {
+        const text = "*Live Events*\n" + sections.liveEvents.map(item => `• ${item}`).join("\n");
+        blocks.push({ type: "section", text: { type: "mrkdwn", text } });
+        blocks.push({ type: "divider" });
+    }
+
+    if (sections.snowIncidents.length > 0 || sections.pdIncidents.length > 0) {
+        let incidentText = "*🚨 Open Incidents*\n";
+
+        if (sections.snowIncidents.length > 0) {
+            incidentText += "*ServiceNow (SNOW)*\n";
+            sections.snowIncidents.forEach(item => {
+                const formattedItem = item.replace(/(INC\d+)/gi, "🔹 *$1*");
+                incidentText += `${formattedItem}\n`;
+            });
+        }
+
+        if (sections.pdIncidents.length > 0) {
+            if (sections.snowIncidents.length > 0) incidentText += "\n";
+            incidentText += "*PagerDuty*\n";
+            sections.pdIncidents.forEach(item => {
+                const formattedItem = item.replace(/(\b\d{6,20}\b)/g, "🟡 *PD #$1*");
+                incidentText += `${formattedItem}\n`;
+            });
+        }
+
+        blocks.push({ type: "section", text: { type: "mrkdwn", text: incidentText.trim() } });
+        blocks.push({ type: "divider" });
+    }
+
+    if (sections.requests.length > 0) {
+        const text = "*📢 Requests*\n" + sections.requests.map(item => `• ${item}`).join("\n");
+        blocks.push({ type: "section", text: { type: "mrkdwn", text } });
+        blocks.push({ type: "divider" });
+    }
+
+    if (sections.links.length > 0) {
+        const text = "*🔗 Useful Links*\n" + sections.links.map(l => `• <${l.url}|${l.label}>`).join("\n");
+        blocks.push({ type: "section", text: { type: "mrkdwn", text } });
+        blocks.push({ type: "divider" });
+    }
+
+    if (sections.notes.length > 0) {
+        const text = "*📝 Important Notes*\n" + sections.notes.join("\n");
+        blocks.push({ type: "section", text: { type: "mrkdwn", text } });
+        blocks.push({ type: "divider" });
+    }
+
+    if (sections.other.length > 0) {
+        const text = "*📌 Additional Information*\n" + sections.other.map(item => `• ${item}`).join("\n");
+        blocks.push({ type: "section", text: { type: "mrkdwn", text } });
+        blocks.push({ type: "divider" });
+    }
+
+    // 4. SHIFT METRICS SECTION (API SOURCE OF TRUTH FOR PD METRICS & DETAILS)
+    const metrics = calculateShiftMetrics(rawNotes);
+    if (metrics.pdTotal > 0 || metrics.snowTotal > 0) {
+        let metricsText = "*📊 Shift Metrics*\n\n";
+
+        if (metrics.pdTotal > 0) {
+            metricsText += `🟡 *PagerDuty Tickets*\n\nTotal : ${metrics.pdTotal}\n\n`;
+            Object.entries(metrics.pdCounts).forEach(([owner, count]) => {
+                metricsText += `• ${owner} - ${count}\n`;
+            });
+
+            if (metrics.pdDetails.length > 0) {
+                metricsText += `\n*PD Details*\n\n`;
+                metrics.pdDetails.forEach(detail => {
+                    metricsText += `• *#${detail.number}*\n  Assigned To : ${detail.owner}\n  ${detail.title ? detail.title : 'Incident details in PagerDuty Console'}\n\n`;
+                });
+            }
+        }
+
+        if (metrics.pdTotal > 0 && metrics.snowTotal > 0) {
+            metricsText += "━━━━━━━━━━━━━━\n\n";
+        }
+
+        if (metrics.snowTotal > 0) {
+            metricsText += `🔴 *ServiceNow Tickets*\n\nTotal : ${metrics.snowTotal}\n\n`;
+            Object.entries(metrics.snowCounts).forEach(([owner, count]) => {
+                metricsText += `• ${owner} - ${count}\n`;
+            });
+        }
+
+        blocks.push({ type: "section", text: { type: "mrkdwn", text: metricsText.trim() } });
+        blocks.push({ type: "divider" });
+    }
+
+    blocks.push({
+        type: "context",
+        elements: [
+            {
+                type: "mrkdwn",
+                text: "🤖 _Generated automatically from NavEx Portal_"
+            }
+        ]
+    });
+
+    return { blocks };
+}
+
 /* ---------- LOGIN ---------- */
 
 const USERS={
-
 "navya.teja@wbd.com":"navya@236",
 "praveen.sharma@wbd.com":"sro@2026",
 "venkataharish.mitta@wbd.com":"sro@2026",
@@ -2497,2439 +1636,1259 @@ const USERS={
 "reginna.gregorio@wbd.com":"sro@2026",
 "paul.hobbs@wbd.com":"sro@2026",
 "jaspal.bhatia@wbd.com":"sro@2026"
-
 };
 
 function login(){
+const email=document.getElementById("email").value.trim().toLowerCase();
+const password=document.getElementById("password").value;
 
-const email=
-
-document
-.getElementById(
-"email"
-)
-.value
-.trim()
-.toLowerCase();
-
-const password=
-
-document
-.getElementById(
-"password"
-)
-.value;
-
-if(
-
-USERS[email]
-
-&&
-
-USERS[email]===password
-
-){
-
-localStorage.setItem(
-"navexLogin",
-"ok"
-);
-
-localStorage.setItem(
-"navexUser",
-email
-);
-
-document
-.getElementById(
-"login-screen"
-)
-.style.display="none";
-
+if(USERS[email] && USERS[email]===password){
+localStorage.setItem("navexLogin","ok");
+localStorage.setItem("navexUser",email);
+document.getElementById("login-screen").style.display="none";
+}else{
+document.getElementById("error").innerHTML="Invalid email or password";
+}
 }
 
-else{
-
-document
-.getElementById(
-"error"
-)
-.innerHTML=
-
-"Invalid email or password";
-
+window.addEventListener("load", ()=>{
+if(localStorage.getItem("navexLogin")==="ok"){
+document.getElementById("login-screen").style.display="none";
 }
-
-}
-
-window.addEventListener(
-
-"load",
-
-()=>{
-
-if(
-
-localStorage.getItem(
-"navexLogin"
-)
-
-===
-
-"ok"
-
-){
-
-document
-.getElementById(
-"login-screen"
-)
-.style.display="none";
-
-}
-
-}
-
-);
-
-/* ---------- END LOGIN ---------- */
+});
 
 function requestAccess(){
-
-const email=
-
-document
-.getElementById(
-"email"
-)
-.value
-.trim();
-
-const message=
-
-`Hi Navya,
-
-Please provide access to NAVEX Dashboard.
-
-Requester:
-${email}`;
-
-navigator.clipboard.writeText(
-message
-);
-
-alert(
-"Access request copied. Please send it to Navya on Teams or Outlook."
-);
-
-window.open(
-
-"https://outlook.office.com/mail/deeplink/compose?to=navya.teja@wbd.com&subject=NAVEX%20Dashboard%20Access%20Request"
-
-);
-
+const email=document.getElementById("email").value.trim();
+const message=`Hi Navya,\n\nPlease provide access to NAVEX Dashboard.\n\nRequester:\n${email}`;
+navigator.clipboard.writeText(message);
+alert("Access request copied. Please send it to Navya on Teams or Outlook.");
+window.open("https://outlook.office.com/mail/deeplink/compose?to=navya.teja@wbd.com&subject=NAVEX%20Dashboard%20Access%20Request");
 }
 
 function format(zone){
-
-return new Date()
-
-.toLocaleTimeString(
-"en-GB",
-{
-hour12:false,
-timeZone:zone
+return new Date().toLocaleTimeString("en-GB",{hour12:false,timeZone:zone});
 }
-
-);
-
-}
-
 
 function clock(){
-
-document.getElementById("ist").innerHTML=
-format("Asia/Kolkata");
-
-document.getElementById("utc").innerHTML=
-format("UTC");
-
-document.getElementById("bst").innerHTML=
-format("Europe/London");
-
-document.getElementById("pst").innerHTML=
-format("America/Los_Angeles");
+document.getElementById("ist").innerHTML=format("Asia/Kolkata");
+document.getElementById("utc").innerHTML=format("UTC");
+document.getElementById("bst").innerHTML=format("Europe/London");
+document.getElementById("pst").innerHTML=format("America/Los_Angeles");
 
 let hr = new Date().getHours();
+let greeting = hr < 12 ? "☀️ Good Morning" : hr < 18 ? "🌤️ Good Afternoon" : "🌙 Good Evening";
+const user = (localStorage.getItem("navexUser") || "SRO").split("@")[0].replace(/\./g," ");
+const firstName = user.split(" ")[0].charAt(0).toUpperCase() + user.split(" ")[0].slice(1);
 
-let greeting =
-hr < 12
-? "☀️ Good Morning"
-: hr < 18
-? "🌤️ Good Afternoon"
-: "🌙 Good Evening";
-
-const user =
-(
-    localStorage.getItem("navexUser")
-    || "SRO"
-)
-.split("@")[0]
-.replace(/\./g," ");
-
-const firstName =
-user
-.split(" ")[0]
-.charAt(0).toUpperCase() +
-user.split(" ")[0].slice(1);
-
-const openedAt =
-Number(localStorage.getItem("navexOpened"));
-
+const openedAt = Number(localStorage.getItem("navexOpened"));
 if(!openedAt){
-
-    localStorage.setItem(
-        "navexOpened",
-        Date.now()
-    );
-
+    localStorage.setItem("navexOpened", Date.now());
 }
 
-const diff =
-Date.now() -
-Number(localStorage.getItem("navexOpened"));
-
+const diff = Date.now() - Number(localStorage.getItem("navexOpened"));
 if(diff < 60000){
-
-    document.getElementById("greeting").innerHTML =
-    `🟢 Welcome back, <b>${firstName}</b>`;
-
+    document.getElementById("greeting").innerHTML = `🟢 Welcome back, <b>${firstName}</b>`;
 }else{
-
-    document.getElementById("greeting").innerHTML =
-    `${greeting}, <b>${firstName}</b>`;
-
+    document.getElementById("greeting").innerHTML = `${greeting}, <b>${firstName}</b>`;
 }
-
 }
 
 clock();
-
-setInterval(
-clock,
-1000
-);
-
-
+setInterval(clock, 1000);
 
 function filterButtons(){
+let val=document.getElementById("search").value.trim().toLowerCase();
+const toolItems=`tools mux mediamelon inflow ad-platform ui tundra sdp console tempo studio dacc grafana foundry taiga chimera kibana disco datadog coui`.toLowerCase();
 
-let val=
-
-document
-.getElementById(
-"search"
-)
-.value
-.trim()
-.toLowerCase();
-
-
-const toolItems=
-
-`
-tools
-mux
-mediamelon
-inflow
-ad-platform ui
-tundra
-sdp console
-tempo
-studio
-dacc
-grafana
-foundry
-taiga
-chimera
-kibana
-disco
-datadog
-coui
-`
-.toLowerCase();
-
-
-document
-.querySelectorAll(
-".container a"
-)
-
-.forEach(
-
-x=>{
-
-let searchable=
-
-(
-x.dataset.search
-||
-""
-)
-
-+
-
-" "
-
-+
-
-x.innerText;
-
-
-x.style.display=
-
-searchable
-.toLowerCase()
-.includes(val)
-
-||
-
-(
-x.href.includes(
-"tools.html"
-)
-
-&&
-
-toolItems.includes(
-val
-)
-
-)
-
-?
-
-"block"
-
-:
-
-"none";
-
-}
-
-);
-
-}
-
-const bg=
-document.getElementById(
-"bg-video"
-);
-
-function startVideo(){
-
-if(!bg)return;
-
-bg.muted=true;
-
-bg.setAttribute(
-"muted",
-""
-);
-
-bg.setAttribute(
-"playsinline",
-""
-);
-
-bg.setAttribute(
-"webkit-playsinline",
-""
-);
-
-const play=
-bg.play();
-
-if(play!==undefined){
-
-play.catch(()=>{
-
-setTimeout(
-()=>bg.play(),
-500
-);
-
+document.querySelectorAll(".container a").forEach(x=>{
+let searchable=(x.dataset.search||"") + " " + x.innerText;
+x.style.display=searchable.toLowerCase().includes(val) || (x.href.includes("tools.html") && toolItems.includes(val)) ? "block" : "none";
 });
-
 }
 
+const bg=document.getElementById("bg-video");
+function startVideo(){
+if(!bg)return;
+bg.muted=true;
+bg.setAttribute("muted","");
+bg.setAttribute("playsinline","");
+bg.setAttribute("webkit-playsinline","");
+const play=bg.play();
+if(play!==undefined){
+play.catch(()=>{ setTimeout(()=>bg.play(), 500); });
+}
 }
 
-window.addEventListener(
-"load",
-startVideo
-);
-
+window.addEventListener("load", startVideo);
 window.addEventListener("DOMContentLoaded", ()=>{
-
 document.getElementById("handoverHistoryBtn").onclick = ()=>{
-
-    document.getElementById("handoverHistoryModal")
-    .style.display = "flex";
-
+    document.getElementById("handoverHistoryModal").style.display = "flex";
     window.loadHandoverHistory();
-
 };
 
-    document
-    .getElementById("closeHistory")
-    .onclick = ()=>{
-
-        document
-        .getElementById("handoverHistoryModal")
-        .style.display="none";
-
-    };
-
+document.getElementById("closeHistory").onclick = ()=>{
+    document.getElementById("handoverHistoryModal").style.display="none";
+};
 });
 
-document.addEventListener(
-"visibilitychange",
-()=>{
-
-if(
-!document.hidden
-)
-
-startVideo();
-
-});
-
-document.addEventListener(
-"touchstart",
-startVideo,
-{
-once:true
-}
-);
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) startVideo(); });
+document.addEventListener("touchstart", startVideo, {once:true});
 
 async function loadPagerDuty(){
-
 try{
+const TOKEN="u+mnguNsLNMzxz7KoUuA";
+const res=await fetch("https://api.pagerduty.com/incidents?team_ids[]=PK3J30X&statuses[]=triggered&statuses[]=acknowledged&limit=100", {
+headers:{ Authorization:`Token token=${TOKEN}`, Accept:"application/vnd.pagerduty+json;version=2" }
+});
+const data=await res.json();
 
-const TOKEN=
-"u+mnguNsLNMzxz7KoUuA";
+window.rawPdIncidentsData = data.incidents || [];
 
-const res=
-await fetch(
-
-"https://api.pagerduty.com/incidents?team_ids[]=PK3J30X&statuses[]=triggered&statuses[]=acknowledged&limit=100",
-
-{
-headers:{
-Authorization:
-`Token token=${TOKEN}`,
-Accept:
-"application/vnd.pagerduty+json;version=2"
-}
-}
-
-);
-
-const data=
-await res.json();
-
-/* ---------- LOAD ONCALLS ---------- */
-
-const scheduleIds = [
-    "PH56ZWR", // L1
-    "PZJXY4B", // L2
-    "PWN9XSO"  // L3
-];
-
-const oncallURL =
-"https://api.pagerduty.com/oncalls?"
-+
-scheduleIds
-.map(id => `schedule_ids[]=${id}`)
-.join("&");
-
-const oncallRes =
-await fetch(
-    oncallURL,
-    {
-        headers:{
-            Authorization:`Token token=${TOKEN}`,
-            Accept:"application/vnd.pagerduty+json;version=2"
-        }
-    }
-);
-
-const oncallData =
-await oncallRes.json();
-
+const scheduleIds = ["PH56ZWR", "PZJXY4B", "PWN9XSO"];
+const oncallURL = "https://api.pagerduty.com/oncalls?" + scheduleIds.map(id => `schedule_ids[]=${id}`).join("&");
+const oncallRes = await fetch(oncallURL, { headers:{ Authorization:`Token token=${TOKEN}`, Accept:"application/vnd.pagerduty+json;version=2" } });
+const oncallData = await oncallRes.json();
 const oncalls = {};
 
 oncallData.oncalls.forEach(o=>{
-
-    const schedule =
-    o.schedule.summary;
-
-    oncalls[schedule] =
-    o.user.summary;
-
+    const schedule = o.schedule.summary;
+    oncalls[schedule] = o.user.summary;
 });
 
-window.incidentsByPriority = {
-    P1:[],
-    P2:[],
-    P3:[]
-};
-window.incidentsByPriority.P1 = [];
-window.incidentsByPriority.P2 = [];
-window.incidentsByPriority.P3 = [];
-
-const c={
-
-P1:{o:0,t:0,a:0},
-
-P2:{o:0,t:0,a:0},
-
-P3:{o:0,t:0,a:0}
-
-};
-
+window.incidentsByPriority = { P1:[], P2:[], P3:[] };
+const c={ P1:{o:0,t:0,a:0}, P2:{o:0,t:0,a:0}, P3:{o:0,t:0,a:0} };
 
 (data.incidents||[]).forEach(i=>{
-
-const p=
-(
-i.priority?.summary
-||
-i.priority?.name
-||
-"P3"
-)
-
-.match(/P[123]/)
-
-?.[0];
-
+const p=(i.priority?.summary || i.priority?.name || "P3").match(/P[123]/)?.[0];
 if(!p)return;
-
 c[p].o++;
-
-if(i.status==="triggered")
-c[p].t++;
-
-if(i.status==="acknowledged")
-c[p].a++;
-window.incidentsByPriority[p].push({
-    title:i.title,
-    url:i.html_url,
-    status:i.status,
-    incident:i.incident_number
+if(i.status==="triggered") c[p].t++;
+if(i.status==="acknowledged") c[p].a++;
+window.incidentsByPriority[p].push({ title:i.title, url:i.html_url, status:i.status, incident:i.incident_number });
 });
 
+["P1","P2","P3"].forEach(p=>{
+document.getElementById(p.toLowerCase()+"o").innerHTML=c[p].o;
+document.getElementById(p.toLowerCase()+"t").innerHTML=c[p].t;
+document.getElementById(p.toLowerCase()+"a").innerHTML=c[p].a;
 });
-
-["P1","P2","P3"]
-
-.forEach(p=>{
-
-document.getElementById(
-p.toLowerCase()+"o"
-).innerHTML=
-c[p].o;
-
-document.getElementById(
-p.toLowerCase()+"t"
-).innerHTML=
-c[p].t;
-
-document.getElementById(
-p.toLowerCase()+"a"
-).innerHTML=
-c[p].a;
-
-});
-
 
 document.getElementById("p1Card").onclick = ()=>showIncidents("P1");
-
 document.getElementById("p2Card").onclick = ()=>showIncidents("P2");
-
 document.getElementById("p3Card").onclick = ()=>showIncidents("P3");
 
 document.getElementById("announcementBar").innerHTML = `
-🟢 Oncall:
-L1 - ${oncalls["SRO IN - L1"] || "--"}
-&nbsp;&nbsp;|
-L2 - ${oncalls["SRO IN - L2"] || "--"}
-&nbsp;&nbsp;|
-L3 - ${oncalls["SRO IN - L3"] || "--"}
-&nbsp;&nbsp;|
-SRO ONE Project has been kickstarted
-&nbsp;&nbsp;|
-💡 Team Update: Shifts to be started from 6th July
+🟢 Oncall: L1 - ${oncalls["SRO IN - L1"] || "--"} &nbsp;&nbsp;| L2 - ${oncalls["SRO IN - L2"] || "--"} &nbsp;&nbsp;| L3 - ${oncalls["SRO IN - L3"] || "--"} &nbsp;&nbsp;| 🛠️ Maintenance: PD migration Sunday &nbsp;&nbsp;| 💡 Team Update: Shifts to be started from 6th July
 `;
 
-}
-
-catch(e){
-
-console.log(
-"PD ERROR:",
-e
-);
-
-}
-
+}catch(e){ console.log("PD ERROR:", e); }
 }
 
 loadPagerDuty();
-
-setInterval(
-loadPagerDuty,
-60000
-);
+setInterval(loadPagerDuty, 60000);
 
 function logout(){
-
-localStorage.removeItem(
-"navexLogin"
-);
-
+localStorage.removeItem("navexLogin");
 location.reload();
-
 }
 
 function loadEventMedia(){
-
-document
-.querySelectorAll(".media-box")
-.forEach(box=>{
-
-const base=
-box.dataset.src;
-
-const formats=[
-
-".jpeg",
-".jpg",
-".png",
-".mp4",
-".webm"
-
-];
-
+document.querySelectorAll(".media-box").forEach(box=>{
+const base=box.dataset.src;
+const formats=[".jpeg",".jpg",".png",".mp4",".webm"];
 loadFile(0);
 
 function loadFile(i){
-
 if(i>=formats.length)return;
-
-const src=
-base+formats[i];
-
-if(
-src.endsWith(".mp4")
-||
-src.endsWith(".webm")
-){
-
-const v=
-document.createElement("video");
-
-v.autoplay=true;
-v.loop=true;
-v.muted=true;
-v.playsInline=true;
-
-v.style.width="100%";
-v.style.height="100%";
-v.style.objectFit="cover";
-
-v.onloadeddata=
-()=>{
-
-box.innerHTML="";
-
-box.appendChild(v);
-
-};
-
-v.onerror=
-()=>loadFile(i+1);
-
+const src=base+formats[i];
+if(src.endsWith(".mp4") || src.endsWith(".webm")){
+const v=document.createElement("video");
+v.autoplay=true; v.loop=true; v.muted=true; v.playsInline=true;
+v.style.width="100%"; v.style.height="100%"; v.style.objectFit="cover";
+v.onloadeddata=()=>{ box.innerHTML=""; box.appendChild(v); };
+v.onerror=()=>loadFile(i+1);
 v.src=src;
-
-}
-
-else{
-
-const img=
-new Image();
-
-img.onload=
-()=>{
-
-box.innerHTML="";
-
-box.appendChild(img);
-
-};
-
-img.onerror=
-()=>loadFile(i+1);
-
+}else{
+const img=new Image();
+img.onload=()=>{ box.innerHTML=""; box.appendChild(img); };
+img.onerror=()=>loadFile(i+1);
 img.src=src;
-
 }
-
 }
-
 });
-
 }
 
-window.addEventListener(
-
-"load",
-
-()=>{
-
+window.addEventListener("load", ()=>{
 loadEventMedia();
-
 autoRotate();
-
-document
-.getElementById(
-"chatInput"
-)
-.addEventListener(
-
-"keydown",
-
-e=>{
-
-if(
-e.key==="Enter"
-){
-
-e.preventDefault();
-
-sendChat();
-
-}
-
-}
-
-
-);
-
-const saved =
-localStorage.getItem("todayShift");
-
-if(saved){
-
-    const shift =
-    JSON.parse(saved);
-
-    const today =
-    new Date().toISOString().split("T")[0];
-
-    if(shift.date===today){
-
-        const btn =
-document.getElementById("shiftBtn");
-
-btn.innerHTML = `
-✅ Shift Logged
-<br>
-<small>${shift.loginTime}</small>
-`;
-
-btn.style.background = "#16a34a";
-
-/* THIS IS THE IMPORTANT LINE */
-btn.onclick = openEndShiftModal;
-
-    }else{
-
-        localStorage.removeItem("todayShift");
-
-    }
-
-}
-
-document
-.querySelectorAll(".shiftCheck")
-.forEach(c=>{
-
-c.addEventListener(
-"change",
-updateShiftProgress
-);
-
+document.getElementById("chatInput").addEventListener("keydown", e=>{
+if(e.key==="Enter"){ e.preventDefault(); sendChat(); }
 });
 
+const saved = localStorage.getItem("todayShift");
+if(saved){
+    const shift = JSON.parse(saved);
+    const today = new Date().toISOString().split("T")[0];
+    if(shift.date===today){
+        const btn = document.getElementById("shiftBtn");
+        btn.innerHTML = `✅ Shift Logged<br><small>${shift.loginTime}</small>`;
+        btn.style.background = "#16a34a";
+        btn.onclick = openEndShiftModal;
+    }else{
+        localStorage.removeItem("todayShift");
+    }
+}
+
+document.querySelectorAll(".shiftCheck").forEach(c=>{
+c.addEventListener("change", updateShiftProgress);
+});
 });
 
 function autoRotate(){
-
-const rail=
-document.querySelector(".events-scroll");
-
+const rail=document.querySelector(".events-scroll");
 if(!rail)return;
-
-const cards=
-rail.querySelectorAll(".media-box");
-
+const cards=rail.querySelectorAll(".media-box");
 let current=0;
-
 setInterval(()=>{
-
 current++;
-
-if(current > cards.length - 3){
-current = 0;
-}
-
-const cardWidth =
-cards[0].offsetWidth + 18;
-
-rail.scrollTo({
-left: current * cardWidth,
-behavior:"smooth"
-});
-
+if(current > cards.length - 3){ current = 0; }
+const cardWidth = cards[0].offsetWidth + 18;
+rail.scrollTo({ left: current * cardWidth, behavior:"smooth" });
 },4500);
-
 }
 
-function openShiftModal(){
+function openShiftModal(){ document.getElementById("shiftModal").style.display="flex"; }
+function closeShiftModal(){ document.getElementById("shiftModal").style.display="none"; }
+function openEndShiftModal(){ document.getElementById("endShiftModal").style.display="flex"; }
+function closeEndShiftModal(){ document.getElementById("endShiftModal").style.display="none"; }
+function closeTeamModal(){ document.getElementById("teamModal").style.display="none"; }
 
-document.getElementById("shiftModal").style.display="flex";
-
-}
-
-function closeShiftModal(){
-
-document.getElementById("shiftModal").style.display="none";
-
-}
-function openEndShiftModal(){
-
-document.getElementById("endShiftModal").style.display="flex";
-
-}
-
-function closeEndShiftModal(){
-
-document.getElementById("endShiftModal").style.display="none";
-
-}
-
-function closeTeamModal(){
-
-document.getElementById("teamModal").style.display="none";
-
-}
 async function acknowledgeShift(){
-
     try{
-
         const now = new Date();
+        const loginTime = now.toLocaleTimeString([],{ hour:"2-digit", minute:"2-digit" });
 
-        const loginTime = now.toLocaleTimeString([],{
-            hour:"2-digit",
-            minute:"2-digit"
-        });
+        const shiftData = {
+            user: localStorage.getItem("navexUser"),
+            status:"active",
+            loginTime:loginTime,
+            loginEpoch: Date.now(),
+            logoutTime:null,
+            loginNotes:document.getElementById("shiftNotes").value,
+            logoutNotes:"",
+            date:now.toISOString().split("T")[0]
+        };
 
-     const shiftData = {
-
-    user: localStorage.getItem("navexUser"),
-
-    status:"active",
-
-    loginTime:loginTime,
-
-    loginEpoch: Date.now(),
-
-    logoutTime:null,
-
-    loginNotes:document.getElementById("shiftNotes").value,
-
-    logoutNotes:"",
-
-    date:now.toISOString().split("T")[0]
-
-};
-
-        // Try Firebase, but don't stop if it fails
         window.lastShiftData = shiftData;
         if(window.saveShiftToFirebase){
-
             await window.saveShiftToFirebase(shiftData);
-
         }
 
-        localStorage.setItem(
-            "todayShift",
-            JSON.stringify(shiftData)
-        );
+        const userName = getSlackFormattedUserName(shiftData.user);
+        const formattedISTTime = getSlackISTTime();
 
-const btn = document.getElementById("shiftBtn");
+        sendSlackNotification({
+            blocks: [
+                {
+                    type: "header",
+                    text: { type: "plain_text", text: "🟢 Shift Login", emoji: true }
+                },
+                {
+                    type: "section",
+                    fields: [
+                        { type: "mrkdwn", text: `*User:*\n${userName}` },
+                        { type: "mrkdwn", text: `*Time:*\n${formattedISTTime}` },
+                        { type: "mrkdwn", text: `*Status:*\nLogged In` }
+                    ]
+                }
+            ]
+        });
 
-const displayTime =
-loginTime || shift.loginTime || "--";
+        localStorage.setItem("todayShift", JSON.stringify(shiftData));
 
-btn.innerHTML =
-`
-🟢 Shift Active<br>
-<small>${displayTime}</small>
-`;
-
-btn.style.background="#16a34a";
-btn.onclick=openEndShiftModal;
+        const btn = document.getElementById("shiftBtn");
+        const displayTime = loginTime || shiftData.loginTime || "--";
+        btn.innerHTML = `🟢 Shift Active<br><small>${displayTime}</small>`;
+        btn.style.background="#16a34a";
+        btn.onclick=openEndShiftModal;
 
         closeShiftModal();
-
-    }
-    catch(err){
-
+    }catch(err){
         console.error("Shift Save Error:", err);
-
         alert(err.message);
-
     }
-
 }
+
 async function endShift(){
-
     try{
-
-        const notes =
-        document.getElementById("endShiftNotes").value;
-
+        const notes = document.getElementById("endShiftNotes").value;
         await window.endShiftInFirebase(notes);
 
         localStorage.removeItem("todayShift");
-
-        const btn =
-        document.getElementById("shiftBtn");
-
+        const btn = document.getElementById("shiftBtn");
         btn.innerHTML="Logging into Shift";
-
         btn.style.background="";
-
         btn.onclick=openShiftModal;
 
         closeEndShiftModal();
-
         await loadShiftStatus();
-
-    }
-    catch(err){
-
+    }catch(err){
         console.error(err);
-
         alert(err.message);
-
     }
-
 }
 
 function updateShiftProgress(){
+const checks = document.querySelectorAll(".shiftCheck");
+const completed = [...checks].filter(c=>c.checked).length;
+const percent = Math.round((completed/checks.length)*100);
 
-const checks =
-document.querySelectorAll(".shiftCheck");
-
-const completed =
-[...checks].filter(c=>c.checked).length;
-
-const percent =
-Math.round((completed/checks.length)*100);
-
-document.getElementById("progressFill").style.width =
-percent + "%";
-
-document.getElementById("progressText").innerHTML =
-percent + "%";
-
-document.getElementById("ackBtn").disabled =
-completed !== checks.length;
-
+document.getElementById("progressFill").style.width = percent + "%";
+document.getElementById("progressText").innerHTML = percent + "%";
+document.getElementById("ackBtn").disabled = completed !== checks.length;
 }
 
 </script>
+
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
-
-getDatabase,
-ref,
-set,
-get,
-push,
-child,
-onChildAdded,
-onValue,
-query,
-limitToLast,
-orderByChild
-
-}
-from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+getDatabase, ref, set, get, push, remove, child, onChildAdded, onValue, query, limitToLast, orderByChild
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 
 const firebaseConfig = {
-
     apiKey: "AIzaSyAFh5qQee550XC4-_YvvVfr5PiXRLJeNnE",
-
     authDomain: "navex-chat.firebaseapp.com",
-
-    databaseURL:
-    "https://navex-chat-default-rtdb.europe-west1.firebasedatabase.app",
-
+    databaseURL: "https://navex-chat-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "navex-chat",
-
-    storageBucket:
-    "navex-chat.firebasestorage.app",
-
+    storageBucket: "navex-chat.firebasestorage.app",
     messagingSenderId: "49824114190",
-
-    appId:
-    "1:49824114190:web:2df658e59bda148eb4fe5f"
-
+    appId: "1:49824114190:web:2df658e59bda148eb4fe5f"
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getDatabase(app);
-
 const chatRef = ref(db,"navex-chat");
+const chatBox = document.getElementById("chatBox");
+const myUser = (localStorage.getItem("navexUser") || "guest").split("@")[0];
 
-const chatBox =
-document.getElementById("chatBox");
-
-const myUser =
-(
-localStorage.getItem("navexUser")
-||
-"guest"
-)
-.split("@")[0];
 async function getLoginContext(){
-
     let ipData = {};
-
     try{
-
         const res = await fetch("https://ipapi.co/json/");
-
         ipData = await res.json();
-
     }catch(e){
-
         console.warn("Unable to fetch IP information");
-
     }
 
     const ua = navigator.userAgent;
-
     let device = "Desktop";
-
-    if(/Android|iPhone|iPad/i.test(ua))
-        device = "Mobile";
+    if(/Android|iPhone|iPad/i.test(ua)) device = "Mobile";
 
     let browser = "Unknown";
-
-    if(ua.includes("Edg"))
-        browser = "Edge";
-    else if(ua.includes("Chrome"))
-        browser = "Chrome";
-    else if(ua.includes("Firefox"))
-        browser = "Firefox";
-    else if(ua.includes("Safari"))
-        browser = "Safari";
+    if(ua.includes("Edg")) browser = "Edge";
+    else if(ua.includes("Chrome")) browser = "Chrome";
+    else if(ua.includes("Firefox")) browser = "Firefox";
+    else if(ua.includes("Safari")) browser = "Safari";
 
     let os = "Unknown";
+    if(ua.includes("Windows")) os = "Windows";
+    else if(ua.includes("Mac")) os = "macOS";
+    else if(ua.includes("Android")) os = "Android";
+    else if(ua.includes("iPhone")) os = "iOS";
 
-    if(ua.includes("Windows"))
-        os = "Windows";
-    else if(ua.includes("Mac"))
-        os = "macOS";
-    else if(ua.includes("Android"))
-        os = "Android";
-    else if(ua.includes("iPhone"))
-        os = "iOS";
-
-    return{
-
+    return {
         ip: ipData.ip || "",
-
         city: ipData.city || "",
-
         region: ipData.region || "",
-
         country: ipData.country_name || "",
-
         isp: ipData.org || "",
-
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-
-        browser,
-
-        os,
-
-        device,
-
-        screen:
-            screen.width + "x" + screen.height,
-
+        browser, os, device,
+        screen: screen.width + "x" + screen.height,
         userAgent: ua
-
     };
-
 }
 
 window.saveShiftToFirebase = async function(shiftData){
-
-    console.log("Saving shift...", shiftData);
-
-    /* Capture login context */
     const context = await getLoginContext();
-
-    /* Detect Office / Home (configure later) */
-    const OFFICE_IP_PREFIXES = [
-    "203."
-];
+    const OFFICE_IP_PREFIXES = ["203."];
 
     shiftData.loginContext = {
-
-        ip: context.ip,
-
-        city: context.city,
-
-        region: context.region,
-
-        country: context.country,
-
-        isp: context.isp,
-
-        timezone: context.timezone,
-
-        browser: context.browser,
-
-        os: context.os,
-
-        device: context.device,
-
-        screen: context.screen,
-
-        userAgent: context.userAgent,
-
-        network:
-    OFFICE_IP_PREFIXES.some(prefix =>
-        context.ip.startsWith(prefix)
-    )
-        ? "Office"
-        : "Home",
-
-        loginTimestamp:
-            new Date().toISOString()
-
+        ip: context.ip, city: context.city, region: context.region, country: context.country, isp: context.isp,
+        timezone: context.timezone, browser: context.browser, os: context.os, device: context.device,
+        screen: context.screen, userAgent: context.userAgent,
+        network: OFFICE_IP_PREFIXES.some(prefix => context.ip.startsWith(prefix)) ? "Office" : "Home",
+        loginTimestamp: new Date().toISOString()
     };
 
-    const email =
-    shiftData.user
-        .replace(/\./g,"_")
-        .replace(/@/g,"_");
-
-    await set(
-
-        ref(
-            db,
-            `navex-shifts/${shiftData.date}/${email}`
-        ),
-
-        shiftData
-
-    );
-
-    console.log("Shift saved", shiftData);
-
+    const email = shiftData.user.replace(/\./g,"_").replace(/@/g,"_");
+    await set(ref(db, `navex-shifts/${shiftData.date}/${email}`), shiftData);
 };
+
 window.endShiftInFirebase = async function(logoutNotes){
+    const today = new Date().toISOString().split("T")[0];
+    const rawUserEmail = localStorage.getItem("navexUser") || "";
+    const email = rawUserEmail.replace(/\./g,"_").replace(/@/g,"_");
+    const logoutTime = new Date().toLocaleTimeString([],{ hour:"2-digit", minute:"2-digit" });
 
-    const today =
-    new Date().toISOString().split("T")[0];
-
-    const email =
-    localStorage
-    .getItem("navexUser")
-    .replace(/\./g,"_")
-    .replace(/@/g,"_");
-
-    const logoutTime =
-    new Date().toLocaleTimeString([],{
-        hour:"2-digit",
-        minute:"2-digit"
-    });
-
-    const snap =
-    await get(
-        ref(
-            db,
-            `navex-shifts/${today}/${email}`
-        )
-    );
-
+    const snap = await get(ref(db, `navex-shifts/${today}/${email}`));
     if(!snap.exists()) return;
 
     const data = snap.val();
-
-    /* Capture logout context */
     const context = await getLoginContext();
-
-    const OFFICE_IP_PREFIXES = [
-    "203."
-];
+    const OFFICE_IP_PREFIXES = ["203."];
 
     data.status = "ended";
-
     data.logoutTime = logoutTime;
-
     data.logoutEpoch = Date.now();
-
     data.logoutNotes = logoutNotes;
-
     data.lastUpdated = Date.now();
 
     data.logoutContext = {
-
-        ip: context.ip,
-
-        city: context.city,
-
-        region: context.region,
-
-        country: context.country,
-
-        isp: context.isp,
-
-        timezone: context.timezone,
-
-        browser: context.browser,
-
-        os: context.os,
-
-        device: context.device,
-
-        screen: context.screen,
-
-        userAgent: context.userAgent,
-
-        network:
-    OFFICE_IP_PREFIXES.some(prefix =>
-        context.ip.startsWith(prefix)
-    )
-        ? "Office"
-        : "Home",
-
-        logoutTimestamp:
-            new Date().toISOString()
-
+        ip: context.ip, city: context.city, region: context.region, country: context.country, isp: context.isp,
+        timezone: context.timezone, browser: context.browser, os: context.os, device: context.device,
+        screen: context.screen, userAgent: context.userAgent,
+        network: OFFICE_IP_PREFIXES.some(prefix => context.ip.startsWith(prefix)) ? "Office" : "Home",
+        logoutTimestamp: new Date().toISOString()
     };
 
-    console.log(data);
+    data.analytics = {
+        shiftDurationMinutes: (data.loginEpoch && data.logoutEpoch) ? Math.round((data.logoutEpoch - data.loginEpoch) / 60000) : 0,
+        deviceChanged: data.loginContext?.device !== data.logoutContext.device,
+        browserChanged: data.loginContext?.browser !== data.logoutContext.browser,
+        networkChanged: data.loginContext?.network !== data.logoutContext.network,
+        cityChanged: data.loginContext?.city !== data.logoutContext.city,
+        ipChanged: data.loginContext?.ip !== data.logoutContext.ip
+    };
 
-    /* -------- Analytics Flags -------- */
+    await set(ref(db, `navex-shifts/${today}/${email}`), data);
 
-data.analytics = {
+    await push(ref(db,"navex-handovers"), {
+        user: data.user, date: today, loginTime: data.loginTime, logoutTime: data.logoutTime,
+        loginEpoch: data.loginEpoch, logoutEpoch: data.logoutEpoch, logoutNotes: data.logoutNotes,
+        loginContext: data.loginContext, analytics: data.analytics, lastUpdated: Date.now()
+    });
 
-    shiftDurationMinutes:
-(
-    data.loginEpoch &&
-    data.logoutEpoch
-)
-?
-Math.round(
-    (data.logoutEpoch - data.loginEpoch)
-/60000
-)
-:
-0,
+    const userName = getSlackFormattedUserName(data.user || rawUserEmail);
+    const formattedISTTime = getSlackISTTime();
 
-    deviceChanged:
-        data.loginContext?.device !==
-        data.logoutContext.device,
+    sendSlackNotification({
+        blocks: [
+            { type: "header", text: { type: "plain_text", text: "🔴 Shift Logout", emoji: true } },
+            {
+                type: "section",
+                fields: [
+                    { type: "mrkdwn", text: `*User:*\n${userName}` },
+                    { type: "mrkdwn", text: `*Time:*\n${formattedISTTime}` },
+                    { type: "mrkdwn", text: `*Status:*\nLogged Out` }
+                ]
+            }
+        ]
+    });
 
-    browserChanged:
-        data.loginContext?.browser !==
-        data.logoutContext.browser,
+    if (logoutNotes && logoutNotes.trim() !== "") {
+        const shiftRange = (data.loginTime && data.logoutTime) 
+            ? `${data.loginTime} – ${data.logoutTime}` 
+            : "Shift Completed";
 
-    networkChanged:
-        data.loginContext?.network !==
-        data.logoutContext.network,
+        const handoverPayload = parseHandoverToBlockKit(
+            logoutNotes,
+            userName,
+            formattedISTTime,
+            shiftRange
+        );
 
-    cityChanged:
-        data.loginContext?.city !==
-        data.logoutContext.city,
-
-    ipChanged:
-        data.loginContext?.ip !==
-        data.logoutContext.ip
-
-};
-
-    await set(
-
-        ref(
-            db,
-            `navex-shifts/${today}/${email}`
-        ),
-
-        data
-
-    );
-
-    // =====================================
-// Save Handover History
-// =====================================
-
-await push(
-
-    ref(db,"navex-handovers"),
-
-    {
-
-        user: data.user,
-
-        date: today,
-
-        loginTime: data.loginTime,
-
-        logoutTime: data.logoutTime,
-
-        loginEpoch: data.loginEpoch,
-
-        logoutEpoch: data.logoutEpoch,
-
-        logoutNotes: data.logoutNotes,
-
-        loginContext: data.loginContext,
-
-        analytics: data.analytics,
-
-        lastUpdated: Date.now()
-
+        sendSlackNotification(handoverPayload);
     }
-
-);
-
-    console.log("Shift ended", data);
-
 };
+
 window.loadHandoverHistory = async function(){
-
-    const list =
-    document.getElementById("handoverHistoryList");
-
+    const list = document.getElementById("handoverHistoryList");
     list.innerHTML = "Loading...";
 
-    const snap = await get(
-        query(
-            ref(db,"navex-handovers"),
-            limitToLast(250)
-        )
-    );
+    const snap = await get(query(ref(db,"navex-handovers"), limitToLast(250)));
+    if(!snap.exists()){ list.innerHTML = "No handovers found."; return; }
 
-    if(!snap.exists()){
-        list.innerHTML = "No handovers found.";
-        return;
-    }
-
-   const handovers = Object.values(snap.val());
-
-handovers.sort((a,b)=>
-    (b.lastUpdated || b.logoutEpoch || 0) -
-    (a.lastUpdated || a.logoutEpoch || 0)
-);
-const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
-
-const recentHistory = handovers.filter(h =>
-
-    (h.lastUpdated || h.logoutEpoch || 0) >= sevenDaysAgo
-
-);
+    const handovers = Object.values(snap.val());
+    handovers.sort((a,b)=> (b.lastUpdated || b.logoutEpoch || 0) - (a.lastUpdated || a.logoutEpoch || 0));
+    const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+    const recentHistory = handovers.filter(h => (h.lastUpdated || h.logoutEpoch || 0) >= sevenDaysAgo);
 
     list.innerHTML="";
-
-    recentHistory
-.filter(h => h.logoutNotes && h.logoutNotes.trim() !== "")
-.forEach(h=>{
-
+    recentHistory.filter(h => h.logoutNotes && h.logoutNotes.trim() !== "").forEach(h=>{
         list.innerHTML += `
-<div class="handoverCard" style="
-            background:rgba(255,255,255,.05);
-            padding:12px;
-            border-radius:10px;
-            margin-bottom:10px;
-        ">
-
-            <div style="font-weight:700;">
-                ${h.user.split("@")[0]}
-            </div>
-
-            <div style="opacity:.6;font-size:13px;">
-                📅 ${h.date}
-
-&nbsp;&nbsp;
-
-🕒 ${h.logoutTime}
-            </div>
-
-            <div
-style="
-margin-top:10px;
-white-space:pre-wrap;
-word-break:break-word;
-overflow-wrap:anywhere;
-line-height:1.55;
-font-size:15px;
-">
-
-${h.logoutNotes}
-
-</div>
-
+        <div class="handoverCard" style="background:rgba(255,255,255,.05); padding:12px; border-radius:10px; margin-bottom:10px;">
+            <div style="font-weight:700;">${h.user.split("@")[0]}</div>
+            <div style="opacity:.6; font-size:13px;">📅 ${h.date} &nbsp;&nbsp; 🕒 ${h.logoutTime}</div>
+            <div style="margin-top:10px; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere; line-height:1.55; font-size:15px;">${h.logoutNotes}</div>
         </div>`;
     });
-    // ===============================
-// Live Search
-// ===============================
 
-const searchBox =
-document.getElementById("handoverSearch");
-
-searchBox.value = "";
-
-searchBox.oninput = function(){
-
-    const keyword =
-    this.value.toLowerCase();
-
-    const cards =
-    list.querySelectorAll(".handoverCard");
-
-    cards.forEach(card=>{
-
-        const text =
-        card.innerText.toLowerCase();
-
-        card.style.display =
-        text.includes(keyword)
-        ? "block"
-        : "none";
-
-    });
-
-};
-
+    const searchBox = document.getElementById("handoverSearch");
+    searchBox.value = "";
+    searchBox.oninput = function(){
+        const keyword = this.value.toLowerCase();
+        const cards = list.querySelectorAll(".handoverCard");
+        cards.forEach(card=>{
+            card.style.display = card.innerText.toLowerCase().includes(keyword) ? "block" : "none";
+        });
+    };
 }
 
 window.renderLatestHandover = async function(){
-
-    const snap = await get(
-        query(
-            ref(db,"navex-handovers"),
-            limitToLast(100)
-        )
-    );
-
+    const snap = await get(query(ref(db,"navex-handovers"), limitToLast(100)));
     if(!snap.exists()){
-
-        document.getElementById("lastHandover").innerHTML =
-        "No handover yet.";
-
+        document.getElementById("lastHandover").innerHTML = "No handover yet.";
         return;
-
     }
 
-    const handovers =
-    Object.values(snap.val())
-
-    .sort(
-        (a,b)=>
-        (b.lastUpdated||0)-
-        (a.lastUpdated||0)
-    )
-
-    .filter(h=>
-        h.logoutNotes &&
-        h.logoutNotes.trim()!==""
-    );
+    const handovers = Object.values(snap.val())
+        .sort((a,b)=> (b.lastUpdated||0)-(a.lastUpdated||0))
+        .filter(h=> h.logoutNotes && h.logoutNotes.trim()!=="");
 
     if(handovers.length===0){
-
-        document.getElementById("lastHandover").innerHTML =
-        "No handover yet.";
-
+        document.getElementById("lastHandover").innerHTML = "No handover yet.";
         return;
-
     }
 
     const latest = handovers[0];
-
-    const previewNotes = latest.logoutNotes
-    .replace(/\r\n/g,"\n")
-    .replace(/^\s+|\s+$/g,"")
-    .replace(/\n{2,}/g,"\n");
+    const previewNotes = latest.logoutNotes.replace(/\r\n/g,"\n").replace(/^\s+|\s+$/g,"").replace(/\n{2,}/g,"\n");
 
     document.getElementById("lastHandover").innerHTML = `
-
-<div
-style="
-margin-top:6px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-font-weight:600;
-">
-
-<span>
-
-${latest.user.split("@")[0]}
-
-</span>
-
-<span
-style="
-font-size:18px;
-opacity:.55;
-">
-
-⤢
-
-</span>
-
-</div>
-
-<div
-style="
-opacity:.8;
-margin-top:4px;
-">
-
-${latest.logoutTime}
-
-</div>
-
-<div
-style="
-margin-top:12px;
-position:relative;
-">
-
-<div
-style="
-white-space:pre-wrap;
-line-height:1.6;
-font-size:15px;
-color:#f2f2f2;
-display:-webkit-box;
--webkit-line-clamp:3;
--webkit-box-orient:vertical;
-overflow:hidden;
-word-break:break-word;
-">${previewNotes}</div>
-
-</div>
-
-`;
+        <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center; font-weight:600;">
+            <span>${latest.user.split("@")[0]}</span>
+            <span style="font-size: var(--text-clamp-body); opacity:.55;">⤢</span>
+        </div>
+        <div style="opacity:.8; margin-top:4px;">${latest.logoutTime}</div>
+        <div style="margin-top:12px; position:relative;">
+            <div style="white-space:pre-wrap; line-height:1.6; font-size: var(--text-clamp-small); color:#f2f2f2; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;">${previewNotes}</div>
+        </div>
+    `;
 
     document.getElementById("lastHandover").style.cursor="pointer";
-
     document.getElementById("lastHandover").onclick=()=>{
+        const metrics = calculateShiftMetrics(previewNotes);
+        let metricsHTML = "";
+
+        if (metrics.pdTotal > 0 || metrics.snowTotal > 0) {
+            metricsHTML += `<hr style="border:none; border-top:1px solid rgba(255,255,255,.08); margin:18px 0;">`;
+            metricsHTML += `<div style="font-weight:700; font-size:16px; margin-bottom:10px;">📊 Shift Metrics</div>`;
+
+            if (metrics.pdTotal > 0) {
+                metricsHTML += `<div style="color:#facc15; font-weight:600;">🟡 PagerDuty Tickets (Total: ${metrics.pdTotal})</div><ul style="margin:4px 0 12px 18px; padding:0;">`;
+                Object.entries(metrics.pdCounts).forEach(([owner, count]) => {
+                    metricsHTML += `<li>${owner} - ${count}</li>`;
+                });
+                metricsHTML += `</ul>`;
+
+                if (metrics.pdDetails.length > 0) {
+                    metricsHTML += `<div style="font-weight:600; margin-top:10px;">PD Details</div><ul style="margin:4px 0 12px 18px; padding:0;">`;
+                    metrics.pdDetails.forEach(detail => {
+                        metricsHTML += `<li><b>#${detail.number}</b> - Assigned To: ${detail.owner}${detail.title ? ' (' + detail.title + ')' : ''}</li>`;
+                    });
+                    metricsHTML += `</ul>`;
+                }
+            }
+
+            if (metrics.snowTotal > 0) {
+                metricsHTML += `<div style="color:#ef4444; font-weight:600;">🔴 ServiceNow Tickets (Total: ${metrics.snowTotal})</div><ul style="margin:4px 0 12px 18px; padding:0;">`;
+                Object.entries(metrics.snowCounts).forEach(([owner, count]) => {
+                    metricsHTML += `<li>${owner} - ${count}</li>`;
+                });
+                metricsHTML += `</ul>`;
+            }
+        }
 
         document.getElementById("handoverBody").innerHTML=`
-
-<div style="font-size:18px;font-weight:700;">
-👤 ${latest.user.split("@")[0]}
-</div>
-
-<div style="margin-top:8px;opacity:.7;">
-🕒 ${latest.date} • ${latest.logoutTime}
-</div>
-
-<hr style="
-border:none;
-border-top:1px solid rgba(255,255,255,.08);
-margin:18px 0;
-">
-
-<div
-style="
-white-space:pre-wrap;
-line-height:1.7;
-word-break:break-word;
-">${previewNotes}</div>
-
-`;
+            <div style="font-size: var(--text-clamp-body); font-weight:700;">👤 ${latest.user.split("@")[0]}</div>
+            <div style="margin-top:8px; opacity:.7;">🕒 ${latest.date} • ${latest.logoutTime}</div>
+            <hr style="border:none; border-top:1px solid rgba(255,255,255,.08); margin:18px 0;">
+            <div style="white-space:pre-wrap; line-height:1.7; word-break:break-word;">${previewNotes}</div>
+            ${metricsHTML}
+        `;
 
         document.getElementById("handoverModal").style.display="block";
-        document.getElementById("closeHandover").onclick = () => {
-
-    document.getElementById("handoverModal").style.display = "none";
-
-};
-document.getElementById("handoverModal").onclick = (e) => {
-
-    if (e.target.id === "handoverModal") {
-
-        document.getElementById("handoverModal").style.display = "none";
-
-    }
-
-};
-
+        document.getElementById("closeHandover").onclick = () => { document.getElementById("handoverModal").style.display = "none"; };
+        document.getElementById("handoverModal").onclick = (e) => { if (e.target.id === "handoverModal") document.getElementById("handoverModal").style.display = "none"; };
     };
-
 };
 
 window.sendChat = async function(){
-
-    const input =
-    document.getElementById("chatInput");
-
-    const text =
-    input.value.trim();
-
+    const input = document.getElementById("chatInput");
+    const text = input.value.trim();
     if(!text) return;
 
-    await push(
-
-        chatRef,
-
-        {
-
-            user:
-
-            (
-            localStorage.getItem("navexUser")
-            ||
-            "guest"
-            ).split("@")[0],
-
-            text,
-
-            time:Date.now()
-
-        }
-
-    );
+    await push(chatRef, {
+        user: (localStorage.getItem("navexUser") || "guest").split("@")[0],
+        text,
+        time:Date.now()
+    });
 
     input.value="";
-
 };
 
-onChildAdded(
+onChildAdded(chatRef, snap=>{
+    const m=snap.val();
+    if(!m) return;
 
-    chatRef,
+    const id="msg-"+snap.key;
+    if(document.getElementById(id)) return;
 
-    snap=>{
+    chatBox.insertAdjacentHTML("beforeend", `
+        <div id="${id}" class="msg ${m.user===myUser?"mine":"other"}">
+            <div class="author">${m.user}</div>
+            <div class="bubble">${m.text}</div>
+        </div>
+    `);
 
-        const m=snap.val();
+    chatBox.scrollTop = chatBox.scrollHeight;
+    document.querySelectorAll(".bubble").forEach(b=>{
+        b.onclick=()=>{ b.classList.toggle("expanded"); };
+    });
+});
 
-        if(!m) return;
+window.loadShiftStatus = async function(){
+    const today = new Date().toISOString().split("T")[0];
+    const snap = await get(ref(db, `navex-shifts/${today}`));
+    const data = snap.exists() ? snap.val() : {};
+    updateShiftCard(data);
+    return data;
+};
 
-        const id="msg-"+snap.key;
+window.updateShiftCard=function(data){
+    const TOTAL=26;
+    const activeUsers = Object.values(data).filter(user=>user.status==="active");
+    const ready = activeUsers.length;
+    const pending = TOTAL-ready;
+    const percent = Math.round((ready/TOTAL)*100);
 
-        if(document.getElementById(id))
-        return;
+    if(document.getElementById("readyCount")) document.getElementById("readyCount").innerHTML = ready;
+    if(document.getElementById("pendingCount")) document.getElementById("pendingCount").innerHTML = pending;
+    if(document.getElementById("teamProgress")) document.getElementById("teamProgress").style.width = percent + "%";
 
-        chatBox.insertAdjacentHTML(
+    document.getElementById("loginPercent").innerHTML = ready;
 
-            "beforeend",
+    const currentUser = localStorage.getItem("navexUser");
+    const myShift = activeUsers.find(user => user.user === currentUser);
 
-`
-<div id="${id}" class="msg ${m.user===myUser?"mine":"other"}">
+    let duration = "--";
+    if(myShift && myShift.loginTime){
+        const now = new Date();
+        const [hour, minute] = myShift.loginTime.split(":").map(Number);
+        const login = new Date();
+        login.setHours(hour); login.setMinutes(minute); login.setSeconds(0);
 
-<div class="author">
-
-${m.user}
-
-</div>
-
-<div class="bubble">
-
-${m.text}
-
-</div>
-
-</div>
-`
-
-        );
-
-        chatBox.scrollTop =
-        chatBox.scrollHeight;
-
-        document
-        .querySelectorAll(".bubble")
-        .forEach(b=>{
-
-            b.onclick=()=>{
-
-                b.classList.toggle("expanded");
-
-            };
-
-        });
-
+        const diffMinutes = Math.floor((now - login) / 60000);
+        const hrs = Math.floor(diffMinutes / 60);
+        const mins = diffMinutes % 60;
+        duration = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
     }
 
-);
-window.loadShiftStatus = async function(){
-
-    const today =
-    new Date().toISOString().split("T")[0];
-
-    const snap =
-    await get(
-        ref(
-            db,
-            `navex-shifts/${today}`
-        )
-    );
-
-    const data =
-    snap.exists()
-    ?
-    snap.val()
-    :
-    {};
-
-    updateShiftCard(data);
-
-    return data;
-
-};
-window.updateShiftCard=function(data){
-
-const TOTAL=26;
-
-const activeUsers =
-
-Object.values(data)
-
-.filter(
-
-user=>user.status==="active"
-
-);
-
-const ready =
-
-activeUsers.length;
-
-const pending=
-TOTAL-ready;
-
-const percent =
-Math.round((ready/TOTAL)*100);
-
-if(document.getElementById("readyCount"))
-    document.getElementById("readyCount").innerHTML = ready;
-
-if(document.getElementById("pendingCount"))
-    document.getElementById("pendingCount").innerHTML = pending;
-
-if(document.getElementById("teamProgress"))
-    document.getElementById("teamProgress").style.width = percent + "%";
-
-document.getElementById("loginPercent").innerHTML = ready;
-
-const currentUser =
-localStorage.getItem("navexUser");
-
-const myShift =
-activeUsers.find(
-    user => user.user === currentUser
-);
-
-let duration = "--";
-
-if(myShift && myShift.loginTime){
-
-    const now = new Date();
-
-    const [hour, minute] =
-    myShift.loginTime.split(":").map(Number);
-
-    const login = new Date();
-
-    login.setHours(hour);
-    login.setMinutes(minute);
-    login.setSeconds(0);
-
-    const diffMinutes =
-    Math.floor((now - login) / 60000);
-
-    const hrs =
-    Math.floor(diffMinutes / 60);
-
-    const mins =
-    diffMinutes % 60;
-
-    duration =
-    hrs > 0
-        ? `${hrs}h ${mins}m`
-        : `${mins}m`;
-
-}
-
-document.getElementById("lastLogin").innerHTML =
-duration;
+    document.getElementById("lastLogin").innerHTML = duration;
 };
 
 window.showIncidents = function(priority){
     window.currentIncidentPriority = priority;
+    const incidents = window.incidentsByPriority[priority] || [];
 
-    const incidents =
-window.incidentsByPriority[priority] || [];
-
-    document.getElementById("incidentTitle").innerHTML =
-        "🚨 " + priority + " Incidents (" + incidents.length + ")";
+    document.getElementById("incidentTitle").innerHTML = "🚨 " + priority + " Incidents (" + incidents.length + ")";
 
     if(!incidents.length){
-
         document.getElementById("incidentList").innerHTML = `
-            <div style="
-                text-align:center;
-                padding:40px;
-                opacity:.7;
-                font-size:18px;
-            ">
+            <div style="text-align:center; padding:40px; opacity:.7; font-size: var(--text-clamp-body);">
                 No active ${priority} incidents 🎉
             </div>
         `;
-
     }else{
-
-        document.getElementById("incidentList").innerHTML =
-            incidents.map(i=>`
-
-<div style="
-padding:18px;
-margin-bottom:15px;
-background:rgba(255,255,255,.05);
-border-radius:16px;
-">
-
-<div style="
-font-size:20px;
-font-weight:bold;
-">
-
-#${i.incident}
-
-</div>
-
-<div style="
-margin-top:8px;
-font-size:16px;
-">
-
-${i.title}
-
-</div>
-
-<div style="
-margin-top:10px;
-opacity:.75;
-">
-
-Status :
-<b>${i.status}</b>
-
-</div>
-
-<button
-
-onclick="window.open('${i.url}','_blank')"
-
-style="
-margin-top:15px;
-background:#5b5cf6;
-border:none;
-color:white;
-padding:10px 18px;
-border-radius:10px;
-cursor:pointer;
-">
-
-Open in PagerDuty
-
-</button>
-
-</div>
-
-`).join("");
-
+        document.getElementById("incidentList").innerHTML = incidents.map(i=>`
+            <div style="padding:18px; margin-bottom:15px; background:rgba(255,255,255,.05); border-radius:16px;">
+                <div style="font-size: var(--text-clamp-body); font-weight:bold;">#${i.incident}</div>
+                <div style="margin-top:8px; font-size: var(--text-clamp-small);">${i.title}</div>
+                <div style="margin-top:10px; opacity:.75; font-size: var(--text-clamp-small);">Status : <b>${i.status}</b></div>
+                <button onclick="window.open('${i.url}','_blank')" style="margin-top:15px; background:#5b5cf6; border:none; color:white; padding:10px 18px; border-radius:10px; cursor:pointer; font-size: var(--text-clamp-small);">Open in PagerDuty</button>
+            </div>
+        `).join("");
     }
-    const searchBox =
-document.getElementById("incidentSearch");
 
-searchBox.value = "";
+    const searchBox = document.getElementById("incidentSearch");
+    searchBox.value = "";
+    searchBox.oninput = function(){
+        const keyword = this.value.toLowerCase();
+        const filtered = window.incidentsByPriority[window.currentIncidentPriority].filter(i=>
+            i.title.toLowerCase().includes(keyword) || String(i.incident).includes(keyword)
+        );
 
-searchBox.oninput = function(){
-
-    const keyword =
-    this.value.toLowerCase();
-
-    const filtered =
-    window.incidentsByPriority[
-        window.currentIncidentPriority
-    ].filter(i=>
-
-        i.title.toLowerCase().includes(keyword) ||
-
-        String(i.incident).includes(keyword)
-
-    );
-
-    document.getElementById("incidentList").innerHTML =
-    filtered.length ?
-
-    filtered.map(i=>`
-
-<div style="
-padding:18px;
-margin-bottom:15px;
-background:rgba(255,255,255,.05);
-border-radius:16px;
-">
-
-<div style="
-font-size:20px;
-font-weight:bold;
-">
-
-#${i.incident}
-
-</div>
-
-<div style="
-margin-top:8px;
-font-size:16px;
-">
-
-${i.title}
-
-</div>
-
-<div style="
-margin-top:10px;
-opacity:.75;
-">
-
-Status :
-<b>${i.status}</b>
-
-</div>
-
-<button
-
-onclick="window.open('${i.url}','_blank')"
-
-style="
-margin-top:15px;
-background:#5b5cf6;
-border:none;
-color:white;
-padding:10px 18px;
-border-radius:10px;
-cursor:pointer;
-">
-
-Open in PagerDuty
-
-</button>
-
-</div>
-
-`).join("")
-
-:
-
-`
-<div style="
-padding:50px;
-text-align:center;
-opacity:.6;
-font-size:18px;
-">
-
-No matching incidents found.
-
-</div>
-`;
-
-};
+        document.getElementById("incidentList").innerHTML = filtered.length ? filtered.map(i=>`
+            <div style="padding:18px; margin-bottom:15px; background:rgba(255,255,255,.05); border-radius:16px;">
+                <div style="font-size: var(--text-clamp-body); font-weight:bold;">#${i.incident}</div>
+                <div style="margin-top:8px; font-size: var(--text-clamp-small);">${i.title}</div>
+                <div style="margin-top:10px; opacity:.75; font-size: var(--text-clamp-small);">Status : <b>${i.status}</b></div>
+                <button onclick="window.open('${i.url}','_blank')" style="margin-top:15px; background:#5b5cf6; border:none; color:white; padding:10px 18px; border-radius:10px; cursor:pointer; font-size: var(--text-clamp-small);">Open in PagerDuty</button>
+            </div>
+        `).join("") : `<div style="padding:50px; text-align:center; opacity:.6; font-size: var(--text-clamp-body);">No matching incidents found.</div>`;
+    };
 
     document.getElementById("incidentModal").style.display = "flex";
-
 }
 
-window.closeIncidentModal = function(){
+window.closeIncidentModal = function(){ document.getElementById("incidentModal").style.display = "none"; }
 
-    document.getElementById("incidentModal").style.display = "none";
-
-}
 function formatTime(time){
-
     if(!time) return "--";
+    if(time.includes("AM") || time.includes("PM")) return time;
 
-    // Already contains AM/PM
-    if(time.includes("AM") || time.includes("PM")){
-        return time;
-    }
-
-    const [h,m] = time.split(":").map(Number);
-
+    const h = parseInt(time.split(":")[0], 10);
+    const m = parseInt(time.split(":")[1], 10);
     const d = new Date();
+    d.setHours(h); d.setMinutes(m);
 
-    d.setHours(h);
-    d.setMinutes(m);
-
-    return d.toLocaleTimeString([],{
-        hour:"2-digit",
-        minute:"2-digit",
-        hour12:true
-    });
-
+    return d.toLocaleTimeString([],{ hour:"2-digit", minute:"2-digit", hour12:true });
 }
+
 window.showShiftTeam = async function(){
-    console.log("View Team clicked");
-
     const TEAM = {
-
-"navya.teja@wbd.com":"Navya Teja",
-"praveen.sharma@wbd.com":"Praveen Sharma",
-"venkataharish.mitta@wbd.com":"Harish Mitta",
-"somana.nagasaikrishna@wbd.com":"Sai Krishna",
-"abhinandan.kumar@wbd.com":"Abhinandan",
-"yogananda.t@wbd.com":"Yogananda",
-"mathumitha.gosh@wbd.com":"Mathumitha",
-"vignesh.pandurangan@wbd.com":"Vignesh",
-"kuljeet.singh@wbd.com":"Kuljeet Singh",
-"mdmohtasim.alam@wbd.com":"Mohtasim Alam",
-"chitturisrijaya.venkatasurya@wbd.com":"Surya",
-"akash.vankadari@wbd.com":"Akash",
-"masani.reddy@wbd.com":"Sai Bhargav",
-"manisha.gutlapalli@wbd.com":"Manisha",
-"naveen.vonna@wbd.com":"Naveen",
-"sourabh.tiwari@wbd.com":"Sourabh Tiwari",
-"hajibasha.tadpatri@wbd.com":"Haji Basha",
-"raju.chintapally@wbd.com":"Raju Chintapally",
-"nagasatish.mattaparthi@wbd.com":"Naga Satish",
-"kumar.mude@wbd.com":"Kumar Naik",
-"kovvuridileep.srisaireddy@wbd.com":"Dileep Reddy",
-"manasa.g@wbd.com":"Manasa",
-"divya.m@wbd.com":"Divya",
-"linginenisampath.kumar@wbd.com":"Sampath Kumar",
-"mande.sri@wbd.com":"Yeshwanth Sri",
-"jyotisman.rath@wbd.com":"Jyotisman Rath",
-"aditya.gupta@wbd.com":"Aditya Gupta",
-"bhagyaraju.tn@wbd.com":"Bhagyaraju",
-"raghavendra.p@wbd.com":"Raghavendra P",
-"kush.vekaria@wbd.com":"Kush Vekeria",
-"danille.dones@wbd.com":"Danille Dones",
-"reginna.gregorio@wbd.com":"Reginna Gregorio",
-"paul.hobbs@wbd.com":"Paul Hobbs",
-"jaspal.bhatia@wbd.com":"Jaspal Bhatia"
+        "navya.teja@wbd.com":"Navya Teja",
+        "praveen.sharma@wbd.com":"Praveen Sharma",
+        "venkataharish.mitta@wbd.com":"Harish Mitta",
+        "somana.nagasaikrishna@wbd.com":"Sai Krishna",
+        "abhinandan.kumar@wbd.com":"Abhinandan",
+        "yogananda.t@wbd.com":"Yogananda",
+        "mathumitha.gosh@wbd.com":"Mathumitha",
+        "vignesh.pandurangan@wbd.com":"Vignesh",
+        "kuljeet.singh@wbd.com":"Kuljeet Singh",
+        "mdmohtasim.alam@wbd.com":"Mohtasim Alam",
+        "chitturisrijaya.venkatasurya@wbd.com":"Surya",
+        "akash.vankadari@wbd.com":"Vankadari Akash",
+        "masani.reddy@wbd.com":"Sai Bhargav",
+        "manisha.gutlapalli@wbd.com":"Manisha",
+        "naveen.vonna@wbd.com":"Naveen",
+        "sourabh.tiwari@wbd.com":"Sourabh Tiwari",
+        "hajibasha.tadpatri@wbd.com":"Haji Basha",
+        "raju.chintapally@wbd.com":"Raju Chintapally",
+        "nagasatish.mattaparthi@wbd.com":"Naga Satish",
+        "kumar.mude@wbd.com":"Kumar Naik",
+        "kovvuridileep.srisaireddy@wbd.com":"Dileep Reddy",
+        "manasa.g@wbd.com":"Manasa",
+        "divya.m@wbd.com":"Divya",
+        "linginenisampath.kumar@wbd.com":"Sampath Kumar",
+        "mande.sri@wbd.com":"Yeshwanth Sri",
+        "jyotisman.rath@wbd.com":"Jyotisman Rath",
+        "aditya.gupta@wbd.com":"Aditya Gupta",
+        "bhagyaraju.tn@wbd.com":"Bhagyaraju",
+        "raghavendra.p@wbd.com":"Raghavendra P",
+        "kush.vekaria@wbd.com":"Kush Vekeria",
+        "danille.dones@wbd.com":"Danille Dones",
+        "reginna.gorgorio@wbd.com":"Reginna Gregorio",
+        "paul.hobbs@wbd.com":"Paul Hobbs",
+        "jaspal.bhatia@wbd.com":"Jaspal Bhatia"
     };
 
     window.renderTeam = function(data){
-
-        let ready = 0;
-        let pending = 0;
-
-        let readyHTML = "";
-        let pendingHTML = "";
+        let ready = 0, pending = 0;
+        let readyHTML = "", pendingHTML = "";
 
         Object.entries(TEAM).forEach(([mail,name])=>{
-
-            const key = mail
-                .replace(/\./g,"_")
-                .replace(/@/g,"_");
-
+            const key = mail.replace(/\./g,"_").replace(/@/g,"_");
             const user = data[key];
 
             if(user && user.status==="active"){
-
                 ready++;
-
-                readyHTML += `
-                <div style="
-                    display:flex;
-                    justify-content:space-between;
-                    padding:12px 0;
-                    border-bottom:1px solid rgba(255,255,255,.06);
-                ">
-                    <div>🟢 ${name}</div>
-                    <div>${formatTime(user.loginTime)}</div>
-                </div>`;
-            }
-            else{
-
+                readyHTML += `<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.06);"><div>🟢 ${name}</div><div>${formatTime(user.loginTime)}</div></div>`;
+            }else{
                 pending++;
-
-                pendingHTML += `
-                <div style="
-                    display:flex;
-                    justify-content:space-between;
-                    padding:12px 0;
-                    border-bottom:1px solid rgba(255,255,255,.06);
-                ">
-                    <div>🟡 ${name}</div>
-                    <div>--</div>
-                </div>`;
+                pendingHTML += `<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.06);"><div>🟡 ${name}</div><div>--</div></div>`;
             }
-
         });
 
         document.getElementById("teamList").innerHTML = `
-            <div style="
-                font-size:22px;
-                font-weight:bold;
-                color:#22c55e;
-                margin-bottom:15px;
-            ">
-                🟢 READY (${ready})
-            </div>
-
+            <div style="font-size: var(--text-clamp-body); font-weight:bold; color:#22c55e; margin-bottom:15px;">🟢 READY (${ready})</div>
             ${readyHTML}
-
-            <div style="
-                margin:25px 0;
-                border-top:1px solid rgba(255,255,255,.08);
-            "></div>
-
-            <div style="
-                font-size:22px;
-                font-weight:bold;
-                color:#facc15;
-                margin:15px 0;
-            ">
-                🟡 PENDING (${pending})
-            </div>
-
+            <div style="margin:25px 0; border-top:1px solid rgba(255,255,255,.08);"></div>
+            <div style="font-size: var(--text-clamp-body); font-weight:bold; color:#facc15; margin:15px 0;">🟡 PENDING (${pending})</div>
             ${pendingHTML}
         `;
     }
 
     const data = await window.loadShiftStatus();
-
     renderTeam(data);
-
     document.getElementById("teamModal").style.display = "flex";
-
 };
 
-const today =
-new Date().toISOString().split("T")[0];
+/* ==========================================================================
+   FEATURE: MY TICKETS & TICKET ANALYTICS
+   ========================================================================== */
 
-onValue(
-
-ref(
-db,
-`navex-shifts/${today}`
-),
-
-(snapshot)=>{
-
-    const data = snapshot.val() || {};
-
-    window.updateShiftCard(data);
-
-    if(
-        document.getElementById("teamModal").style.display==="flex"
-        &&
-        window.renderTeam
-    ){
-        window.renderTeam(data);
-    }
-    window.renderLatestHandover();
-
+function getCurrentShiftName() {
+    const hr = new Date().getHours();
+    if (hr >= 6 && hr < 14) return "Morning";
+    if (hr >= 14 && hr < 22) return "Afternoon";
+    return "Night";
 }
 
-);
+function parseAndNormalizeTicketInput(rawInput) {
+    if (!rawInput) return null;
+    const clean = rawInput.trim().toUpperCase();
 
-console.log("✅ Firebase Live Listener Ready");
+    // ServiceNow Match
+    if (/^(INC[-_\s]*)?(\d{6,12})$/i.test(clean) && clean.startsWith("INC")) {
+        const num = clean.replace(/[^0-9]/g, "");
+        return { ticket: `INC${num}`, ticketType: "ServiceNow" };
+    }
+    if (/^INC[-_\s]*\d{6,12}$/i.test(clean)) {
+        const num = clean.replace(/[^0-9]/g, "");
+        return { ticket: `INC${num}`, ticketType: "ServiceNow" };
+    }
+
+    // PagerDuty Match
+    if (/^(PD[-_\s]*)?(\d{6,12})$/i.test(clean) && clean.startsWith("PD")) {
+        const num = clean.replace(/[^0-9]/g, "");
+        return { ticket: `PD${num}`, ticketType: "PagerDuty" };
+    }
+    if (/^PD[-_\s]*\d{6,12}$/i.test(clean)) {
+        const num = clean.replace(/[^0-9]/g, "");
+        return { ticket: `PD${num}`, ticketType: "PagerDuty" };
+    }
+
+    // Generic digits match (defaults to PagerDuty if pure digits)
+    if (/^\d{6,12}$/.test(clean)) {
+        return { ticket: `PD${clean}`, ticketType: "PagerDuty" };
+    }
+
+    return null;
+}
+
+window.handleAddWorkedTicket = async function() {
+    const inputEl = document.getElementById("quickTicketInput");
+    const errorEl = document.getElementById("ticketInputError");
+    const rawVal = inputEl.value;
+
+    errorEl.style.display = "none";
+    const parsed = parseAndNormalizeTicketInput(rawVal);
+
+    if (!parsed) {
+        errorEl.innerText = "Invalid ticket format. Examples: PD3486052 or INC1234567";
+        errorEl.style.display = "block";
+        return;
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    const userEmail = localStorage.getItem("navexUser") || "guest@wbd.com";
+    const engineerName = getSlackFormattedUserName(userEmail);
+    const shiftName = getCurrentShiftName();
+
+    const ticketRecord = {
+        date: today,
+        timestamp: Date.now(),
+        engineerEmail: userEmail,
+        engineerName: engineerName,
+        shift: shiftName,
+        ticket: parsed.ticket,
+        ticketType: parsed.ticketType
+    };
+
+    try {
+        const ticketRef = ref(db, `navex-worked-tickets/${today}/${parsed.ticket}`);
+        await set(ticketRef, ticketRecord);
+        inputEl.value = "";
+        loadMyTicketsToday();
+    } catch (err) {
+        console.error("Error saving ticket:", err);
+        errorEl.innerText = "Error saving ticket. Please try again.";
+        errorEl.style.display = "block";
+    }
+};
+
+window.handleDeleteWorkedTicket = async function(ticketId) {
+    const today = new Date().toISOString().split("T")[0];
+    try {
+        await remove(ref(db, `navex-worked-tickets/${today}/${ticketId}`));
+        loadMyTicketsToday();
+    } catch (err) {
+        console.error("Error deleting ticket:", err);
+    }
+};
+
+async function loadMyTicketsToday() {
+    const listEl = document.getElementById("myTicketsList");
+    if (!listEl) return;
+
+    const today = new Date().toISOString().split("T")[0];
+    const myEmail = localStorage.getItem("navexUser") || "guest@wbd.com";
+
+    try {
+        const snap = await get(ref(db, `navex-worked-tickets/${today}`));
+        if (!snap.exists()) {
+            listEl.innerHTML = `<div style="font-size:var(--text-clamp-small); opacity:0.5; font-style:italic;">No tickets logged today yet.</div>`;
+            return;
+        }
+
+        const data = snap.val();
+        const myTickets = Object.values(data).filter(t => t.engineerEmail === myEmail);
+
+        if (myTickets.length === 0) {
+            listEl.innerHTML = `<div style="font-size:var(--text-clamp-small); opacity:0.5; font-style:italic;">No tickets logged today yet.</div>`;
+            return;
+        }
+
+        myTickets.sort((a,b) => b.timestamp - a.timestamp);
+
+        listEl.innerHTML = myTickets.map(t => {
+            const isPD = t.ticketType === "PagerDuty";
+            const tagClass = isPD ? "pd" : "inc";
+            return `
+                <div class="ticket-tag ${tagClass}">
+                    <span><b>${t.ticketType}:</b> ${t.ticket}</span>
+                    <button class="ticket-delete-btn" onclick="handleDeleteWorkedTicket('${t.ticket}')" title="Remove">&times;</button>
+                </div>
+            `;
+        }).join("");
+
+    } catch (err) {
+        console.error("Failed to load tickets:", err);
+    }
+}
+
+// Modal Toggle & Tabs
+window.openTicketAnalyticsModal = function() {
+    document.getElementById("ticketAnalyticsModal").style.display = "flex";
+    populateEngineerSelects();
+    loadTicketExplorerData();
+};
+
+window.closeTicketAnalyticsModal = function() {
+    document.getElementById("ticketAnalyticsModal").style.display = "none";
+};
+
+window.switchAnalyticsTab = function(tabName) {
+    ["Explorer", "Search", "Engineer", "Metrics"].forEach(t => {
+        const el = document.getElementById(`analyticsTab${t}`);
+        const btn = document.getElementById(`tabBtn${t}`);
+        if (el) el.style.display = "none";
+        if (btn) btn.classList.remove("active");
+    });
+
+    const activeTab = document.getElementById(`analyticsTab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+    const activeBtn = document.getElementById(`tabBtn${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+    if (activeTab) activeTab.style.display = "block";
+    if (activeBtn) activeBtn.classList.add("active");
+
+    if (tabName === 'explorer') loadTicketExplorerData();
+    if (tabName === 'engineer') loadEngineerHistory();
+    if (tabName === 'metrics') loadDashboardMetrics();
+};
+
+function populateEngineerSelects() {
+    const filterEng = document.getElementById("analyticsFilterEngineer");
+    const selectEng = document.getElementById("analyticsSelectEngineer");
+
+    let options = `<option value="">All Engineers</option>`;
+    TEAM_MEMBERS.forEach(m => {
+        options += `<option value="${m.email}">${m.name}</option>`;
+    });
+
+    if (filterEng) filterEng.innerHTML = options;
+    if (selectEng) selectEng.innerHTML = TEAM_MEMBERS.map(m => `<option value="${m.email}">${m.name}</option>`).join("");
+}
+
+window.loadTicketExplorerData = async function() {
+    const tbody = document.getElementById("explorerTableBody");
+    tbody.innerHTML = `<tr><td colspan="4" style="padding:1rem; text-align:center;">Loading ticket records...</td></tr>`;
+
+    const fromDate = document.getElementById("analyticsFromDate").value;
+    const toDate = document.getElementById("analyticsToDate").value;
+    const engFilter = document.getElementById("analyticsFilterEngineer").value;
+    const typeFilter = document.getElementById("analyticsFilterType").value;
+    const numFilter = document.getElementById("analyticsFilterTicketNumber").value.trim().toUpperCase();
+
+    try {
+        const snap = await get(ref(db, `navex-worked-tickets`));
+        if (!snap.exists()) {
+            tbody.innerHTML = `<tr><td colspan="4" style="padding:1rem; text-align:center; opacity:0.6;">No ticket data recorded yet.</td></tr>`;
+            return;
+        }
+
+        const allDays = snap.val();
+        let allTickets = [];
+
+        Object.keys(allDays).forEach(date => {
+            if (fromDate && date < fromDate) return;
+            if (toDate && date > toDate) return;
+
+            Object.values(allDays[date]).forEach(t => {
+                if (engFilter && t.engineerEmail !== engFilter) return;
+                if (typeFilter && t.ticketType !== typeFilter) return;
+                if (numFilter && !t.ticket.includes(numFilter)) return;
+                allTickets.push(t);
+            });
+        });
+
+        allTickets.sort((a,b) => b.timestamp - a.timestamp);
+
+        if (allTickets.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="padding:1rem; text-align:center; opacity:0.6;">No matching tickets found.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = allTickets.map(t => `
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:0.6rem;">${t.date}</td>
+                <td style="padding:0.6rem;">${t.engineerName}</td>
+                <td style="padding:0.6rem;">${t.ticketType}</td>
+                <td style="padding:0.6rem; font-weight:bold;">${t.ticket}</td>
+            </tr>
+        `).join("");
+
+    } catch (err) {
+        console.error("Explorer error:", err);
+        tbody.innerHTML = `<tr><td colspan="4" style="padding:1rem; text-align:center; color:#fca5a5;">Failed to load data.</td></tr>`;
+    }
+};
+
+/**
+ * Normalizes ticket strings for comparison (e.g. "PD-3486052", "pd3486052", "3486052" -> "3486052")
+ */
+function normalizeTicketNumber(str) {
+    if (!str) return "";
+    return String(str).trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
+/**
+ * Extracts pure digits or core ticket code for flexible cross-matching
+ */
+function getCoreTicketNum(normalizedStr) {
+    return normalizedStr.replace(/^(PD|INC)/i, "");
+}
+
+window.handleTicketSearch = async function() {
+    console.log("Ticket Search started...");
+    
+    const queryInput = document.getElementById("searchTicketQuery");
+    const rawQuery = queryInput ? queryInput.value.trim() : "";
+    const resultEl = document.getElementById("searchTicketResult");
+
+    if (!rawQuery) {
+        resultEl.innerHTML = "<div style='opacity:0.6; padding:0.5rem 0;'>Please enter a ticket number to search.</div>";
+        return;
+    }
+
+    const normQuery = normalizeTicketNumber(rawQuery);
+    const coreQueryNum = getCoreTicketNum(normQuery);
+
+    console.log("Searching for:", rawQuery);
+    console.log("Normalized Query:", normQuery, "| Core Digits:", coreQueryNum);
+    console.log("Querying Firebase...");
+
+    resultEl.innerHTML = "<div style='opacity:0.7;'>Searching Firebase...</div>";
+
+    try {
+        // Querying the existing navex-worked-tickets collection
+        const snap = await get(ref(db, `navex-worked-tickets`));
+
+        if (!snap.exists()) {
+            console.log("No tickets exist in navex-worked-tickets collection.");
+            resultEl.innerHTML = `<div style="opacity:0.6; padding:1rem 0;">No matching ticket found.</div>`;
+            return;
+        }
+
+        const allDays = snap.val();
+        let matches = [];
+
+        Object.keys(allDays).forEach(date => {
+            Object.values(allDays[date]).forEach(t => {
+                if (!t || !t.ticket) return;
+
+                const normStored = normalizeTicketNumber(t.ticket);
+                const coreStoredNum = getCoreTicketNum(normStored);
+
+                // Check exact match, normalized match, or core digit match
+                if (normStored === normQuery || coreStoredNum === coreQueryNum || normStored.includes(normQuery)) {
+                    matches.push(t);
+                }
+            });
+        });
+
+        if (matches.length === 0) {
+            console.log("No matching ticket found for query:", rawQuery);
+            resultEl.innerHTML = `<div style="opacity:0.6; padding:1rem 0;">No matching ticket found.</div>`;
+            return;
+        }
+
+        matches.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        // Step 6 Log returned object
+        console.log("Ticket found:", matches[0]);
+        console.log("Rendering search result...");
+
+        resultEl.innerHTML = matches.map(t => {
+            const timeFormatted = t.timestamp 
+                ? new Date(t.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+                : "--";
+
+            return `
+                <div style="background:rgba(255,255,255,0.05); padding:1.25rem; border-radius:0.875rem; margin-bottom:0.75rem; border: 1px solid rgba(255,255,255,0.08);">
+                    <div style="font-weight:bold; font-size:1.15rem; color:#79b8ff; margin-bottom:0.5rem;">
+                        ${t.ticket} (${t.ticketType || "Unknown"})
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:0.5rem; font-size:var(--text-clamp-small);">
+                        <div><b>Engineer Name:</b> ${t.engineerName || "N/A"}</div>
+                        <div><b>Ticket Type:</b> ${t.ticketType || "N/A"}</div>
+                        <div><b>Date:</b> ${t.date || "N/A"}</div>
+                        <div><b>Time:</b> ${timeFormatted}</div>
+                        <div><b>Shift:</b> ${t.shift || "N/A"}</div>
+                        <div><b>Status:</b> <span style="color:#22c55e; font-weight:bold;">Logged</span></div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    } catch (error) {
+        // Step 2 – Replace Generic Error with detailed Error reporting
+        console.error("Single Ticket Search Error:", error);
+        console.error("Firebase Error Code:", error.code || "N/A");
+        console.error("Firebase Error Message:", error.message || error.toString());
+
+        alert(`Firebase Search Error:\nCode: ${error.code || 'UNKNOWN'}\nMessage: ${error.message || error.toString()}`);
+
+        resultEl.innerHTML = `
+            <div style="color:#fca5a5; padding:1rem; background:rgba(239,68,68,0.1); border-radius:0.5rem;">
+                <b>Search Error Details:</b><br>
+                <span>Code: ${error.code || 'UNKNOWN'}</span><br>
+                <span>Message: ${error.message || error.toString()}</span>
+            </div>
+        `;
+    }
+};
+
+window.loadEngineerHistory = async function() {
+    const engEmail = document.getElementById("analyticsSelectEngineer").value;
+    const cardEl = document.getElementById("engineerHistoryCard");
+    if (!engEmail) return;
+
+    cardEl.innerHTML = "Loading history...";
+
+    try {
+        const snap = await get(ref(db, `navex-worked-tickets`));
+        if (!snap.exists()) {
+            cardEl.innerHTML = "<div style='opacity:0.6;'>No ticket history found.</div>";
+            return;
+        }
+
+        const allDays = snap.val();
+        let engTickets = [];
+
+        Object.keys(allDays).forEach(date => {
+            Object.values(allDays[date]).forEach(t => {
+                if (t.engineerEmail === engEmail) {
+                    engTickets.push(t);
+                }
+            });
+        });
+
+        if (engTickets.length === 0) {
+            cardEl.innerHTML = `<div style="opacity:0.6; padding:1rem 0;">No tickets recorded for this engineer.</div>`;
+            return;
+        }
+
+        engTickets.sort((a,b) => b.timestamp - a.timestamp);
+
+        const pdCount = engTickets.filter(t => t.ticketType === "PagerDuty").length;
+        const snowCount = engTickets.filter(t => t.ticketType === "ServiceNow").length;
+
+        cardEl.innerHTML = `
+            <div style="display:flex; gap:1rem; margin-bottom:1rem; background:rgba(255,255,255,0.05); padding:1rem; border-radius:0.75rem;">
+                <div>Total Worked: <b>${engTickets.length}</b></div>
+                <div>PagerDuty: <b>${pdCount}</b></div>
+                <div>ServiceNow: <b>${snowCount}</b></div>
+            </div>
+            <div style="max-height:15rem; overflow-y:auto; display:flex; flex-direction:column; gap:0.5rem;">
+                ${engTickets.map(t => `
+                    <div style="background:rgba(255,255,255,0.03); padding:0.6rem 0.8rem; border-radius:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                        <span><b>${t.ticket}</b> (${t.ticketType})</span>
+                        <span style="opacity:0.6; font-size:var(--text-clamp-small);">${t.date}</span>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+
+    } catch (err) {
+        console.error("Engineer history error:", err);
+        cardEl.innerHTML = "<div style='color:#fca5a5;'>Failed to load engineer history.</div>";
+    }
+};
+
+async function loadDashboardMetrics() {
+    const container = document.getElementById("dashboardMetricsContainer");
+    container.innerHTML = "Calculating metrics...";
+
+    try {
+        const snap = await get(ref(db, `navex-worked-tickets`));
+        if (!snap.exists()) {
+            container.innerHTML = "<div style='opacity:0.6;'>No metrics data available yet.</div>";
+            return;
+        }
+
+        const allDays = snap.val();
+        let totalTickets = 0;
+        let pdTotal = 0;
+        let snowTotal = 0;
+        let engineerCounts = {};
+
+        Object.keys(allDays).forEach(date => {
+            Object.values(allDays[date]).forEach(t => {
+                totalTickets++;
+                if (t.ticketType === "PagerDuty") pdTotal++;
+                if (t.ticketType === "ServiceNow") snowTotal++;
+
+                const eng = t.engineerName || "Unknown";
+                engineerCounts[eng] = (engineerCounts[eng] || 0) + 1;
+            });
+        });
+
+        const sortedEngineers = Object.entries(engineerCounts).sort((a,b) => b[1] - a[1]);
+
+        container.innerHTML = `
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+                <div style="background:rgba(255,255,255,0.05); padding:1rem; border-radius:0.75rem; text-align:center;">
+                    <div style="font-size:1.5rem; font-weight:bold;">${totalTickets}</div>
+                    <div style="opacity:0.7; font-size:var(--text-clamp-small);">Total Tickets Worked</div>
+                </div>
+                <div style="background:rgba(234, 179, 8, 0.15); padding:1rem; border-radius:0.75rem; text-align:center;">
+                    <div style="font-size:1.5rem; font-weight:bold; color:#fef08a;">${pdTotal}</div>
+                    <div style="opacity:0.7; font-size:var(--text-clamp-small);">PagerDuty Total</div>
+                </div>
+                <div style="background:rgba(239, 68, 68, 0.15); padding:1rem; border-radius:0.75rem; text-align:center;">
+                    <div style="font-size:1.5rem; font-weight:bold; color:#fca5a5;">${snowTotal}</div>
+                    <div style="opacity:0.7; font-size:var(--text-clamp-small);">ServiceNow Total</div>
+                </div>
+            </div>
+
+            <h3>🏆 Top Contributors</h3>
+            <div style="max-height:12rem; overflow-y:auto; display:flex; flex-direction:column; gap:0.4rem;">
+                ${sortedEngineers.map(([eng, cnt]) => `
+                    <div style="display:flex; justify-content:space-between; background:rgba(255,255,255,0.03); padding:0.5rem 0.8rem; border-radius:0.5rem;">
+                        <span>${eng}</span>
+                        <b>${cnt} tickets</b>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+
+    } catch (err) {
+        console.error("Metrics error:", err);
+        container.innerHTML = "<div style='color:#fca5a5;'>Failed to render metrics.</div>";
+    }
+}
+
+// Initial loads
+window.addEventListener("load", () => {
+    loadMyTicketsToday();
+    renderLatestHandover();
+    loadShiftStatus();
+});
 
 </script>
 
-<!-- ================= INCIDENT CENTER ================= -->
-
-<div id="incidentModal"
-
-style="
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.7);
-backdrop-filter:blur(10px);
-justify-content:center;
-align-items:center;
-z-index:99999;
-">
-
-<div
-
-style="
-width:760px;
-max-width:92%;
-max-height:82vh;
-overflow:auto;
-background:#121826;
-border-radius:22px;
-padding:25px;
-color:white;
-">
-
-<div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-">
-
-<h2 id="incidentTitle"
-style="margin:0;">
-PagerDuty Incidents
-</h2>
-
-<button
-
-onclick="closeIncidentModal()"
-
-style="
-background:#ef4444;
-border:none;
-color:white;
-padding:8px 15px;
-border-radius:10px;
-cursor:pointer;
-">
-
-Close
-
-</button>
-
-</div>
-
-<input
-
-id="incidentSearch"
-
-type="text"
-
-placeholder="🔍 Search incidents..."
-
-style="
-width:100%;
-padding:14px;
-margin-bottom:18px;
-border:none;
-border-radius:12px;
-font-size:15px;
-outline:none;
-background:rgba(255,255,255,.08);
-color:white;
-">
-
-<div id="incidentList">
-
-Loading...
-
-</div>
-
-</div>
-
-</div>
-<div
-id="handoverModal"
-style="
-display:none;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.65);
-backdrop-filter:blur(8px);
-z-index:99999;
-">
-
-<div
-style="
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-width:700px;
-max-width:90%;
-max-height:80%;
-overflow:auto;
-background:#1d2233;
-border-radius:18px;
-padding:24px;
-color:white;
-box-shadow:0 20px 60px rgba(0,0,0,.45);
-">
-
-<div
-style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:18px;
-">
-
-<h2 style="margin:0;">
-📝 Shift Handover
-</h2>
-
-<span
-id="closeHandover"
-style="
-font-size:28px;
-cursor:pointer;
-opacity:.7;
-">
-✕
-</span>
-
-</div>
-
-<div id="handoverBody"></div>
-
-</div>
-
-</div>
-
-<!-- ============================= -->
-<!-- Handover History Modal -->
-<!-- ============================= -->
-
-<div
-
-id="handoverHistoryModal"
-
-style="
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.65);
-backdrop-filter:blur(8px);
-z-index:99999;
-justify-content:center;
-align-items:center;
-">
-
-<div
-
-style="
-width:760px;
-max-width:92%;
-max-height:82vh;
-background:#1d1f24;
-border-radius:22px;
-padding:24px;
-display:flex;
-flex-direction:column;
-box-shadow:0 20px 60px rgba(0,0,0,.45);
-">
-
-<!-- Header -->
-
-<div
-style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-">
-
-<div
-style="
-font-size:28px;
-font-weight:700;
-">
-📜 Handover History
-</div>
-
-<div
-
-id="closeHistory"
-
-style="
-font-size:30px;
-cursor:pointer;
-opacity:.7;
-">
-
-✕
-
-</div>
-
-</div>
-
-<!-- Search -->
-
-<input
-
-id="handoverSearch"
-
-placeholder="Search engineer, PD number, event, keyword..."
-
-style="
-margin-top:18px;
-padding:14px 18px;
-border-radius:12px;
-border:none;
-outline:none;
-font-size:15px;
-background:#2a2d35;
-color:white;
-">
-
-<!-- Results -->
-
-<div
-
-id="handoverHistoryList"
-
-style="
-margin-top:20px;
-overflow-y:auto;
-flex:1;
-">
-
-Loading...
-
-</div>
-
-</div>
-
-</div>
-</div>
 </body>
-
 </html>
