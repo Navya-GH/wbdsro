@@ -1878,7 +1878,7 @@ async function acknowledgeShift(){
             loginTime:loginTime,
             loginEpoch: Date.now(),
             logoutTime:null,
-            loginNotes:document.getElementById("shiftNotes").value,
+            loginNotes:document.getElementById("shiftNotes") ? document.getElementById("shiftNotes").value : "",
             logoutNotes:"",
             date:now.toISOString().split("T")[0]
         };
@@ -1888,35 +1888,27 @@ async function acknowledgeShift(){
             await window.saveShiftToFirebase(shiftData);
         }
 
-        const userName = getSlackFormattedUserName(shiftData.user);
-        const formattedISTTime = getSlackISTTime();
+        const userName = typeof getSlackFormattedUserName === "function" ? getSlackFormattedUserName(shiftData.user) : shiftData.user;
+        const formattedISTTime = typeof getSlackISTTime === "function" ? getSlackISTTime() : loginTime;
 
-        sendSlackNotification({
-            blocks: [
-                {
-                    type: "header",
-                    text: { type: "plain_text", text: "🟢 Shift Login", emoji: true }
-                },
-                {
-                    type: "section",
-                    fields: [
-                        { type: "mrkdwn", text: `*User:*\n${userName}` },
-                        { type: "mrkdwn", text: `*Time:*\n${formattedISTTime}` },
-                        { type: "mrkdwn", text: `*Status:*\nLogged In` }
-                    ]
-                }
-            ]
-        });
+        // Login notification with double spaces around hyphen and pipe lines
+        if (typeof sendSlackNotification === "function") {
+            sendSlackNotification(`:large_green_circle: Shift Login       -      User: ${userName} |         Time: ${formattedISTTime} |                     Status: Logged In`);
+        }
 
         localStorage.setItem("todayShift", JSON.stringify(shiftData));
 
         const btn = document.getElementById("shiftBtn");
-        const displayTime = loginTime || shiftData.loginTime || "--";
-        btn.innerHTML = `🟢 Shift Active<br><small>${displayTime}</small>`;
-        btn.style.background="#16a34a";
-        btn.onclick=openEndShiftModal;
+        if (btn) {
+            const displayTime = loginTime || shiftData.loginTime || "--";
+            btn.innerHTML = `🟢 Shift Active<br><small>${displayTime}</small>`;
+            btn.style.background="#16a34a";
+            btn.onclick=openEndShiftModal;
+        }
 
-        closeShiftModal();
+        if (typeof closeShiftModal === "function") {
+            closeShiftModal();
+        }
     }catch(err){
         console.error("Shift Save Error:", err);
         alert(err.message);
@@ -1925,28 +1917,32 @@ async function acknowledgeShift(){
 
 async function endShift(){
     try{
-        const notes = document.getElementById("endShiftNotes").value;
+        const notes = document.getElementById("endShiftNotes") ? document.getElementById("endShiftNotes").value : "";
         const user = localStorage.getItem("navexUser");
-        const userName = getSlackFormattedUserName(user);
-        const formattedISTTime = getSlackISTTime();
+        const userName = typeof getSlackFormattedUserName === "function" ? getSlackFormattedUserName(user) : user;
+        const formattedISTTime = typeof getSlackISTTime === "function" ? getSlackISTTime() : new Date().toLocaleTimeString();
 
-        // Dispatch Slack Handover Notification
-        if (typeof parseHandoverToBlockKit === "function") {
-            const blockPayload = parseHandoverToBlockKit(notes, userName, formattedISTTime, "Shift Handover");
-            sendSlackNotification(blockPayload);
+        // 1. Single-line Logout Notification sent directly from endShift
+        if (typeof sendSlackNotification === "function") {
+            sendSlackNotification(`:red_circle: Shift Logout       -      User: ${userName} |         Time: ${formattedISTTime} |                     Status: Logged out`);
         }
 
+        // 2. window.endShiftInFirebase handles Firebase updates and appends Handover details if provided
         if (window.endShiftInFirebase) {
             await window.endShiftInFirebase(notes);
         }
 
         localStorage.removeItem("todayShift");
         const btn = document.getElementById("shiftBtn");
-        btn.innerHTML="Logging into Shift";
-        btn.style.background="";
-        btn.onclick=openShiftModal;
+        if (btn) {
+            btn.innerHTML="Logging into Shift";
+            btn.style.background="";
+            btn.onclick=openShiftModal;
+        }
 
-        closeEndShiftModal();
+        if (typeof closeEndShiftModal === "function") {
+            closeEndShiftModal();
+        }
         if (typeof loadShiftStatus === "function") {
             await loadShiftStatus();
         }
@@ -1955,7 +1951,6 @@ async function endShift(){
         alert(err.message);
     }
 }
-
 function updateShiftProgress(){
 const checks = document.querySelectorAll(".shiftCheck");
 const completed = [...checks].filter(c=>c.checked).length;
