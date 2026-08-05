@@ -2036,6 +2036,14 @@ window.saveShiftToFirebase = async function(shiftData){
         loginTimestamp: new Date().toISOString()
     };
 
+    // --- ADD THIS LINE BELOW ---
+    // Automatically tags MORNING, GENERAL, or UNKNOWN based on login hour in IST
+    shiftData.shiftType = (() => {
+        const hour = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', hour: 'numeric', hour12: false }).format(new Date(shiftData.loginEpoch)), 10);
+        return (hour >= 5 && hour < 7) ? "MORNING" : (hour >= 9 && hour < 11) ? "GENERAL" : "UNKNOWN";
+    })();
+    // ---------------------------
+
     const email = shiftData.user.replace(/\./g,"_").replace(/@/g,"_");
     await set(ref(db, `navex-shifts/${shiftData.date}/${email}`), shiftData);
 };
