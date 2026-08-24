@@ -1741,7 +1741,7 @@ document.addEventListener("touchstart", startVideo, {once:true});
 async function loadPagerDuty(){
 try{
 const TOKEN="u+mnguNsLNMzxz7KoUuA";
-const res=await fetch("https://api.pagerduty.com/incidents?team_ids[]=PK3J30X&statuses[]=triggered&statuses[]=acknowledged&limit=100", {
+const res=await fetch("https://api.pagerduty.com/incidents?team_ids[]=PDFK6AA&statuses[]=triggered&statuses[]=acknowledged&limit=100", {
 headers:{ Authorization:`Token token=${TOKEN}`, Accept:"application/vnd.pagerduty+json;version=2" }
 });
 const data=await res.json();
@@ -1830,16 +1830,29 @@ if(e.key==="Enter"){ e.preventDefault(); sendChat(); }
 });
 
 const saved = localStorage.getItem("todayShift");
+const btn = document.getElementById("shiftBtn");
 if(saved){
     const shift = JSON.parse(saved);
     const today = new Date().toISOString().split("T")[0];
     if(shift.date===today){
-        const btn = document.getElementById("shiftBtn");
-        btn.innerHTML = `✅ Shift Logged<br><small>${shift.loginTime}</small>`;
-        btn.style.background = "#16a34a";
-        btn.onclick = openEndShiftModal;
+        if (btn) {
+            btn.innerHTML = `🟢 Shift Active<br><small>${shift.loginTime}</small>`;
+            btn.style.background = "#16a34a";
+            btn.onclick = openEndShiftModal;
+        }
     }else{
         localStorage.removeItem("todayShift");
+        if (btn) {
+            btn.innerHTML = "🔴 Shift Login";
+            btn.style.background = "#ef4444";
+            btn.onclick = openShiftModal;
+        }
+    }
+} else {
+    if (btn) {
+        btn.innerHTML = "🔴 Shift Login";
+        btn.style.background = "#ef4444";
+        btn.onclick = openShiftModal;
     }
 }
 
@@ -1861,14 +1874,39 @@ rail.scrollTo({ left: current * cardWidth, behavior:"smooth" });
 },4500);
 }
 
-function openShiftModal(){ document.getElementById("shiftModal").style.display="flex"; }
+function openShiftModal(){ 
+    const saved = localStorage.getItem("todayShift");
+    if (saved) {
+        const shift = JSON.parse(saved);
+        const rawUserEmail = localStorage.getItem("navexUser") || "";
+        const userName = typeof getSlackFormattedUserName === "function" ? getSlackFormattedUserName(rawUserEmail) : rawUserEmail;
+        alert(`Hi ${userName},\nYou are already logged in. Have a great shift ahead!`);
+        return;
+    }
+    document.getElementById("shiftModal").style.display="flex"; 
+}
 function closeShiftModal(){ document.getElementById("shiftModal").style.display="none"; }
 function openEndShiftModal(){ document.getElementById("endShiftModal").style.display="flex"; }
 function closeEndShiftModal(){ document.getElementById("endShiftModal").style.display="none"; }
 function closeTeamModal(){ document.getElementById("teamModal").style.display="none"; }
 
+let isLoginProcessing = false;
+
 async function acknowledgeShift(){
-    try{
+    if (isLoginProcessing) return;
+    if (localStorage.getItem("todayShift")) {
+        const rawUserEmail = localStorage.getItem("navexUser") || "";
+        const userName = typeof getSlackFormattedUserName === "function" ? getSlackFormattedUserName(rawUserEmail) : rawUserEmail;
+        alert(`Hi ${userName},\nYou are already logged in. Have a great shift ahead!`);
+        closeShiftModal();
+        return;
+    }
+
+    try {
+        isLoginProcessing = true;
+        const ackBtn = document.getElementById("ackBtn");
+        if (ackBtn) ackBtn.disabled = true;
+
         const now = new Date();
         const loginTime = now.toLocaleTimeString([],{ hour:"2-digit", minute:"2-digit" });
 
@@ -1891,7 +1929,6 @@ async function acknowledgeShift(){
         const userName = typeof getSlackFormattedUserName === "function" ? getSlackFormattedUserName(shiftData.user) : shiftData.user;
         const formattedISTTime = typeof getSlackISTTime === "function" ? getSlackISTTime() : loginTime;
 
-        // Login notification with double spaces around hyphen and pipe lines
         if (typeof sendSlackNotification === "function") {
             sendSlackNotification(`:large_green_circle: Shift Login       -      User: ${userName} |         Time: ${formattedISTTime} |                     Status: Logged In`);
         }
@@ -1909,25 +1946,55 @@ async function acknowledgeShift(){
         if (typeof closeShiftModal === "function") {
             closeShiftModal();
         }
-    }catch(err){
+
+        let hr = new Date().getHours();
+        let timeGreeting = hr < 12 ? "Good Morning!" : hr < 18 ? "Good Afternoon!" : "Good Evening!";
+        alert(`Hi ${userName}, ${timeGreeting}\nHave a great shift ahead!`);
+
+    } catch(err) {
         console.error("Shift Save Error:", err);
         alert(err.message);
+    } finally {
+        isLoginProcessing = false;
+        const ackBtn = document.getElementById("ackBtn");
+        if (ackBtn) ackBtn.disabled = false;
     }
 }
 
+// Modified replacement code
+let isLogoutProcessing = false;
+
 async function endShift(){
-    try{
+    if (isLogoutProcessing) return;
+
+    if (!localStorage.getItem("todayShift")) {
+        const rawUserEmail = localStorage.getItem("navexUser") || "";
+        const userName = typeof getSlackFormattedUserName === "function" ? getSlackFormattedUserName(rawUserEmail) : rawUserEmail;
+        alert(`Hi ${userName},\nYou are already logged out.`);
+        closeEndShiftModal();
+        return;
+    }
+
+    // Step 1: Show confirmation popup before making any changes
+    const isConfirmed = confirm("Are you sure you want to logout from the shift?");
+    if (!isConfirmed) {
+        // Step 2: User selected Cancel / No -> Abort logout process completely
+        return;
+    }
+
+    // Step 3: User selected Confirm / Yes -> Execute existing logout flow
+    try {
+        isLogoutProcessing = true;
+
         const notes = document.getElementById("endShiftNotes") ? document.getElementById("endShiftNotes").value : "";
         const user = localStorage.getItem("navexUser");
         const userName = typeof getSlackFormattedUserName === "function" ? getSlackFormattedUserName(user) : user;
         const formattedISTTime = typeof getSlackISTTime === "function" ? getSlackISTTime() : new Date().toLocaleTimeString();
 
-        // 1. Single-line Logout Notification sent directly from endShift
         if (typeof sendSlackNotification === "function") {
             sendSlackNotification(`:red_circle: Shift Logout       -      User: ${userName} |         Time: ${formattedISTTime} |                     Status: Logged out`);
         }
 
-        // 2. window.endShiftInFirebase handles Firebase updates and appends Handover details if provided
         if (window.endShiftInFirebase) {
             await window.endShiftInFirebase(notes);
         }
@@ -1935,9 +2002,9 @@ async function endShift(){
         localStorage.removeItem("todayShift");
         const btn = document.getElementById("shiftBtn");
         if (btn) {
-            btn.innerHTML="Logging into Shift";
-            btn.style.background="";
-            btn.onclick=openShiftModal;
+            btn.innerHTML = "🔴 Shift Login";
+            btn.style.background = "#ef4444";
+            btn.onclick = openShiftModal;
         }
 
         if (typeof closeEndShiftModal === "function") {
@@ -1946,9 +2013,15 @@ async function endShift(){
         if (typeof loadShiftStatus === "function") {
             await loadShiftStatus();
         }
-    }catch(err){
+
+        // Step 4: Show personalized success popup AFTER logout completes successfully
+        alert(`Hi ${userName}\nYou have successfully logged out from the shift. Have a great day ahead.`);
+
+    } catch(err) {
         console.error("End Shift Error:", err);
         alert(err.message);
+    } finally {
+        isLogoutProcessing = false;
     }
 }
 function updateShiftProgress(){
@@ -2094,20 +2167,6 @@ window.endShiftInFirebase = async function(logoutNotes){
 
     const userName = getSlackFormattedUserName(data.user || rawUserEmail);
     const formattedISTTime = getSlackISTTime();
-
-    sendSlackNotification({
-        blocks: [
-            { type: "header", text: { type: "plain_text", text: "🔴 Shift Logout", emoji: true } },
-            {
-                type: "section",
-                fields: [
-                    { type: "mrkdwn", text: `*User:*\n${userName}` },
-                    { type: "mrkdwn", text: `*Time:*\n${formattedISTTime}` },
-                    { type: "mrkdwn", text: `*Status:*\nLogged Out` }
-                ]
-            }
-        ]
-    });
 
     if (logoutNotes && logoutNotes.trim() !== "") {
         const shiftRange = (data.loginTime && data.logoutTime) 
