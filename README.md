@@ -12,3 +12,8 @@ URL : https://github.com/Navya-GH/wbdsro/releases/download/v1.0.0/RG.mp4
 3) Added login/logout confirmation and status messages.
 4) Updated PagerDuty team ID for incident retrieval.
 5) Improved shift button state handling.
+
+**Deploying an updated version of shift handover**
+1) Increased the efficiency of handover from navex to slack integration message .
+2) track the effort for particular individuals who worked on PD tickets .
+3) Created a Habdover functionality in this version.

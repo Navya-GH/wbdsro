@@ -831,6 +831,27 @@ a {
     }
 }
 
+
+/* ===== SHIFT HANDOVER FORM (new) ===== */
+#shiftHandoverModal > div { max-height: 90vh; overflow-y: auto; font-size: var(--text-clamp-small); }
+.sh-label { display:block; margin:1rem 0 0.35rem; font-weight:700; }
+.sh-input { width:100%; padding:0.6rem 0.8rem; border-radius:0.75rem; border:none; outline:none; background:rgba(255,255,255,0.08); color:white; font-size:var(--text-clamp-small); font-family:inherit; }
+.sh-input option { color:#000; }
+textarea.sh-input { resize:vertical; }
+.sh-card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:0.875rem; padding:0.75rem; margin-top:0.5rem; display:flex; flex-direction:column; gap:0.5rem; }
+.sh-row { display:flex; gap:0.5rem; align-items:center; }
+.sh-row > .sh-input { flex:1; min-width:0; }
+.sh-remove { background:transparent; border:none; color:rgba(255,255,255,.6); font-size:1.25rem; line-height:1; padding:0 0.4rem; }
+.sh-remove:hover { color:#ef4444; }
+.sh-add { margin-top:0.5rem; padding:0.5rem 0.9rem; border:none; border-radius:0.75rem; background:linear-gradient(135deg,#5b5cf6,#8b5cf6); color:white; font-weight:bold; font-size:var(--text-clamp-small); }
+.sh-details summary { cursor:pointer; padding:0.55rem 0.8rem; border-radius:0.75rem; background:rgba(255,255,255,0.08); user-select:none; }
+.sh-check-list { max-height:9rem; overflow-y:auto; margin-top:0.4rem; padding:0.4rem 0.6rem; border-radius:0.75rem; background:rgba(0,0,0,0.25); display:grid; grid-template-columns:repeat(auto-fill,minmax(10rem,1fr)); gap:0.25rem 0.75rem; }
+.sh-check { display:flex; gap:0.4rem; align-items:center; cursor:pointer; }
+.sh-banner { padding:0.75rem 0.9rem; border-radius:0.875rem; line-height:1.5; margin-top:0.75rem; }
+.sh-banner.info { background:rgba(59,130,246,0.18); border:1px solid rgba(59,130,246,0.35); color:#bfdbfe; }
+.sh-banner.warn { background:rgba(234,179,8,0.15); border:1px solid rgba(234,179,8,0.3); color:#fef08a; }
+.sh-banner.err { background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#fca5a5; }
+
 </style>
 
 </head>
@@ -959,6 +980,10 @@ Sign in to continue
                 Shift Login
             </button>
 
+            <button type="button" onclick="openShiftHandoverForm()" style="margin-top:0.625rem; width:100%; height:3.125rem; border:none; border-radius:0.875rem; cursor:pointer; font-size: var(--text-clamp-small); font-weight:600; background:linear-gradient(135deg,#5b5cf6,#8b5cf6); color:white;">
+                📋 Shift Handover
+            </button>
+
             <button onclick="showShiftTeam()" style="margin-top:0.625rem; width:100%; height:3.125rem; position:relative; z-index:10; pointer-events:auto; border:none; border-radius:0.875rem; cursor:pointer; font-size: var(--text-clamp-small); background:rgba(255,255,255,.08); color:white;">
                 👥 View Team
             </button>
@@ -1059,12 +1084,72 @@ Sign in to continue
         <label><input class="endShiftCheck" type="checkbox"> No Active Investigations</label><br><br>
         <label><input class="endShiftCheck" type="checkbox"> Teams Status Updated</label>
 
-        <textarea id="endShiftNotes" placeholder="Anything to tell next shift..." style="margin-top:1.25rem; width:100%; height:5.625rem; border:none; border-radius:0.875rem; padding:0.75rem; resize:none;"></textarea>
+        <div style="margin-top:1.25rem; padding:0.875rem; border-radius:1rem; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);">
+            <div style="font-weight:700;">📋 Shift Handover <span style="opacity:.6; font-weight:400;">(optional)</span></div>
+            <div id="endShiftHandoverStatus" style="margin-top:0.35rem; opacity:.85; line-height:1.5;">Checking handover status...</div>
+            <button type="button" id="endShiftHandoverBtn" onclick="openShiftHandoverForm()" style="margin-top:0.625rem; padding:0.6rem 1rem; border:none; border-radius:0.75rem; background:linear-gradient(135deg,#5b5cf6,#8b5cf6); color:white; font-weight:bold; cursor:pointer;">📋 Shift Handover</button>
+            <div style="margin-top:0.5rem; opacity:.6;">You can log out whether or not a handover is submitted.</div>
+        </div>
 
         <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
             <button onclick="closeEndShiftModal()" style="padding:0.75rem 1.125rem; border:none; border-radius:0.75rem; cursor:pointer;">Cancel</button>
             <button style="padding:0.75rem 1.125rem; border:none; border-radius:0.75rem; background:#ef4444; color:white; cursor:pointer;" onclick="endShift()">End Shift</button>
         </div>
+    </div>
+</div>
+
+<!-- ================= SHIFT HANDOVER FORM MODAL (new) ================= -->
+<div id="shiftHandoverModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(12px); justify-content:center; align-items:center; z-index:10000;">
+    <div style="width:44rem; max-width:95%; background:rgba(15,23,42,.95); border-radius:1.5rem; padding:1.75rem; border:1px solid rgba(255,255,255,.08);">
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="margin:0;">📋 Shift Handover</h2>
+            <button type="button" onclick="closeShiftHandoverForm()" style="border:none; background:#ef4444; color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; cursor:pointer;">Close</button>
+        </div>
+
+        <div id="shStatusBanner" class="sh-banner info" style="display:none;"></div>
+
+        <div id="shFormBody">
+
+            <label class="sh-label" for="shShiftSelect">Shift <span id="shShiftNote" style="font-weight:400; opacity:.6;"></span></label>
+            <div class="sh-row">
+                <select id="shShiftSelect" class="sh-input" onchange="shRefreshState()">
+                    <option value="SHIFT_1">Shift 1 — 06:00 AM – 04:00 PM IST</option>
+                    <option value="SHIFT_2">Shift 2 — 10:00 AM – 08:00 PM IST</option>
+                </select>
+                <span id="shDateText" style="white-space:nowrap; opacity:.8;"></span>
+            </div>
+
+            <label class="sh-label" for="shLive">LIVE EVENTS</label>
+            <textarea id="shLive" class="sh-input" rows="3" maxlength="5000" placeholder="Live event information..."></textarea>
+
+            <label class="sh-label" for="shVod">VOD EVENTS</label>
+            <textarea id="shVod" class="sh-input" rows="3" maxlength="5000" placeholder="VOD event information..."></textarea>
+
+            <label class="sh-label">PDs WORKED</label>
+            <div id="shPdList"></div>
+            <button type="button" class="sh-add" onclick="shAddPd()">+ Add PD</button>
+
+            <label class="sh-label">INCs WORKED</label>
+            <div id="shIncList"></div>
+            <button type="button" class="sh-add" onclick="shAddInc()">+ Add INC</button>
+
+            <label class="sh-label">HYPERLINKS</label>
+            <div id="shLinkList"></div>
+            <button type="button" class="sh-add" onclick="shAddLink()">+ Add Hyperlink</button>
+
+            <label class="sh-label" for="shAdditional">ADDITIONAL INFORMATION</label>
+            <textarea id="shAdditional" class="sh-input" rows="3" maxlength="5000" placeholder="Anything else the next shift should know..."></textarea>
+        </div>
+
+        <div id="shError" class="sh-banner err" style="display:none;"></div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+            <button type="button" onclick="closeShiftHandoverForm()" style="padding:0.75rem 1.125rem; border:none; border-radius:0.75rem; cursor:pointer;">Close</button>
+            <button type="button" id="shSubmitBtn" onclick="submitShiftHandover()" style="padding:0.75rem 1.125rem; border:none; border-radius:0.75rem; background:#5b5cf6; color:white; cursor:pointer; font-weight:bold;">Submit Handover</button>
+        </div>
+
+        <div style="margin-top:0.75rem; opacity:.55; font-size:0.85em;">Submitting a handover is optional and separate from logging out.</div>
     </div>
 </div>
 
@@ -1888,7 +1973,11 @@ function openShiftModal(){
     document.getElementById("shiftModal").style.display="flex"; 
 }
 function closeShiftModal(){ document.getElementById("shiftModal").style.display="none"; }
-function openEndShiftModal(){ document.getElementById("endShiftModal").style.display="flex"; }
+function openEndShiftModal(){
+    document.getElementById("endShiftModal").style.display="flex";
+    // Information only - never blocks or disables logout
+    try { if (window.refreshEndShiftHandoverStatus) window.refreshEndShiftHandoverStatus(); } catch (e) { console.warn(e); }
+}
 function closeEndShiftModal(){ document.getElementById("endShiftModal").style.display="none"; }
 function closeTeamModal(){ document.getElementById("teamModal").style.display="none"; }
 
@@ -1998,7 +2087,12 @@ async function endShift(){
         }
 
         if (window.endShiftInFirebase) {
-            await window.endShiftInFirebase(notes);
+            try {
+                await window.endShiftInFirebase(notes);
+            } catch (fbErr) {
+                // A Firebase problem must never keep the user logged in
+                console.error("End shift Firebase update failed (logout continues):", fbErr);
+            }
         }
 
         localStorage.removeItem("todayShift");
@@ -2013,7 +2107,7 @@ async function endShift(){
             closeEndShiftModal();
         }
         if (typeof loadShiftStatus === "function") {
-            await loadShiftStatus();
+            try { await loadShiftStatus(); } catch (e) { console.warn("Shift status refresh failed:", e); }
         }
 
         // Step 4: Show personalized success popup AFTER logout completes successfully
@@ -2042,7 +2136,7 @@ document.getElementById("ackBtn").disabled = completed !== checks.length;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
-getDatabase, ref, set, get, push, remove, child, onChildAdded, onValue, query, limitToLast, orderByChild
+getDatabase, ref, set, get, push, remove, child, onChildAdded, onValue, query, limitToLast, orderByChild, runTransaction
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -2963,6 +3057,479 @@ async function loadDashboardMetrics() {
         container.innerHTML = "<div style='color:#fca5a5;'>Failed to render metrics.</div>";
     }
 }
+
+/* ==========================================================================
+   FEATURE: STRUCTURED SHIFT HANDOVER  (replaces the comments-based handover)
+   SAFETY: endShift() / logout() never call anything in this block, and nothing
+   in this block disables, hides or waits on the End Shift / Logout buttons.
+   ========================================================================== */
+
+const SH_SHIFTS = {
+    SHIFT_1: { label: "Shift 1", start: "06:00", end: "16:00", range: "06:00 AM – 04:00 PM IST" },
+    SHIFT_2: { label: "Shift 2", start: "10:00", end: "20:00", range: "10:00 AM – 08:00 PM IST" }
+};
+
+let shSubmitting = false;
+
+function shEscHtml(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// Slack mrkdwn requires & < > to be escaped (this also neutralises <!channel> style injections)
+function shEscSlack(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// Shift "business date" in IST. The day rolls over at 05:00 IST (before Shift 1 starts at 06:00),
+// so a handover is always stored under the date of the shift it belongs to.
+function shGetShiftDate(epoch) {
+    const shifted = new Date((epoch || Date.now()) - 5 * 60 * 60 * 1000);
+    return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(shifted);
+}
+
+function shGetISTHour(epoch) {
+    const parts = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "numeric", hour12: false }).formatToParts(new Date(epoch));
+    let h = Number(parts.find(p => p.type === "hour").value);
+    const m = Number(parts.find(p => p.type === "minute").value);
+    if (h === 24) h = 0;
+    return h + m / 60;
+}
+
+/**
+ * Works out which shift the current user belongs to.
+ * 1) Reuses the existing shiftType that NavEx already stores at Shift Login
+ *    (MORNING = Shift 1, GENERAL = Shift 2) - from localStorage "todayShift", else from Firebase.
+ * 2) If shiftType is UNKNOWN/missing, guesses from the login time (before 08:00 IST = Shift 1) and
+ *    lets the user change the dropdown.
+ */
+async function shDetectShift() {
+    const email = localStorage.getItem("navexUser") || "";
+    let rec = null;
+    try { rec = JSON.parse(localStorage.getItem("todayShift") || "null"); } catch (e) { rec = null; }
+
+    if (!rec || !rec.shiftType) {
+        try {
+            const key = email.replace(/\./g, "_").replace(/@/g, "_");
+            const utcToday = new Date().toISOString().split("T")[0];
+            const snap = await get(ref(db, `navex-shifts/${utcToday}/${key}`));
+            if (snap.exists()) rec = snap.val();
+        } catch (e) { console.warn("Shift lookup failed, using time-based guess:", e); }
+    }
+
+    if (rec && rec.shiftType === "MORNING") return { shiftKey: "SHIFT_1", locked: true,  note: "(from your shift login)" };
+    if (rec && rec.shiftType === "GENERAL") return { shiftKey: "SHIFT_2", locked: true,  note: "(from your shift login)" };
+
+    const basis = (rec && rec.loginEpoch) ? rec.loginEpoch : Date.now();
+    const hour = shGetISTHour(basis);
+    return {
+        shiftKey: hour < 8 ? "SHIFT_1" : "SHIFT_2",
+        locked: false,
+        note: rec ? "(guessed from your login time - please confirm)" : "(please confirm your shift)"
+    };
+}
+
+function shShowBanner(kind, text) {
+    const el = document.getElementById("shStatusBanner");
+    if (!el) return;
+    if (!text) { el.style.display = "none"; el.textContent = ""; return; }
+    el.className = "sh-banner " + kind;
+    el.textContent = text;
+    el.style.display = "block";
+}
+
+function shShowError(text) {
+    const el = document.getElementById("shError");
+    if (!el) return;
+    if (!text) { el.style.display = "none"; el.textContent = ""; return; }
+    el.textContent = text;
+    el.style.display = "block";
+}
+
+function shAlreadySubmittedText(h) {
+    return "Shift handover has already been submitted for this shift."
+        + (h && h.submittedBy ? ` Submitted by ${h.submittedBy}` : "")
+        + (h && h.submittedAtIST ? ` at ${h.submittedAtIST}` : "")
+        + ". You can still log out normally.";
+}
+
+// Checks Firebase for an existing handover for (today's shift date + selected shift) and updates the form.
+window.shRefreshState = async function () {
+    const body = document.getElementById("shFormBody");
+    const submitBtn = document.getElementById("shSubmitBtn");
+    const shiftKey = document.getElementById("shShiftSelect").value;
+    const date = shGetShiftDate(Date.now());
+    document.getElementById("shDateText").textContent = date;
+    shShowError("");
+    shShowBanner("info", "Checking whether a handover already exists for this shift...");
+
+    try {
+        const snap = await get(ref(db, `navex-shift-handovers/${date}/${shiftKey}`));
+        if (snap.exists()) {
+            shShowBanner("info", shAlreadySubmittedText(snap.val()));
+            body.style.display = "none";
+            submitBtn.style.display = "none";
+        } else {
+            shShowBanner("", "");
+            body.style.display = "block";
+            submitBtn.style.display = "inline-block";
+        }
+    } catch (e) {
+        console.error("Handover status check failed:", e);
+        shShowBanner("warn", "Could not check whether a handover already exists. You can still fill the form - duplicates are blocked when you submit.");
+        body.style.display = "block";
+        submitBtn.style.display = "inline-block";
+    }
+};
+
+window.openShiftHandoverForm = async function () {
+    document.getElementById("shiftHandoverModal").style.display = "flex";
+    try {
+        const det = await shDetectShift();
+        const sel = document.getElementById("shShiftSelect");
+        sel.value = det.shiftKey;
+        sel.disabled = det.locked;
+        document.getElementById("shShiftNote").textContent = det.note;
+    } catch (e) {
+        console.error("Shift detection failed:", e);
+    }
+    await window.shRefreshState();
+};
+
+window.closeShiftHandoverForm = function () {
+    document.getElementById("shiftHandoverModal").style.display = "none";
+};
+
+/* ---------- dynamic rows ---------- */
+
+function shUsersSorted() {
+    return [...TEAM_MEMBERS].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function shUpdatePdSummary(card) {
+    const names = [...card.querySelectorAll(".sh-pd-user:checked")].map(c => c.value);
+    card.querySelector(".sh-pd-summary").textContent = names.length ? `Worked By (${names.length}): ${names.join(", ")}` : "Worked By: select one or more users";
+}
+
+window.shAddPd = function () {
+    const card = document.createElement("div");
+    card.className = "sh-card sh-pd";
+    const checks = shUsersSorted().map(m => `<label class="sh-check"><input type="checkbox" class="sh-pd-user" value="${shEscHtml(m.name)}"> ${shEscHtml(m.name)}</label>`).join("");
+    card.innerHTML = `
+        <div class="sh-row">
+            <input class="sh-input sh-pd-number" type="text" maxlength="30" placeholder="PD Number (e.g. PD3486052)">
+            <button type="button" class="sh-remove" title="Remove this PD" onclick="this.closest('.sh-card').remove()">&times;</button>
+        </div>
+        <details class="sh-details">
+            <summary class="sh-pd-summary">Worked By: select one or more users</summary>
+            <div class="sh-check-list">${checks}</div>
+        </details>
+        <textarea class="sh-input sh-pd-desc" rows="2" maxlength="2000" placeholder="Description"></textarea>`;
+    card.querySelectorAll(".sh-pd-user").forEach(cb => cb.addEventListener("change", () => shUpdatePdSummary(card)));
+    document.getElementById("shPdList").appendChild(card);
+};
+
+window.shAddInc = function () {
+    const card = document.createElement("div");
+    card.className = "sh-card sh-inc";
+    const opts = shUsersSorted().map(m => `<option value="${shEscHtml(m.name)}">${shEscHtml(m.name)}</option>`).join("");
+    card.innerHTML = `
+        <div class="sh-row">
+            <input class="sh-input sh-inc-number" type="text" maxlength="30" placeholder="INC Number (e.g. INC1234567)">
+            <button type="button" class="sh-remove" title="Remove this INC" onclick="this.closest('.sh-card').remove()">&times;</button>
+        </div>
+        <select class="sh-input sh-inc-user">
+            <option value="">Worked By: select one user</option>${opts}
+        </select>
+        <textarea class="sh-input sh-inc-desc" rows="2" maxlength="2000" placeholder="Description"></textarea>`;
+    document.getElementById("shIncList").appendChild(card);
+};
+
+window.shAddLink = function () {
+    const card = document.createElement("div");
+    card.className = "sh-card sh-link";
+    card.innerHTML = `
+        <div class="sh-row">
+            <input class="sh-input sh-link-name" type="text" maxlength="100" placeholder="Name (e.g. Incident Dashboard)">
+            <input class="sh-input sh-link-url" type="text" maxlength="1000" placeholder="https://example.com/dashboard">
+            <button type="button" class="sh-remove" title="Remove this link" onclick="this.closest('.sh-card').remove()">&times;</button>
+        </div>`;
+    document.getElementById("shLinkList").appendChild(card);
+};
+
+/* ---------- read + validate the form ---------- */
+
+function shCollectForm() {
+    const errors = [];
+
+    const pds = [];
+    const seenPd = new Set();
+    let pdNo = 0;
+    document.querySelectorAll("#shPdList .sh-pd").forEach(card => {
+        const raw = card.querySelector(".sh-pd-number").value.trim();
+        const users = [...card.querySelectorAll(".sh-pd-user:checked")].map(c => c.value);
+        const description = card.querySelector(".sh-pd-desc").value.trim();
+        if (!raw && users.length === 0 && !description) return; // ignore completely empty rows
+        pdNo++;
+        const parsed = parseAndNormalizeTicketInput(raw);
+        if (!parsed || parsed.ticketType !== "PagerDuty") {
+            errors.push(`PD #${pdNo}: enter a valid PD number such as PD3486052.`);
+        } else if (seenPd.has(parsed.ticket)) {
+            errors.push(`PD #${pdNo}: ${parsed.ticket} is listed twice.`);
+        } else {
+            seenPd.add(parsed.ticket);
+        }
+        if (users.length === 0) errors.push(`PD #${pdNo}: select at least one user.`);
+        if (!description) errors.push(`PD #${pdNo}: description is required.`);
+        pds.push({ pdNumber: parsed ? parsed.ticket : raw, users, description });
+    });
+
+    const incs = [];
+    const seenInc = new Set();
+    let incNo = 0;
+    document.querySelectorAll("#shIncList .sh-inc").forEach(card => {
+        const raw = card.querySelector(".sh-inc-number").value.trim();
+        const user = card.querySelector(".sh-inc-user").value;
+        const description = card.querySelector(".sh-inc-desc").value.trim();
+        if (!raw && !user && !description) return;
+        incNo++;
+        const parsed = parseAndNormalizeTicketInput(raw);
+        if (!parsed || parsed.ticketType !== "ServiceNow") {
+            errors.push(`INC #${incNo}: enter a valid INC number such as INC1234567.`);
+        } else if (seenInc.has(parsed.ticket)) {
+            errors.push(`INC #${incNo}: ${parsed.ticket} is listed twice.`);
+        } else {
+            seenInc.add(parsed.ticket);
+        }
+        if (!user) errors.push(`INC #${incNo}: select the user who worked it.`);
+        if (!description) errors.push(`INC #${incNo}: description is required.`);
+        incs.push({ incNumber: parsed ? parsed.ticket : raw, user, description });
+    });
+
+    const hyperlinks = [];
+    let linkNo = 0;
+    document.querySelectorAll("#shLinkList .sh-link").forEach(card => {
+        const name = card.querySelector(".sh-link-name").value.trim();
+        const url = card.querySelector(".sh-link-url").value.trim();
+        if (!name && !url) return;
+        linkNo++;
+        if (!name) errors.push(`Hyperlink #${linkNo}: name is required.`);
+        if (!/^https?:\/\/[^\s<>|]+$/i.test(url)) errors.push(`Hyperlink #${linkNo}: URL must start with http:// or https:// and contain no spaces.`);
+        hyperlinks.push({ name, url });
+    });
+
+    const liveEvents = document.getElementById("shLive").value.trim();
+    const vodEvents = document.getElementById("shVod").value.trim();
+    const additionalInformation = document.getElementById("shAdditional").value.trim();
+
+    if (!liveEvents && !vodEvents && pds.length === 0 && incs.length === 0 && hyperlinks.length === 0 && !additionalInformation) {
+        errors.push("Please fill in at least one section before submitting.");
+    }
+
+    return { errors, liveEvents, vodEvents, pds, incs, hyperlinks, additionalInformation };
+}
+
+/* ---------- Slack payload (goes through the EXISTING sendSlackNotification) ---------- */
+
+function shSlackChunks(text) {
+    const MAX = 2800; // Slack section text limit is 3000
+    const out = [];
+    let rest = String(text);
+    while (rest.length > MAX) {
+        let cut = rest.lastIndexOf("\n", MAX);
+        if (cut <= 0) cut = MAX;
+        out.push(rest.slice(0, cut));
+        rest = rest.slice(cut).replace(/^\n/, "");
+    }
+    if (rest.length) out.push(rest);
+    return out;
+}
+
+function shPushSection(blocks, title, body) {
+    let chunks = shSlackChunks(`*${title}*\n${body}`);
+    chunks = chunks.slice(0, Math.max(0, 47 - blocks.length)); // Slack allows max 50 blocks
+    chunks.forEach(c => blocks.push({ type: "section", text: { type: "mrkdwn", text: c } }));
+    if (chunks.length) blocks.push({ type: "divider" });
+}
+
+function shBuildSlackBlocks(h) {
+    const blocks = [
+        { type: "header", text: { type: "plain_text", text: "📋 SHIFT HANDOVER", emoji: true } },
+        {
+            type: "section",
+            fields: [
+                { type: "mrkdwn", text: `*Shift:*\n${h.shiftLabel} (${h.shiftRange})` },
+                { type: "mrkdwn", text: `*Date / Time:*\n${h.date} • ${h.submittedAtIST}` },
+                { type: "mrkdwn", text: `*Submitted By:*\n${shEscSlack(h.submittedBy)}` }
+            ]
+        },
+        { type: "divider" }
+    ];
+
+    shPushSection(blocks, "Live Events", h.liveEvents ? shEscSlack(h.liveEvents) : "_None_");
+    shPushSection(blocks, "VOD Events", h.vodEvents ? shEscSlack(h.vodEvents) : "_None_");
+
+    const pdText = (h.pds || []).map(p =>
+        `• *${shEscSlack(p.pdNumber)}*\n    Worked By: ${shEscSlack((p.users || []).join(", "))}\n    Description: ${shEscSlack(p.description)}`
+    ).join("\n\n");
+    shPushSection(blocks, "PDs Worked", pdText || "_None_");
+
+    const incText = (h.incs || []).map(i =>
+        `• *${shEscSlack(i.incNumber)}*\n    Worked By: ${shEscSlack(i.user)}\n    Description: ${shEscSlack(i.description)}`
+    ).join("\n\n");
+    shPushSection(blocks, "INCs Worked", incText || "_None_");
+
+    // Slack hyperlink format: <URL|Display Text>
+    const linkText = (h.hyperlinks || []).map(l =>
+        `• <${shEscSlack(l.url)}|${shEscSlack(l.name).replace(/\|/g, "¦")}>`
+    ).join("\n");
+    shPushSection(blocks, "Hyperlinks", linkText || "_None_");
+
+    shPushSection(blocks, "Additional Information", h.additionalInformation ? shEscSlack(h.additionalInformation) : "_None_");
+
+    blocks.push({ type: "context", elements: [{ type: "mrkdwn", text: "🤖 _Generated automatically from NavEx Portal_" }] });
+    return { blocks };
+}
+
+// Plain-text copy so the EXISTING "Latest Handover" card and "History" list can display new handovers unchanged.
+function shBuildPlainText(h) {
+    const L = [];
+    L.push(`📋 SHIFT HANDOVER – ${h.shiftLabel} (${h.shiftRange})`);
+    L.push("");
+    L.push("Live Events:\n" + (h.liveEvents || "None"));
+    L.push("");
+    L.push("VOD Events:\n" + (h.vodEvents || "None"));
+    L.push("");
+    L.push("PDs Worked:");
+    if ((h.pds || []).length) h.pds.forEach(p => L.push(`• ${p.pdNumber} | Worked By: ${p.users.join(", ")} | ${p.description}`)); else L.push("None");
+    L.push("");
+    L.push("INCs Worked:");
+    if ((h.incs || []).length) h.incs.forEach(i => L.push(`• ${i.incNumber} | Worked By: ${i.user} | ${i.description}`)); else L.push("None");
+    L.push("");
+    L.push("Hyperlinks:");
+    if ((h.hyperlinks || []).length) h.hyperlinks.forEach(l => L.push(`• ${l.name}: ${l.url}`)); else L.push("None");
+    L.push("");
+    L.push("Additional Information:\n" + (h.additionalInformation || "None"));
+    // the existing Latest Handover / History renderers use innerHTML, so escape here
+    return shEscHtml(L.join("\n")).replace(/&quot;/g, '"');
+}
+
+/* ---------- SUBMIT (race-safe) ---------- */
+
+window.submitShiftHandover = async function () {
+    if (shSubmitting) return;
+    shShowError("");
+
+    const form = shCollectForm();
+    if (form.errors.length) {
+        shShowError(form.errors.join("\n"));
+        document.getElementById("shError").style.whiteSpace = "pre-line";
+        return;
+    }
+
+    const submitBtn = document.getElementById("shSubmitBtn");
+    shSubmitting = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+
+    try {
+        const shiftKey = document.getElementById("shShiftSelect").value;
+        const shiftDef = SH_SHIFTS[shiftKey];
+        const now = Date.now();
+        const shiftDate = shGetShiftDate(now);
+        const email = localStorage.getItem("navexUser") || "";
+
+        const record = {
+            date: shiftDate,
+            shift: shiftKey,
+            shiftLabel: shiftDef.label,
+            shiftRange: shiftDef.range,
+            shiftStart: shiftDef.start,
+            shiftEnd: shiftDef.end,
+            submittedBy: getSlackFormattedUserName(email),
+            submittedByEmail: email,
+            submittedAt: now,
+            submittedAtIST: getSlackISTTime(),
+            liveEvents: form.liveEvents,
+            vodEvents: form.vodEvents,
+            pds: form.pds,
+            incs: form.incs,
+            hyperlinks: form.hyperlinks,
+            additionalInformation: form.additionalInformation
+        };
+
+        // ATOMIC CLAIM: the whole record is written only if nothing exists yet at
+        // navex-shift-handovers/<date>/<shift>. If someone else got there first, the
+        // transaction aborts (returns undefined) and committed === false.
+        const slotRef = ref(db, `navex-shift-handovers/${shiftDate}/${shiftKey}`);
+        const result = await runTransaction(slotRef, (current) => {
+            if (current !== null && current !== undefined) return; // already submitted -> abort
+            return record;
+        });
+
+        if (!result.committed) {
+            await window.shRefreshState();
+            shShowError("Shift handover has already been submitted for this shift. Your text was not saved.");
+            return;
+        }
+
+        // From here the handover IS saved. Everything below is best-effort and can never undo or block it.
+        try { sendSlackNotification(shBuildSlackBlocks(record)); } catch (e) { console.error("Handover Slack error:", e); }
+
+        try {
+            const savedShift = JSON.parse(localStorage.getItem("todayShift") || "null") || {};
+            await push(ref(db, "navex-handovers"), {
+                user: email,
+                date: shiftDate,
+                shift: shiftKey,
+                type: "structured",
+                loginTime: savedShift.loginTime || "",
+                loginEpoch: savedShift.loginEpoch || 0,
+                logoutTime: new Date(now).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                logoutEpoch: now,
+                logoutNotes: shBuildPlainText(record),
+                lastUpdated: now
+            });
+            if (window.renderLatestHandover) await window.renderLatestHandover();
+        } catch (e) { console.error("Handover history write error:", e); }
+
+        // reset the form for the next shift/day
+        ["shLive", "shVod", "shAdditional"].forEach(id => { document.getElementById(id).value = ""; });
+        ["shPdList", "shIncList", "shLinkList"].forEach(id => { document.getElementById(id).innerHTML = ""; });
+
+        closeShiftHandoverForm();
+        if (window.refreshEndShiftHandoverStatus) window.refreshEndShiftHandoverStatus();
+        alert("Shift handover submitted successfully. You can now log out when you are ready.");
+
+    } catch (err) {
+        console.error("Shift handover submit error:", err);
+        shShowError("Could not submit the shift handover: " + (err && err.message ? err.message : err) + "\nThis does not affect logging out.");
+        document.getElementById("shError").style.whiteSpace = "pre-line";
+    } finally {
+        shSubmitting = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Handover";
+    }
+};
+
+/* ---------- status line inside the End Shift (logout) modal: INFORMATION ONLY ---------- */
+
+window.refreshEndShiftHandoverStatus = async function () {
+    const el = document.getElementById("endShiftHandoverStatus");
+    if (!el) return;
+    el.textContent = "Checking handover status...";
+    try {
+        const det = await shDetectShift();
+        const date = shGetShiftDate(Date.now());
+        const snap = await get(ref(db, `navex-shift-handovers/${date}/${det.shiftKey}`));
+        if (snap.exists()) {
+            el.textContent = shAlreadySubmittedText(snap.val());
+        } else {
+            el.textContent = `No handover submitted yet for ${SH_SHIFTS[det.shiftKey].label} (${SH_SHIFTS[det.shiftKey].range}). Submitting is optional.`;
+        }
+    } catch (e) {
+        el.textContent = "Could not check handover status. You can still log out.";
+    }
+};
 
 // Initial loads
 window.addEventListener("load", () => {
