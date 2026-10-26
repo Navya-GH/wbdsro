@@ -669,6 +669,7 @@ a {
 }
 
 .ticket-tag.pd { background: rgba(234, 179, 8, 0.2); color: #fef08a; border: 1px solid rgba(234, 179, 8, 0.3); }
+.ticket-tag.gpo { background: rgba(59, 130, 246, 0.2); color: #bfdbfe; border: 1px solid rgba(59, 130, 246, 0.35); }
 .ticket-tag.inc { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
 
 .ticket-delete-btn {
@@ -997,7 +998,7 @@ Sign in to continue
             </div>
 
             <div style="display:flex; gap:0.5rem; margin-top:0.25rem;">
-                <input id="quickTicketInput" type="text" placeholder="Enter PD or INC Number (e.g. PD3486052)" style="flex:1; padding:0.6rem 0.8rem; border-radius:0.75rem; border:none; outline:none; background:rgba(255,255,255,0.08); color:white; font-size:var(--text-clamp-small);">
+                <input id="quickTicketInput" type="text" placeholder="Enter PD, INC or GPO Number (e.g. PD3486052)" style="flex:1; padding:0.6rem 0.8rem; border-radius:0.75rem; border:none; outline:none; background:rgba(255,255,255,0.08); color:white; font-size:var(--text-clamp-small);">
                 <button onclick="handleAddWorkedTicket()" style="padding:0.6rem 0.9rem; border:none; border-radius:0.75rem; background:linear-gradient(135deg, #5b5cf6, #8b5cf6); color:white; font-weight:bold; font-size:var(--text-clamp-small);">Add</button>
             </div>
             <div id="ticketInputError" style="font-size: var(--text-clamp-small); color:#fca5a5; display:none; margin-top:-0.25rem;"></div>
@@ -1134,6 +1135,10 @@ Sign in to continue
             <div id="shIncList"></div>
             <button type="button" class="sh-add" onclick="shAddInc()">+ Add INC</button>
 
+            <label class="sh-label">GPO JSMs WORKED</label>
+            <div id="shGpoList"></div>
+            <button type="button" class="sh-add" onclick="shAddGpo()">+ Add GPO JSM</button>
+
             <label class="sh-label">HYPERLINKS</label>
             <div id="shLinkList"></div>
             <button type="button" class="sh-add" onclick="shAddLink()">+ Add Hyperlink</button>
@@ -1224,6 +1229,7 @@ Sign in to continue
                     <option value="">All Types</option>
                     <option value="PagerDuty">PagerDuty</option>
                     <option value="ServiceNow">ServiceNow</option>
+                    <option value="GPO JSM">GPO JSM</option>
                 </select>
                 <input type="text" id="analyticsFilterTicketNumber" placeholder="Ticket #" style="padding:0.5rem; border-radius:0.5rem; border:none; background:rgba(255,255,255,0.08); color:white;">
                 <button onclick="loadTicketExplorerData()" style="padding:0.5rem; border-radius:0.5rem; border:none; background:#5b5cf6; color:white; font-weight:bold;">Filter</button>
@@ -1277,7 +1283,6 @@ Sign in to continue
    ========================================================================== */
 
 const SLACK_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwBL0HWISjc5DBWQOg4EOW_UUPMYLwQSniSOgDpwZMx3FPdCIwwGnXXr1SxqLhCflTpJg/exec";
-
 const TEAM_MEMBERS = [
     { email: "navya.teja@wbd.com", name: "Navya Teja" },
     { email: "praveen.sharma@wbd.com", name: "Praveen Sharma" },
@@ -2642,10 +2647,17 @@ window.handleAddWorkedTicket = async function() {
     const rawVal = inputEl.value;
 
     errorEl.style.display = "none";
+
+    // GPO JSM keys (GPO-1234) are handled by their own validated + atomic path
+    if (/^\s*GPO/i.test(rawVal)) {
+        await handleAddGpoTicket(inputEl, errorEl);
+        return;
+    }
+
     const parsed = parseAndNormalizeTicketInput(rawVal);
 
     if (!parsed) {
-        errorEl.innerText = "Invalid ticket format. Examples: PD3486052 or INC1234567";
+        errorEl.innerText = "Invalid ticket format. Examples: PD3486052, INC1234567 or GPO-1234";
         errorEl.style.display = "block";
         return;
     }
@@ -2677,10 +2689,92 @@ window.handleAddWorkedTicket = async function() {
     }
 };
 
+/**
+ * GPO JSM tickets in My Tickets.
+ * Uniqueness across ALL users is enforced by an atomic Firebase transaction on
+ * navex-gpo-registry/<GPO-KEY> (create-only). The normal My Tickets record is written only after the claim succeeds.
+ */
+async function releaseGpoClaim(key) {
+    const email = localStorage.getItem("navexUser") || "guest@wbd.com";
+    // delete the claim only if it is OURS; otherwise abort (return undefined)
+    await runTransaction(ref(db, `navex-gpo-registry/${key}`), (cur) => (cur && cur.ownerEmail === email) ? null : undefined);
+}
+
+async function handleAddGpoTicket(inputEl, errorEl) {
+    const key = normalizeGpoKey(inputEl.value);
+    if (!key) {
+        errorEl.innerText = "Invalid GPO JSM key. Use the format GPO-1234 (only GPO- tickets are allowed).";
+        errorEl.style.display = "block";
+        return;
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    const userEmail = localStorage.getItem("navexUser") || "guest@wbd.com";
+    const engineerName = getSlackFormattedUserName(userEmail);
+
+    const buildRecord = (date) => ({
+        date: date,
+        timestamp: Date.now(),
+        engineerEmail: userEmail,
+        engineerName: engineerName,
+        shift: getCurrentShiftName(),
+        ticket: key,
+        ticketType: "GPO JSM"
+    });
+
+    const regRef = ref(db, `navex-gpo-registry/${key}`);
+    let claimed = false;
+
+    try {
+        const claim = { ticket: key, ownerEmail: userEmail, ownerName: engineerName, claimedAt: Date.now(), date: today };
+
+        // ATOMIC CLAIM: succeeds only if nobody has claimed this key yet (anywhere, any user, any day)
+        const res = await runTransaction(regRef, (cur) => {
+            if (cur !== null && cur !== undefined) return; // already claimed -> abort
+            return claim;
+        });
+
+        if (!res.committed) {
+            const existing = res.snapshot.val() || {};
+            // Self-heal: I own the claim but my My Tickets record is missing (an earlier write failed) -> recreate it
+            if (existing.ownerEmail === userEmail) {
+                const recDate = existing.date || today;
+                const recSnap = await get(ref(db, `navex-worked-tickets/${recDate}/${key}`));
+                if (!recSnap.exists()) {
+                    await set(ref(db, `navex-worked-tickets/${recDate}/${key}`), buildRecord(recDate));
+                    inputEl.value = "";
+                    loadMyTicketsToday();
+                    return;
+                }
+            }
+            errorEl.innerText = `This GPO JSM ticket has already been added by ${existing.ownerName || "another user"}.`;
+            errorEl.style.display = "block";
+            return;
+        }
+
+        claimed = true;
+        await set(ref(db, `navex-worked-tickets/${today}/${key}`), buildRecord(today));
+        inputEl.value = "";
+        loadMyTicketsToday();
+    } catch (err) {
+        console.error("Error saving GPO ticket:", err);
+        if (claimed) {
+            // roll back our claim so the ticket is not blocked by a half-finished save
+            try { await releaseGpoClaim(key); } catch (e2) { console.error("GPO claim rollback failed:", e2); }
+        }
+        errorEl.innerText = "Error saving ticket. Please try again.";
+        errorEl.style.display = "block";
+    }
+}
+
 window.handleDeleteWorkedTicket = async function(ticketId) {
     const today = new Date().toISOString().split("T")[0];
     try {
         await remove(ref(db, `navex-worked-tickets/${today}/${ticketId}`));
+        // GPO JSM: free the global claim (only succeeds if it is ours)
+        if (/^GPO-[0-9]+$/.test(ticketId)) {
+            try { await releaseGpoClaim(ticketId); } catch (e) { console.error("GPO claim release failed:", e); }
+        }
         loadMyTicketsToday();
     } catch (err) {
         console.error("Error deleting ticket:", err);
@@ -2713,7 +2807,7 @@ async function loadMyTicketsToday() {
 
         listEl.innerHTML = myTickets.map(t => {
             const isPD = t.ticketType === "PagerDuty";
-            const tagClass = isPD ? "pd" : "inc";
+            const tagClass = isPD ? "pd" : (t.ticketType === "GPO JSM" ? "gpo" : "inc");
             return `
                 <div class="ticket-tag ${tagClass}">
                     <span><b>${t.ticketType}:</b> ${t.ticket}</span>
@@ -2972,12 +3066,14 @@ window.loadEngineerHistory = async function() {
 
         const pdCount = engTickets.filter(t => t.ticketType === "PagerDuty").length;
         const snowCount = engTickets.filter(t => t.ticketType === "ServiceNow").length;
+        const gpoCount = engTickets.filter(t => t.ticketType === "GPO JSM").length;
 
         cardEl.innerHTML = `
             <div style="display:flex; gap:1rem; margin-bottom:1rem; background:rgba(255,255,255,0.05); padding:1rem; border-radius:0.75rem;">
                 <div>Total Worked: <b>${engTickets.length}</b></div>
                 <div>PagerDuty: <b>${pdCount}</b></div>
                 <div>ServiceNow: <b>${snowCount}</b></div>
+                <div>GPO JSM: <b>${gpoCount}</b></div>
             </div>
             <div style="max-height:15rem; overflow-y:auto; display:flex; flex-direction:column; gap:0.5rem;">
                 ${engTickets.map(t => `
@@ -3010,6 +3106,7 @@ async function loadDashboardMetrics() {
         let totalTickets = 0;
         let pdTotal = 0;
         let snowTotal = 0;
+        let gpoTotal = 0;
         let engineerCounts = {};
 
         Object.keys(allDays).forEach(date => {
@@ -3017,6 +3114,7 @@ async function loadDashboardMetrics() {
                 totalTickets++;
                 if (t.ticketType === "PagerDuty") pdTotal++;
                 if (t.ticketType === "ServiceNow") snowTotal++;
+                if (t.ticketType === "GPO JSM") gpoTotal++;
 
                 const eng = t.engineerName || "Unknown";
                 engineerCounts[eng] = (engineerCounts[eng] || 0) + 1;
@@ -3038,6 +3136,10 @@ async function loadDashboardMetrics() {
                 <div style="background:rgba(239, 68, 68, 0.15); padding:1rem; border-radius:0.75rem; text-align:center;">
                     <div style="font-size:1.5rem; font-weight:bold; color:#fca5a5;">${snowTotal}</div>
                     <div style="opacity:0.7; font-size:var(--text-clamp-small);">ServiceNow Total</div>
+                </div>
+                <div style="background:rgba(59, 130, 246, 0.15); padding:1rem; border-radius:0.75rem; text-align:center;">
+                    <div style="font-size:1.5rem; font-weight:bold; color:#bfdbfe;">${gpoTotal}</div>
+                    <div style="opacity:0.7; font-size:var(--text-clamp-small);">GPO JSM Total</div>
                 </div>
             </div>
 
@@ -3244,6 +3346,39 @@ window.shAddInc = function () {
     document.getElementById("shIncList").appendChild(card);
 };
 
+/* ---------- GPO JSM support (format check only - does NOT prove the ticket exists in Jira) ---------- */
+
+const GPO_KEY_REGEX = /^GPO-[0-9]+$/i;
+
+// Statuses are chosen manually by the user (NOT fetched from Jira). Edit this list to match your GPO workflow.
+const SH_GPO_STATUSES = ["Open", "In Progress", "Waiting for Support", "Waiting for Customer", "Escalated", "Resolved", "Closed"];
+
+// Returns the normalised key (e.g. "gpo-1234" -> "GPO-1234") or null if invalid.
+function normalizeGpoKey(raw) {
+    const t = String(raw == null ? "" : raw).trim();
+    return GPO_KEY_REGEX.test(t) ? t.toUpperCase() : null;
+}
+
+window.shAddGpo = function () {
+    const card = document.createElement("div");
+    card.className = "sh-card sh-gpo";
+    const opts = shUsersSorted().map(m => `<option value="${shEscHtml(m.name)}">${shEscHtml(m.name)}</option>`).join("");
+    const statusOpts = SH_GPO_STATUSES.map(s => `<option value="${shEscHtml(s)}">${shEscHtml(s)}</option>`).join("");
+    card.innerHTML = `
+        <div class="sh-row">
+            <input class="sh-input sh-gpo-number" type="text" maxlength="30" placeholder="GPO Ticket (e.g. GPO-1234)">
+            <button type="button" class="sh-remove" title="Remove this GPO JSM" onclick="this.closest('.sh-card').remove()">&times;</button>
+        </div>
+        <select class="sh-input sh-gpo-user">
+            <option value="">Worked By: select one user</option>${opts}
+        </select>
+        <select class="sh-input sh-gpo-status">
+            <option value="">Current Status: select</option>${statusOpts}
+        </select>
+        <textarea class="sh-input sh-gpo-desc" rows="2" maxlength="2000" placeholder="Description"></textarea>`;
+    document.getElementById("shGpoList").appendChild(card);
+};
+
 window.shAddLink = function () {
     const card = document.createElement("div");
     card.className = "sh-card sh-link";
@@ -3305,6 +3440,30 @@ function shCollectForm() {
         incs.push({ incNumber: parsed ? parsed.ticket : raw, user, description });
     });
 
+    const gpoJsms = [];
+    const seenGpo = new Set();
+    let gpoNo = 0;
+    document.querySelectorAll("#shGpoList .sh-gpo").forEach(card => {
+        const raw = card.querySelector(".sh-gpo-number").value.trim();
+        const workedBy = card.querySelector(".sh-gpo-user").value;
+        const currentStatus = card.querySelector(".sh-gpo-status").value;
+        const description = card.querySelector(".sh-gpo-desc").value.trim();
+        if (!raw && !workedBy && !currentStatus && !description) return; // ignore completely empty rows
+        gpoNo++;
+        const key = normalizeGpoKey(raw);
+        if (!key) {
+            errors.push(`GPO JSM #${gpoNo}: enter a valid GPO ticket key such as GPO-1234 (only GPO- tickets are allowed).`);
+        } else if (seenGpo.has(key)) {
+            errors.push(`GPO JSM #${gpoNo}: ${key} is listed twice.`);
+        } else {
+            seenGpo.add(key);
+        }
+        if (!workedBy) errors.push(`GPO JSM #${gpoNo}: select the user who worked it.`);
+        if (!currentStatus) errors.push(`GPO JSM #${gpoNo}: select the current status.`);
+        if (!description) errors.push(`GPO JSM #${gpoNo}: description is required.`);
+        gpoJsms.push({ ticketKey: key || raw, workedBy, currentStatus, description });
+    });
+
     const hyperlinks = [];
     let linkNo = 0;
     document.querySelectorAll("#shLinkList .sh-link").forEach(card => {
@@ -3321,11 +3480,11 @@ function shCollectForm() {
     const vodEvents = document.getElementById("shVod").value.trim();
     const additionalInformation = document.getElementById("shAdditional").value.trim();
 
-    if (!liveEvents && !vodEvents && pds.length === 0 && incs.length === 0 && hyperlinks.length === 0 && !additionalInformation) {
+    if (!liveEvents && !vodEvents && pds.length === 0 && incs.length === 0 && gpoJsms.length === 0 && hyperlinks.length === 0 && !additionalInformation) {
         errors.push("Please fill in at least one section before submitting.");
     }
 
-    return { errors, liveEvents, vodEvents, pds, incs, hyperlinks, additionalInformation };
+    return { errors, liveEvents, vodEvents, pds, incs, gpoJsms, hyperlinks, additionalInformation };
 }
 
 /* ---------- Slack payload (goes through the EXISTING sendSlackNotification) ---------- */
@@ -3377,6 +3536,11 @@ function shBuildSlackBlocks(h) {
         `• *${shEscSlack(i.incNumber)}*\n    Worked By: ${shEscSlack(i.user)}\n    Description: ${shEscSlack(i.description)}`
     ).join("\n\n");
     shPushSection(blocks, "INCs Worked", incText || "_None_");
+    const gpoText = (h.gpoJsms || []).map(g =>
+        `• *${shEscSlack(g.ticketKey)}*\n    Worked By: ${shEscSlack(g.workedBy)}\n    Current Status: ${shEscSlack(g.currentStatus)}\n    Description: ${shEscSlack(g.description)}`
+    ).join("\n\n");
+    shPushSection(blocks, "GPO JSMs Worked", gpoText || "_None_");
+
 
     // Slack hyperlink format: <URL|Display Text>
     const linkText = (h.hyperlinks || []).map(l =>
@@ -3404,6 +3568,9 @@ function shBuildPlainText(h) {
     L.push("");
     L.push("INCs Worked:");
     if ((h.incs || []).length) h.incs.forEach(i => L.push(`• ${i.incNumber} | Worked By: ${i.user} | ${i.description}`)); else L.push("None");
+    L.push("");
+    L.push("GPO JSMs Worked:");
+    if ((h.gpoJsms || []).length) h.gpoJsms.forEach(g => L.push(`• ${g.ticketKey} | Worked By: ${g.workedBy} | Status: ${g.currentStatus} | ${g.description}`)); else L.push("None");
     L.push("");
     L.push("Hyperlinks:");
     if ((h.hyperlinks || []).length) h.hyperlinks.forEach(l => L.push(`• ${l.name}: ${l.url}`)); else L.push("None");
@@ -3453,6 +3620,7 @@ window.submitShiftHandover = async function () {
             vodEvents: form.vodEvents,
             pds: form.pds,
             incs: form.incs,
+            gpoJsms: form.gpoJsms,
             hyperlinks: form.hyperlinks,
             additionalInformation: form.additionalInformation
         };
@@ -3494,7 +3662,7 @@ window.submitShiftHandover = async function () {
 
         // reset the form for the next shift/day
         ["shLive", "shVod", "shAdditional"].forEach(id => { document.getElementById(id).value = ""; });
-        ["shPdList", "shIncList", "shLinkList"].forEach(id => { document.getElementById(id).innerHTML = ""; });
+        ["shPdList", "shIncList", "shGpoList", "shLinkList"].forEach(id => { document.getElementById(id).innerHTML = ""; });
 
         closeShiftHandoverForm();
         if (window.refreshEndShiftHandoverStatus) window.refreshEndShiftHandoverStatus();

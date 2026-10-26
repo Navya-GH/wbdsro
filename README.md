@@ -17,3 +17,8 @@ URL : https://github.com/Navya-GH/wbdsro/releases/download/v1.0.0/RG.mp4
 1) Increased the efficiency of handover from navex to slack integration message .
 2) track the effort for particular individuals who worked on PD tickets .
 3) Created a Habdover functionality in this version.
+
+**Added JSM tickets tracking under My tickets and shift handover functionalities**
+1) Modified the rules in database to store the tickets of JSM.
+2) track the effort for particular individuals who worked on JSM tickets .
+3) Duplicate tickets are not allowed while entering the JSM tickets.
